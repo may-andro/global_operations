@@ -35,6 +35,8 @@ on:
         required: true
       GOOGLE_SERVICES_BASE64:
         required: true
+      ANDROID_GOOGLE_MAP_KEY:
+        required: true
 
 env:
   FLUTTER_VERSION: 3.32.2
@@ -91,6 +93,11 @@ jobs:
           echo "storePassword=${{ secrets.SIGNING_STORE_PASSWORD }}" >> ${{env.PROPERTIES_PATH}}
           echo "keyPassword=${{ secrets.SIGNING_KEY_PASSWORD }}" >> ${{env.PROPERTIES_PATH}}
           echo "keyAlias=${{ secrets.SIGNING_KEY_ALIAS }}" >> ${{env.PROPERTIES_PATH}}
+
+      - name: Create the local.properties
+        run: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
+          echo "googleMapsApiKey=${{ secrets.ANDROID_GOOGLE_MAP_KEY }}" >> android/local.properties
 
       - name: Extract version and build name from tag
         run: |
