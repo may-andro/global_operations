@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:global_ops/src/feature/location/domain/domain.dart';
 
 abstract class LocationListenerEvent extends Equatable {
   const LocationListenerEvent();

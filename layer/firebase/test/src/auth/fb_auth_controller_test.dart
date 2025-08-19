@@ -436,7 +436,7 @@ void main() {
             code: code,
             newPassword: newPassword,
           ),
-          throwsA(isA<UnknownAuthException>()),
+          throwsA(isA<InvalidPasswordResetCodeException>()),
         );
       });
     });
@@ -465,7 +465,7 @@ void main() {
 
         expect(
           () => authController.verifyPasswordResetCode(code: code),
-          throwsA(isA<UnknownAuthException>()),
+          throwsA(isA<InvalidPasswordResetCodeException>()),
         );
       });
     });
