@@ -1,0 +1,22 @@
+name: module_injector
+description: Provides dependency injection for the app
+publish_to: 'none'
+
+environment:
+  sdk: ^3.8.1
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get_it: ^8.0.3
+  meta: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true

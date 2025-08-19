@@ -1,0 +1,711 @@
+{
+  "adPanelAdditionalComments": "Additional comments",
+  "@adPanelAdditionalComments": {
+    "description": "Label for section where user can add extra notes about the advertising panel"
+  },
+  "adPanelCamera": "Camera",
+  "@adPanelCamera": {
+    "description": "Label for camera section associated with an advertising panel"
+  },
+  "adPanelCheckboxObjectAdvertisementIssue": "Advertisement issue",
+  "@adPanelCheckboxObjectAdvertisementIssue": {
+    "description": "Checkbox option to report an advertisement issue"
+  },
+  "adPanelCheckboxObjectCampaignIssue": "Campaign issue",
+  "@adPanelCheckboxObjectCampaignIssue": {
+    "description": "Checkbox option to report a campaign issue"
+  },
+  "adPanelCheckboxObjectDamageIssue": "Damage issue",
+  "@adPanelCheckboxObjectDamageIssue": {
+    "description": "Checkbox option to report a damage issue"
+  },
+  "adPanelCheckboxObjectCleanIssue": "Cleaning issue",
+  "@adPanelCheckboxObjectCleanIssue": {
+    "description": "Checkbox option to report a cleaning issue"
+  },
+  "adPanelCheckboxObjectPosterIssue": "Poster issue",
+  "@adPanelCheckboxObjectPosterIssue": {
+    "description": "Checkbox option to report a poster issue"
+  },
+  "adPanelCheckboxObjectLighteningIssue": "Lighting issue",
+  "@adPanelCheckboxObjectLighteningIssue": {
+    "description": "Checkbox option to report a lighting issue"
+  },
+  "adPanelCheckboxObjectMaintenanceIssue": "Maintenance issue",
+  "@adPanelCheckboxObjectMaintenanceIssue": {
+    "description": "Checkbox option to report a maintenance issue"
+  },
+  "adPanelCommentHint": "Add comment [optional]",
+  "@adPanelCommentHint": {
+    "description": "Hint text for optional comment field"
+  },
+  "adPanelDistanceAway": "{distance} km away",
+  "@adPanelDistanceAway": {
+    "description": "Label showing how far the ad panel is from the user",
+    "placeholders": {
+      "distance": {
+        "type": "double",
+        "example": "3.5"
+      }
+    }
+  },
+  "adPanelEmptyDescription": "There are currently no advertising panels available.",
+  "@adPanelEmptyDescription": {
+    "description": "Message shown when no advertising panels exist"
+  },
+  "adPanelEmptyTitle": "No advertising panel",
+  "@adPanelEmptyTitle": {
+    "description": "Title shown when there are no advertising panels"
+  },
+  "adPanelErrorTitle": "Something went wrong",
+  "@adPanelErrorTitle": {
+    "description": "Title shown for generic error state"
+  },
+  "adPanelFaceLabel": "Side: {faceNumber}",
+  "@adPanelFaceLabel": {
+    "description": "Label showing the side number of an advertising panel",
+    "placeholders": {
+      "faceNumber": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "adPanelFaceCount": "{count, plural, =0{No sides} =1{1 side} other{{count} sides}}",
+  "@adPanelFaceCount": {
+    "description": "Shows number of sides an advertising panel has",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "adPanelFacesAndCampaigns": "Sides & Campaigns",
+  "@adPanelFacesAndCampaigns": {
+    "description": "Section title for sides and campaigns"
+  },
+  "adPanelGallery": "Gallery",
+  "@adPanelGallery": {
+    "description": "Label for gallery section"
+  },
+  "adPanelImages": "Images",
+  "@adPanelImages": {
+    "description": "Label for images section"
+  },
+  "adPanelMultiplePanelsFound": "{count} advertising panels found at this location",
+  "@adPanelMultiplePanelsFound": {
+    "description": "Message shown when multiple advertising panels are found at a location",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "adPanelNoResultClearFilters": "Clear filters",
+  "@adPanelNoResultClearFilters": {
+    "description": "Button text to clear filters when no results are found"
+  },
+  "adPanelNoResultDescription": "Try adjusting your search or filters",
+  "@adPanelNoResultDescription": {
+    "description": "Message suggesting adjustments when no results are found"
+  },
+  "adPanelNoResultTitle": "No results found",
+  "@adPanelNoResultTitle": {
+    "description": "Title shown when no search results are found"
+  },
+  "adPanelPanelSubtitle": "Click to view the advertising panels",
+  "@adPanelPanelSubtitle": {
+    "description": "Subtitle guiding users to view advertising panels"
+  },
+  "adPanelPanelTitle": "Advertising panel: {panelKey}",
+  "@adPanelPanelTitle": {
+    "description": "Title showing advertising panel with unique key",
+    "placeholders": {
+      "panelKey": {
+        "type": "String",
+        "example": "AP-123"
+      }
+    }
+  },
+  "adPanelRefresh": "Refresh",
+  "@adPanelRefresh": {
+    "description": "Button label to refresh advertising panels"
+  },
+  "adPanelRunningCampaign": "Running campaign: {campaign}",
+  "@adPanelRunningCampaign": {
+    "description": "Shows currently running campaign on the panel",
+    "placeholders": {
+      "campaign": {
+        "type": "String",
+        "example": "Summer Sale"
+      }
+    }
+  },
+  "adPanelSearchHint": "Search advertising panels...",
+  "@adPanelSearchHint": {
+    "description": "Hint text for search input"
+  },
+  "adPanelSearchRadiusLabel": "{radius} km",
+  "@adPanelSearchRadiusLabel": {
+    "description": "Label showing search radius in kilometers",
+    "placeholders": {
+      "radius": {
+        "type": "String",
+        "example": "10"
+      }
+    }
+  },
+  "adPanelSearchResultCount": "{count, plural, =0{No advertising panels found} =1{1 advertising panel found} other{{count} advertising panels found}}",
+  "@adPanelSearchResultCount": {
+    "description": "Message showing number of advertising panels found",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "adPanelSearchResultCountWithRadius": "{count, plural, =0{No advertising panels found within {radius} km} =1{1 advertising panel found within {radius} km} other{{count} advertising panels found within {radius} km}}",
+  "@adPanelSearchResultCountWithRadius": {
+    "description": "Message showing number of advertising panels found within a radius",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      },
+      "radius": {
+        "type": "String",
+        "example": "15"
+      }
+    }
+  },
+  "adPanelSeeDetails": "View details",
+  "@adPanelSeeDetails": {
+    "description": "Button label to view advertising panel details"
+  },
+  "adPanelSelectImageSource": "Select an image source",
+  "@adPanelSelectImageSource": {
+    "description": "Prompt to select image source"
+  },
+  "adPanelShowListViewTooltip": "Show list view",
+  "@adPanelShowListViewTooltip": {
+    "description": "Tooltip for switching to list view"
+  },
+  "adPanelShowMapViewTooltip": "Show map view",
+  "@adPanelShowMapViewTooltip": {
+    "description": "Tooltip for switching to map view"
+  },
+  "adPanelSortTooltip": "Sort options",
+  "@adPanelSortTooltip": {
+    "description": "Tooltip for sort options"
+  },
+  "adPanelSortDistanceSubtitle": "Sort by distance from your current location",
+  "@adPanelSortDistanceSubtitle": {
+    "description": "Subtitle for sorting option by distance"
+  },
+  "adPanelSortDistanceTitle": "Distance",
+  "@adPanelSortDistanceTitle": {
+    "description": "Title for sorting option by distance"
+  },
+  "adPanelSortEditedSubtitle": "Sort by recently edited panels",
+  "@adPanelSortEditedSubtitle": {
+    "description": "Subtitle for sorting option by recently edited panels"
+  },
+  "adPanelSortEditedTitle": "Recently edited",
+  "@adPanelSortEditedTitle": {
+    "description": "Title for sorting option by recently edited panels"
+  },
+  "adPanelSortObjectNumberSubtitle": "Sort by object number in ascending order",
+  "@adPanelSortObjectNumberSubtitle": {
+    "description": "Subtitle for sorting option by object number"
+  },
+  "adPanelSortObjectNumberTitle": "Object number",
+  "@adPanelSortObjectNumberTitle": {
+    "description": "Title for sorting option by object number"
+  },
+  "adPanelSortStreetSubtitle": "Sort by street name in alphabetical order",
+  "@adPanelSortStreetSubtitle": {
+    "description": "Subtitle for sorting option by street name"
+  },
+  "adPanelSortStreetTitle": "Street",
+  "@adPanelSortStreetTitle": {
+    "description": "Title for sorting option by street name"
+  },
+  "adPanelSortingOptions": "Sort options",
+  "@adPanelSortingOptions": {
+    "description": "Label for sorting options section"
+  },
+  "adPanelSubmitUpdateTooltip": "Submit changes",
+  "@adPanelSubmitUpdateTooltip": {
+    "description": "Tooltip for submitting updates to ad panels"
+  },
+  "adPanelUpdateSuccess": "Your changes have been successfully updated",
+  "@adPanelUpdateSuccess": {
+    "description": "Success message shown after ad panel updates"
+  },
+  "appVersion": "Version {version}",
+  "@appVersion": {
+    "description": "Displays the current app version",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.2.3"
+      }
+    }
+  },
+  "companyName": "Global",
+  "@companyName": {
+    "description": "Name of the company"
+  },
+  "copyright": "© 2025 Global Ops. All rights reserved.",
+  "@copyright": {
+    "description": "Copyright notice text"
+  },
+  "localeSelectLanguage": "Choose your language",
+  "@localeSelectLanguage": {
+    "description": "Label prompting user to select a language"
+  },
+  "locationPermissionAllow": "Allow location",
+  "@locationPermissionAllow": {
+    "description": "Button text to allow location access"
+  },
+  "locationPermissionDeniedDescription": "This feature requires location access. Please grant permission.",
+  "@locationPermissionDeniedDescription": {
+    "description": "Message shown when location permission is denied"
+  },
+  "locationPermissionDeniedTitle": "Location permission needed",
+  "@locationPermissionDeniedTitle": {
+    "description": "Title when location permission is denied"
+  },
+  "locationPermissionFailure": "Could not retrieve permission status",
+  "@locationPermissionFailure": {
+    "description": "Error message when permission status cannot be retrieved"
+  },
+  "locationPermissionLimitedDescription": "You have granted limited location access. Some features may not work as expected.",
+  "@locationPermissionLimitedDescription": {
+    "description": "Message when limited location access is granted"
+  },
+  "locationPermissionLimitedTitle": "Limited location access",
+  "@locationPermissionLimitedTitle": {
+    "description": "Title for limited location access"
+  },
+  "locationPermissionOpenSettings": "Open app settings",
+  "@locationPermissionOpenSettings": {
+    "description": "Button text to open app settings"
+  },
+  "locationPermissionPermanentlyDeniedDescription": "Location permission has been permanently denied. Please open settings to allow it.",
+  "@locationPermissionPermanentlyDeniedDescription": {
+    "description": "Message when location permission is permanently denied"
+  },
+  "locationPermissionPermanentlyDeniedTitle": "Location permission required",
+  "@locationPermissionPermanentlyDeniedTitle": {
+    "description": "Title when location permission is permanently denied"
+  },
+  "locationPermissionProvisionalDescription": "You have provisional location access. Confirm to grant full access.",
+  "@locationPermissionProvisionalDescription": {
+    "description": "Message for provisional location access"
+  },
+  "locationPermissionProvisionalTitle": "Provisional location access",
+  "@locationPermissionProvisionalTitle": {
+    "description": "Title for provisional location access"
+  },
+  "locationPermissionRestrictedDescription": "Location access is restricted on this device or by parental controls.",
+  "@locationPermissionRestrictedDescription": {
+    "description": "Message when location access is restricted"
+  },
+  "locationPermissionRestrictedTitle": "Location restricted",
+  "@locationPermissionRestrictedTitle": {
+    "description": "Title when location access is restricted"
+  },
+  "no": "No",
+  "@no": {
+    "description": "Label for a negative response option"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "Label for a positive response option"
+  },
+  "routeNotFoundButton": "Go to Home",
+  "@routeNotFoundButton": {
+    "description": "Button text to navigate back to home when route not found"
+  },
+  "routeNotFoundMessage": "Oops! The page you are looking for\\nis not found.",
+  "@routeNotFoundMessage": {
+    "description": "Message shown when a page/route cannot be found"
+  },
+  "routeNotFoundTitle": "Page Not Found",
+  "@routeNotFoundTitle": {
+    "description": "Title shown when a page/route cannot be found"
+  },
+  "settingAppLanguage": "Application language",
+  "@settingAppLanguage": {
+    "description": "Setting option to select application language"
+  },
+  "settingChangePassword": "Change password",
+  "@settingChangePassword": {
+    "description": "Setting option to change password"
+  },
+  "settingCurrentUser": "Current user",
+  "@settingCurrentUser": {
+    "description": "Label showing current logged-in user"
+  },
+  "settingDeleteAccount": "Delete account",
+  "@settingDeleteAccount": {
+    "description": "Setting option to delete account"
+  },
+  "settingDeleteAccountConfirmation": "Delete account confirmation",
+  "@settingDeleteAccountConfirmation": {
+    "description": "Title for delete account confirmation"
+  },
+  "settingDeleteAccountConfirmationPrompt": "Account deletion is irreversible. Are you sure you want to delete your account?",
+  "@settingDeleteAccountConfirmationPrompt": {
+    "description": "Prompt warning about irreversible account deletion"
+  },
+  "settingLanguageSectionTitle": "Language",
+  "@settingLanguageSectionTitle": {
+    "description": "Title for language settings section"
+  },
+  "settingLocationBasedSearch": "Location-based search",
+  "@settingLocationBasedSearch": {
+    "description": "Toggle setting for location-based search"
+  },
+  "settingLocationBasedSearchDescription": "Enable this feature to find advertising panels within a selected radius from your current location.",
+  "@settingLocationBasedSearchDescription": {
+    "description": "Description of location-based search feature"
+  },
+  "settingLogout": "Logout",
+  "@settingLogout": {
+    "description": "Setting option to log out"
+  },
+  "settingLogoutConfirmation": "Logout confirmation",
+  "@settingLogoutConfirmation": {
+    "description": "Title for logout confirmation dialog"
+  },
+  "settingLogoutConfirmationPrompt": "Do you want to logout?",
+  "@settingLogoutConfirmationPrompt": {
+    "description": "Prompt asking the user to confirm logout"
+  },
+  "settingSearchCriteriaSectionTitle": "Search criteria",
+  "@settingSearchCriteriaSectionTitle": {
+    "description": "Title for search criteria settings section"
+  },
+  "settingUserManagementSectionTitle": "User management",
+  "@settingUserManagementSectionTitle": {
+    "description": "Title for user management settings section"
+  },
+  "splashContactSupport": "contact support",
+  "@splashContactSupport": {
+    "description": "Label for contacting support in splash error"
+  },
+  "splashErrorMessage": "Restart the app again or try later. If the problem persists",
+  "@splashErrorMessage": {
+    "description": "Error message shown on splash screen when setup fails"
+  },
+  "splashErrorTitle": "We encountered a problem during setup 😵‍💫💻",
+  "@splashErrorTitle": {
+    "description": "Title for error on splash screen"
+  },
+  "splashProdMessage": "Warming up the engine...",
+  "@splashProdMessage": {
+    "description": "Message shown during production setup on splash screen"
+  },
+  "splashStagingDoneMessage": "Setup is complete 🚀",
+  "@splashStagingDoneMessage": {
+    "description": "Message shown when staging setup completes"
+  },
+  "splashStagingPostRegisterMessage": "Retrieving all dependencies 🎯",
+  "@splashStagingPostRegisterMessage": {
+    "description": "Message shown during dependency retrieval in staging"
+  },
+  "splashStagingRegisteringMessage": "Registering the services ⬇️",
+  "@splashStagingRegisteringMessage": {
+    "description": "Message shown when services are registering in staging"
+  },
+  "splashStagingStartMessage": "Warming up the app 🔥",
+  "@splashStagingStartMessage": {
+    "description": "Message shown at the start of staging setup"
+  },
+  "errorNetworkConnection": "Check your internet connection and try again",
+  "@errorNetworkConnection": {
+    "description": "Error message when network connection fails"
+  },
+  "errorImageSizeExceeded": "Image file is too large. Maximum size is 10MB",
+  "@errorImageSizeExceeded": {
+    "description": "Error message when uploaded image exceeds size limit"
+  },
+  "errorUploadCancelled": "Upload was cancelled",
+  "@errorUploadCancelled": {
+    "description": "Message shown when a file upload is cancelled"
+  },
+  "errorPermissionDenied": "Access denied. Check your account settings",
+  "@errorPermissionDenied": {
+    "description": "Message shown when user tries an action without proper permissions"
+  },
+  "errorInvalidFile": "Invalid file. Select a valid file",
+  "@errorInvalidFile": {
+    "description": "Message shown when user selects an invalid file"
+  },
+  "errorStorageService": "Storage service error. Try again later",
+  "@errorStorageService": {
+    "description": "Error message when cloud storage service fails"
+  },
+  "errorUploadUnknown": "An unexpected error occurred during upload",
+  "@errorUploadUnknown": {
+    "description": "Error message when an unknown issue occurs during file upload"
+  },
+  "errorValidationFailed": "Check the data and try again",
+  "@errorValidationFailed": {
+    "description": "Message shown when validation fails on user input"
+  },
+  "errorServerUnavailable": "Server is temporarily unavailable. Try again later",
+  "@errorServerUnavailable": {
+    "description": "Message when server is down or unavailable"
+  },
+  "errorSessionExpired": "Session expired. Please log in again",
+  "@errorSessionExpired": {
+    "description": "Message shown when user session has expired"
+  },
+  "errorUpdateFailed": "An unexpected error occurred during update",
+  "@errorUpdateFailed": {
+    "description": "Message shown when app update fails unexpectedly"
+  },
+  "errorUnexpected": "An unexpected error occurred: {error}",
+  "@errorUnexpected": {
+    "description": "Generic unexpected error message",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Network timeout"
+      }
+    }
+  },
+  "errorAdPanelUpdatePermissionDenied": "You do not have permission to update these panels",
+  "@errorAdPanelUpdatePermissionDenied": {
+    "description": "Message shown when user tries to update ad panels without permission"
+  },
+  "errorLocaleStorageFailure": "Storage error: Unable to read locale settings",
+  "@errorLocaleStorageFailure": {
+    "description": "Message shown when locale settings cannot be read from storage"
+  },
+  "errorLocaleValidationFailure": "Invalid locale data detected",
+  "@errorLocaleValidationFailure": {
+    "description": "Message shown when locale data fails validation"
+  },
+  "errorLocaleNotFound": "No locale preference found, using default settings",
+  "@errorLocaleNotFound": {
+    "description": "Message shown when no locale is set"
+  },
+  "errorLocaleLoadUnknown": "Unexpected error while loading locale settings",
+  "@errorLocaleLoadUnknown": {
+    "description": "Message shown when loading locale settings fails unexpectedly"
+  },
+  "errorLocaleCacheFailure": "Unable to save locale settings",
+  "@errorLocaleCacheFailure": {
+    "description": "Message shown when saving locale settings fails"
+  },
+  "errorLocaleServiceLocatorFailure": "Unable to update application services. Please restart the app",
+  "@errorLocaleServiceLocatorFailure": {
+    "description": "Message when updating app services fails"
+  },
+  "errorLocaleIntlFailure": "Unable to set internationalization settings",
+  "@errorLocaleIntlFailure": {
+    "description": "Message shown when setting intl configuration fails"
+  },
+  "errorLocaleStreamFailure": "Locale updated but notification failed",
+  "@errorLocaleStreamFailure": {
+    "description": "Message shown when locale changes but notification fails"
+  },
+  "errorLocaleUpdateValidationFailure": "Invalid locale format provided",
+  "@errorLocaleUpdateValidationFailure": {
+    "description": "Message shown when locale update has invalid format"
+  },
+  "errorLocaleUpdateUnknown": "Unexpected error while updating locale",
+  "@errorLocaleUpdateUnknown": {
+    "description": "Message shown when locale update fails unexpectedly"
+  },
+  "errorUserNotSignedIn": "User is not signed in. Please log in to continue",
+  "@errorUserNotSignedIn": {
+    "description": "Message shown when an action requires login"
+  },
+  "errorWrongPassword": "Incorrect password. Please try again",
+  "@errorWrongPassword": {
+    "description": "Message shown when user enters wrong password"
+  },
+  "errorRecentLoginRequired": "Recent login required. Please sign in again to continue",
+  "@errorRecentLoginRequired": {
+    "description": "Message shown when user needs to re-login due to security requirements"
+  },
+  "errorNetwork": "Network error. Please check your connection and try again",
+  "@errorNetwork": {
+    "description": "Generic network error message"
+  },
+  "errorTooManyRequests": "Too many requests. Please wait and try again later",
+  "@errorTooManyRequests": {
+    "description": "Message shown when API request limit is exceeded"
+  },
+  "errorInvalidCredential": "Invalid credentials provided",
+  "@errorInvalidCredential": {
+    "description": "Message shown when login credentials are invalid"
+  },
+  "errorUserDisabled": "This account has been disabled. Contact support for assistance",
+  "@errorUserDisabled": {
+    "description": "Message shown when user account is disabled"
+  },
+  "errorMissingEmail": "Email address is required",
+  "@errorMissingEmail": {
+    "description": "Message shown when email field is empty"
+  },
+  "errorAuthState": "Authentication state error. Please try logging in again",
+  "@errorAuthState": {
+    "description": "Message shown when authentication state is invalid"
+  },
+  "deleteAccountTitle": "Delete Account",
+  "@deleteAccountTitle": {
+    "description": "Title for delete account dialog"
+  },
+  "deleteAccountSubtitle": "This action is irreversible. Once you delete your account, all your data will be permanently removed.",
+  "@deleteAccountSubtitle": {
+    "description": "Subtitle warning for account deletion"
+  },
+  "deleteAccountSuccess": "You have successfully deleted your account.",
+  "@deleteAccountSuccess": {
+    "description": "Message shown after account deletion succeeds"
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Generic submit button text"
+  },
+  "updatePasswordTitle": "Update Password",
+  "@updatePasswordTitle": {
+    "description": "Title for update password screen"
+  },
+  "updatePasswordSubtitle": "Please enter your new password which must be at least 6 characters long and at most 12 characters long.",
+  "@updatePasswordSubtitle": {
+    "description": "Instructions for updating password"
+  },
+  "updatePasswordSuccess": "You have successfully updated your password.",
+  "@updatePasswordSuccess": {
+    "description": "Message shown when password update succeeds"
+  },
+  "currentPassword": "Current Password",
+  "@currentPassword": {
+    "description": "Label for current password input"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "Label for new password input"
+  },
+  "errorWeakPassword": "New password is too weak. Please choose a stronger password",
+  "@errorWeakPassword": {
+    "description": "Message shown when password strength is insufficient"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Generic close button text"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button text"
+  },
+  "adPanelUpdatingTitle": "Updating...",
+  "@adPanelUpdatingTitle": {
+    "description": "Title shown while ad panel update is in progress"
+  },
+  "adPanelUpdatingDescription": "Please wait while we process your request",
+  "@adPanelUpdatingDescription": {
+    "description": "Message shown while updating ad panels"
+  },
+  "adPanelCompressingImagesTitle": "Compressing Images",
+  "@adPanelCompressingImagesTitle": {
+    "description": "Title shown while images are being compressed"
+  },
+  "adPanelCompressingImagesDescription": "Please wait, your ({currentFileIndex}/{totalFiles}) image file is being prepared for upload",
+  "@adPanelCompressingImagesDescription": {
+    "description": "Message shown when compressing multiple images",
+    "placeholders": {
+      "currentFileIndex": {
+        "type": "int",
+        "example": "1"
+      },
+      "totalFiles": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "adPanelUploadingImagesTitle": "Uploading Images...",
+  "@adPanelUploadingImagesTitle": {
+    "description": "Title shown while images are being uploaded"
+  },
+  "adPanelUploadingImagesDescription": "Please wait, your ({currentFileIndex}/{totalFiles}) image file is being uploaded",
+  "@adPanelUploadingImagesDescription": {
+    "description": "Message shown when uploading multiple images",
+    "placeholders": {
+      "currentFileIndex": {
+        "type": "int",
+        "example": "1"
+      },
+      "totalFiles": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "adPanelUpdatingPanelsTitle": "Updating panels...",
+  "@adPanelUpdatingPanelsTitle": {
+    "description": "Title shown while ad panels are being updated"
+  },
+  "adPanelUpdatingPanelsDescription": "Please wait while we update your ad panels",
+  "@adPanelUpdatingPanelsDescription": {
+    "description": "Message shown while updating ad panels"
+  },
+  "adPanelUpdateExistWarningCompressingImages": "Images are being compressed. Please wait until the process is complete.",
+  "@adPanelUpdateExistWarningCompressingImages": {
+    "description": "Warning message when images are being compressed and user tries to exit."
+  },
+  "adPanelUpdateExistWarningUploadingImages": "Images are being uploaded. Please wait until the process is complete.",
+  "@adPanelUpdateExistWarningUploadingImages": {
+    "description": "Warning message when images are being uploaded and user tries to exit."
+  },
+  "adPanelUpdateExistWarningUpdatingPanels": "Ad Panels are being updated. Please wait until the process is complete.",
+  "@adPanelUpdateExistWarningUpdatingPanels": {
+    "description": "Warning message when panels are being updated and user tries to exit."
+  },
+  "adPanelUpdateExistWarningUnsavedChanges": "You have unsaved changes. Are you sure you want to leave without saving?",
+  "@adPanelUpdateExistWarningUnsavedChanges": {
+    "description": "Warning message shown when user tries to exit while having unsaved changes"
+  },
+  "adPanelUpdateExistWarningTitleUnsavedChanges": "Unsaved Changes",
+  "@adPanelUpdateExistWarningTitleUnsavedChanges": {
+    "description": "Warning title shown when user tries to exit while having unsaved changes"
+  },
+  "adPanelUpdateProcessingWarningTitleUnsavedChanges": "Processing...",
+  "@adPanelUpdateProcessingWarningTitleUnsavedChanges": {
+    "description": "Warning title shown when user tries to exit while having unsaved changes"
+  },
+  "adPanelAllowedImageMaxLengthTitle": "Only 3 photos are allowed",
+  "@adPanelAllowedImageMaxLengthTitle": {
+    "description": "Warning title shown when user tries to add an image that exceeds the maximum allowed size"
+  },
+  "adPanelAllowedImageMaxLengthMessage": "You can add more photos by removing existing ones.",
+  "@adPanelAllowedImageMaxLengthMessage": {
+    "description": "Warning message shown when user tries to add an image that exceeds the maximum allowed size"
+  },
+
+  "adPanelImageUpdateFailureTitle": "Upload Failure",
+  "@adPanelImageUpdateFailureTitle": {
+    "description": "Title shown when image update fails for ad panels"
+  },
+  "adPanelImageUpdateFailureMessage": "{count, plural, =0{All files} =1{1 file} other{{count} failed to upload. Please try uploading the failed files again.}}",
+  "@adPanelImageUpdateFailureMessage": {
+    "description": "Message shown when image update fails for ad panels",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  }
+}

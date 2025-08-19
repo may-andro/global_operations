@@ -1,0 +1,25 @@
+name: log_reporter
+description: Provides support for generating logs for the app
+publish_to: 'none'
+
+environment:
+  sdk: ^3.8.1
+
+resolution: workspace
+
+dependencies:
+  firebase:
+    path: ../firebase
+  flutter:
+    sdk: flutter
+  logger: ^2.6.0
+  module_injector:
+    path: ../module_injector
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true

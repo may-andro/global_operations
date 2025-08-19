@@ -1,0 +1,15 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  image_path_android: "assets/launcher/logo_android.png"
+  min_sdk_android: 24
+
+  ios: true
+  image_path_ios: "assets/launcher/logo_ios.png"
+  remove_alpha_channel_ios: true
+
+  web:
+    generate: true
+    image_path: "assets/launcher/logo_web.png"
+    background_color: "#212121"
+    theme_color: "#0B78BE"

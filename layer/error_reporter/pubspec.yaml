@@ -1,0 +1,27 @@
+name: error_reporter
+description: Provides reporting and handling errors for the app
+publish_to: 'none'
+
+environment:
+  sdk: ^3.8.1
+
+resolution: workspace
+
+dependencies:
+  firebase:
+    path: ../firebase
+  flutter:
+    sdk: flutter
+  log_reporter:
+    path: ../log_reporter
+  module_injector:
+    path: ../module_injector
+  meta: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true

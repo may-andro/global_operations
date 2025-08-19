@@ -1,0 +1,18 @@
+targets:
+  $default:
+    sources:
+      include:
+        - "pubspec.yaml"
+        - $package$
+        - assets/**
+        - lib/**
+    builders:
+      json_serializable|json_serializable:
+        enabled: true
+        options:
+          explicit_to_json: true
+        generate_for:
+          - lib/src/feature/**/data/model/*.dart
+          - lib/src/feature/**/domain/entity/*.dart
+          - lib/src/feature/**/presentation/tracking/*.dart
+          - layer/event_reporter/lib/src/data/model/*.dart
