@@ -68,7 +68,8 @@ class DsMapMarkerGenerator {
     if (bytes == null) {
       return null;
     }
-    final icon = BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+
+    final icon = BitmapDescriptor.bytes(bytes.buffer.asUint8List());
     _setCachedIcon('${markerId}_$clusterCount', isSelected, icon);
     return icon;
   }

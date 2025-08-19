@@ -26,7 +26,6 @@ class FbFunctionController {
 
       return response.data;
     } catch (e, st) {
-      print('FbFunctionController.callFunction - Error: $e');
       throw FbFunctionException(e, st);
     }
   }

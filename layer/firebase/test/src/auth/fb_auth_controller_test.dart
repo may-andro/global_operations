@@ -256,7 +256,6 @@ void main() {
         () async {
           const email = 'test@example.com';
           const password = 'password123';
-          final mockCredential = MockAuthCredential();
 
           when(() => mockFirebaseAuth.currentUser).thenReturn(mockUser);
           when(

@@ -112,9 +112,8 @@ class _DSMapWidgetState extends State<DSMapWidget> {
     }
 
     // Setup controller callbacks
-    widget.controller?._attachUpdateMarkersCallback(
-      (items) => _updateClustersCommon(items, fitBounds: true),
-    );
+    widget.controller?._attachUpdateMarkersCallback = (items) =>
+        _updateClustersCommon(items, fitBounds: true);
 
     // Initial marker setup
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -289,7 +288,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
       // Original logic for mobile platforms
       final visibleRegion = await _mapController!.getVisibleRegion();
       final currentZoom = _currentZoom;
-      final bool boundsContain =
+      final boundsContain =
           visibleRegion.southwest.latitude <= minLat &&
           visibleRegion.northeast.latitude >= maxLat &&
           visibleRegion.southwest.longitude <= minLng &&
@@ -498,7 +497,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
   /// Handle map creation
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    widget.controller?._attachMapController(controller);
+    widget.controller?._attachMapController = controller;
     _updateClusters();
   }
 
@@ -518,12 +517,14 @@ class DSMapController extends ChangeNotifier {
   void Function(List<DSMapItem>)? _updateMarkersCallback;
 
   // Called by DSMapWidget to register the GoogleMapController
-  void _attachMapController(GoogleMapController controller) {
+  // ignore: avoid_setters_without_getters
+  set _attachMapController(GoogleMapController controller) {
     _googleMapController = controller;
   }
 
   // Called by DSMapWidget to register a callback for updating markers
-  void _attachUpdateMarkersCallback(void Function(List<DSMapItem>) callback) {
+  // ignore: avoid_setters_without_getters
+  set _attachUpdateMarkersCallback(void Function(List<DSMapItem>) callback) {
     _updateMarkersCallback = callback;
   }
 

@@ -29,22 +29,3 @@ class RetryLocationEvent extends LocationListenerEvent {
   @override
   List<Object?> get props => [];
 }
-
-// Internal events for updating state
-class _LocationUpdatedEvent extends LocationListenerEvent {
-  const _LocationUpdatedEvent(this.location);
-
-  final LocationEntity location;
-
-  @override
-  List<Object?> get props => [location];
-}
-
-class _LocationErrorEvent extends LocationListenerEvent {
-  const _LocationErrorEvent(this.error);
-
-  final Object error;
-
-  @override
-  List<Object?> get props => [error];
-}
