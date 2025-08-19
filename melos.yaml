@@ -222,19 +222,6 @@ scripts:
       firebase deploy --only hosting
     description: Host flutter web page
 
-  host_storybook:
-    run: |
-      cd tool/storybook
-      echo "Clean existing repository"
-      flutter clean
-      echo "Getting packages"
-      flutter pub get 
-      echo "Building web with Flutter"
-      flutter build web --release
-      echo "Deploying to Firebase"
-      firebase deploy --only hosting:wahl-consultancy-storybook-320bf-5669e --project wahl-consultancy-storybook-320bf-5669e
-    description: Host flutter web page
-
   host_privacy_policy:
     run: |
       cd tool/privacy_policy
