@@ -100,7 +100,7 @@ class _AdPanelScreenContentState extends State<_AdPanelScreenContent>
                             size: DSAppBarWidget.getHeight(context),
                           ),
                         )
-                      : const Icon(Icons.check),
+                      : const Icon(Icons.check_circle),
                   tooltip: context.localizations.adPanelSubmitUpdateTooltip,
                   onPressed: isLoading
                       ? null

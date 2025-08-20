@@ -9,6 +9,7 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/wid
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/flexible_space_widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/progress_info_card_widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/upload_failure_widget.dart';
+import 'package:go_router/go_router.dart';
 
 class ContentWidget extends StatelessWidget {
   const ContentWidget({super.key, required this.tabController});
@@ -53,6 +54,7 @@ class ContentWidget extends StatelessWidget {
                 type: DSSnackBarType.success,
               ),
             );
+            context.pop();
           default:
             // Do nothing for other states
             break;

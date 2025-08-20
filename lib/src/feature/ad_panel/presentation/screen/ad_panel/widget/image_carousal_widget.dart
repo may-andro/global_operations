@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:design_system/design_system.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/bloc.dart';
@@ -76,6 +77,19 @@ class _ButtonItemWidget extends StatelessWidget {
           return;
         }
 
+        if (kIsWeb) {
+          context.showSnackBar(
+            snackBar: const DSSnackBar(
+              message: 'This feature is not supported yet',
+            ),
+          );
+          return;
+          /*if (context.mounted) {
+            await _pickImageInWeb(context);
+          }
+          return;*/
+        }
+
         final source = await ImagePickerWidget.showAsDialogOrBottomSheet(
           context,
         );
@@ -96,7 +110,7 @@ class _ButtonItemWidget extends StatelessWidget {
 
   Future<void> _pickImage(BuildContext context, ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
+    final pickedFile = await picker.pickImage(source: source, imageQuality: 40);
     if (pickedFile != null) {
       final updatedImages = List<String>.from(adPanel.images ?? [])
         ..add(pickedFile.path);
@@ -106,6 +120,22 @@ class _ButtonItemWidget extends StatelessWidget {
       }
     }
   }
+
+  /*Future<void> _pickImageInWeb(BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 40,
+    );
+    if (pickedFile != null) {
+      final updatedImages = List<String>.from(adPanel.images ?? [])
+        ..add(pickedFile.path);
+      final updatedPanel = adPanel.copyWith(images: updatedImages);
+      if (context.mounted) {
+        context.read<AdPanelBloc>().add(EditAdPanelEvent(index, updatedPanel));
+      }
+    }
+  }*/
 }
 
 class _ImageItemWidget extends StatelessWidget {

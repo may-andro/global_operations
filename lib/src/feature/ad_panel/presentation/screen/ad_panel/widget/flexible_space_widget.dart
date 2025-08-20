@@ -54,59 +54,77 @@ class FlexibleSpaceWidget extends StatelessWidget {
         radius: context.dimen.radiusLevel2,
         child: Padding(
           padding: EdgeInsets.all(context.space(factor: 2)),
-          child: ListView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+          child: Row(
             children: [
-              Row(
-                children: [
-                  DSCircularIconCardWidget(
-                    icon: Icons.ad_units_rounded,
-                    backgroundColor:
-                        context.colorPalette.invertedBackground.onPrimary,
-                    color: context.colorPalette.invertedBackground.primary,
-                  ),
-                  const DSHorizontalSpacerWidget(1),
-                  Flexible(
-                    child: DSTextWidget(
-                      adPanel.objectNumber,
-                      color: context.colorPalette.invertedBackground.onPrimary,
-                      style: context.typography.titleLarge,
-                      maxLines: 1,
-                      textOverflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              if (context.isDesktop) ...[
-                const DSVerticalSpacerWidget(1),
-                Wrap(
-                  spacing: context.space(factor: 2),
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _ItemWidget(icon: Icons.my_location, label: adPanel.street),
-                    _ItemWidget(
-                      icon: Icons.business_rounded,
-                      label: adPanel.station,
+                    Row(
+                      children: [
+                        DSCircularIconCardWidget(
+                          icon: Icons.ad_units_rounded,
+                          backgroundColor:
+                              context.colorPalette.invertedBackground.onPrimary,
+                          color: context.colorPalette.invertedBackground.primary,
+                        ),
+                        const DSHorizontalSpacerWidget(1),
+                        Flexible(
+                          child: DSTextWidget(
+                            adPanel.objectNumber,
+                            color:
+                                context.colorPalette.invertedBackground.onPrimary,
+                            style: context.typography.titleLarge,
+                            maxLines: 1,
+                            textOverflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                    _ItemWidget(
-                      icon: Icons.location_city_rounded,
-                      label: adPanel.municipalityPart,
-                    ),
+                    if (context.isDesktop) ...[
+                      const DSVerticalSpacerWidget(1),
+                      Wrap(
+                        spacing: context.space(factor: 2),
+                        children: [
+                          _ItemWidget(
+                            icon: Icons.my_location,
+                            label: adPanel.street,
+                          ),
+                          _ItemWidget(
+                            icon: Icons.business_rounded,
+                            label: adPanel.station,
+                          ),
+                          _ItemWidget(
+                            icon: Icons.location_city_rounded,
+                            label: adPanel.municipalityPart,
+                          ),
+                        ],
+                      ),
+                    ],
+                    if (!context.isDesktop) ...[
+                      const DSVerticalSpacerWidget(2),
+                      _ItemWidget(icon: Icons.my_location, label: adPanel.street),
+                      const DSVerticalSpacerWidget(1),
+                      _ItemWidget(
+                        icon: Icons.business_rounded,
+                        label: adPanel.station,
+                      ),
+                      const DSVerticalSpacerWidget(1),
+                      _ItemWidget(
+                        icon: Icons.location_city_rounded,
+                        label: adPanel.municipalityPart,
+                      ),
+                    ],
                   ],
                 ),
-              ],
-              if (!context.isDesktop) ...[
-                const DSVerticalSpacerWidget(2),
-                _ItemWidget(icon: Icons.my_location, label: adPanel.street),
-                const DSVerticalSpacerWidget(1),
-                _ItemWidget(
-                  icon: Icons.business_rounded,
-                  label: adPanel.station,
-                ),
-                const DSVerticalSpacerWidget(1),
-                _ItemWidget(
-                  icon: Icons.location_city_rounded,
-                  label: adPanel.municipalityPart,
+              ),
+              if (context.isDesktop) ...[
+                DSIconButtonWidget(
+                  Icons.check_circle,
+                  iconColor: context.colorPalette.brand.onProminent,
+                  buttonColor: context.colorPalette.brand.prominent,
+                  onPressed: () {},
                 ),
               ],
             ],
