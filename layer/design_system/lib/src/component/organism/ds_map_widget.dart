@@ -166,7 +166,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
         final markerId = cluster.markers.first.markerId.value;
         final icon = await DsMapMarkerGenerator.createBitmap(
           markerId,
-          false,
+          cluster.items.first.isSelected,
           1,
           _theme,
         );
@@ -175,6 +175,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
           onTapParam: () {
             widget.onMarkerTap?.call(cluster.markers.first, cluster.items);
           },
+          infoWindowParam: InfoWindow(title: cluster.items.first.id),
         );
         displayMarkers.add(marker);
       } else if (allSame && cluster.markers.length > 1) {

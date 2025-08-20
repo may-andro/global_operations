@@ -16,13 +16,13 @@ class FlexibleSpaceWidget extends StatelessWidget {
     // card padding
     final cardInternalPadding = context.space(factor: 2) * 2;
     // spacing between content
-    final contentSpacing = context.space(factor: 4);
+    final contentSpacing = context.space(factor: context.isDesktop ? 0 : 4);
     // Calculate item height based on text style and text scale factor
     final itemTextHeight = context.getTextHeight(
       context.typography.bodyMedium,
       1,
     );
-    final itemIconHeight = context.space(factor: 2.5);
+    final itemIconHeight = DSIconWidget.getHeight(context, DSIconSize.medium);
     // Calculate the maximum height of the item based on text and icon
     final itemHeight = max(itemTextHeight, itemIconHeight);
     // Calculate the height of the title text
@@ -30,7 +30,7 @@ class FlexibleSpaceWidget extends StatelessWidget {
       context.typography.titleLarge,
       1,
     );
-    final titleIconHeight = context.space(factor: 3);
+    final titleIconHeight = DSCircularIconCardWidget.getHeight(context);
     // Calculate the maximum height of the title based on text and icon
     final titleHeight = max(titleTextHeight, titleIconHeight);
     // Title padding
@@ -40,7 +40,7 @@ class FlexibleSpaceWidget extends StatelessWidget {
         cardVerticalPadding +
         cardInternalPadding +
         contentSpacing +
-        itemHeight * 3 +
+        (context.isDesktop ? itemHeight : itemHeight * 3) +
         titleHeight +
         titlePadding;
   }
@@ -78,15 +78,37 @@ class FlexibleSpaceWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              const DSVerticalSpacerWidget(2),
-              _ItemWidget(icon: Icons.my_location, label: adPanel.street),
-              const DSVerticalSpacerWidget(1),
-              _ItemWidget(icon: Icons.business_rounded, label: adPanel.station),
-              const DSVerticalSpacerWidget(1),
-              _ItemWidget(
-                icon: Icons.location_city_rounded,
-                label: adPanel.municipalityPart,
-              ),
+              if (context.isDesktop) ...[
+                const DSVerticalSpacerWidget(1),
+                Wrap(
+                  spacing: context.space(factor: 2),
+                  children: [
+                    _ItemWidget(icon: Icons.my_location, label: adPanel.street),
+                    _ItemWidget(
+                      icon: Icons.business_rounded,
+                      label: adPanel.station,
+                    ),
+                    _ItemWidget(
+                      icon: Icons.location_city_rounded,
+                      label: adPanel.municipalityPart,
+                    ),
+                  ],
+                ),
+              ],
+              if (!context.isDesktop) ...[
+                const DSVerticalSpacerWidget(2),
+                _ItemWidget(icon: Icons.my_location, label: adPanel.street),
+                const DSVerticalSpacerWidget(1),
+                _ItemWidget(
+                  icon: Icons.business_rounded,
+                  label: adPanel.station,
+                ),
+                const DSVerticalSpacerWidget(1),
+                _ItemWidget(
+                  icon: Icons.location_city_rounded,
+                  label: adPanel.municipalityPart,
+                ),
+              ],
             ],
           ),
         ),
@@ -104,6 +126,7 @@ class _ItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         DSIconWidget(
           icon,

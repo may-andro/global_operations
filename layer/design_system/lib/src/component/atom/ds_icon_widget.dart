@@ -16,6 +16,10 @@ class DSIconWidget extends StatelessWidget {
   final DSColor color;
   final DSIconSize size;
 
+  static double getHeight(BuildContext context, DSIconSize size) {
+    return size.getSize(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Icon(icon, size: size.getSize(context), color: color.color);

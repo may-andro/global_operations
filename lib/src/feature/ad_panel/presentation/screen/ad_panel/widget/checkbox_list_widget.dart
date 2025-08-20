@@ -82,6 +82,27 @@ class CheckboxListWidget extends StatelessWidget {
       ),
     ];
 
+    if (context.isDesktop) {
+      return DSDynamicGridWidget(
+        count: checkboxes.length,
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemBuilder: (context, index) {
+          final checkbox = checkboxes[index];
+          return CheckboxListTile(
+            value: checkbox.value,
+            onChanged: (val) => checkbox.onChanged(val ?? false),
+            title: DSTextWidget(
+              checkbox.label,
+              style: context.typography.bodyMedium,
+              color: context.colorPalette.background.onPrimary,
+            ),
+            controlAffinity: ListTileControlAffinity.leading,
+          );
+        },
+      );
+    }
+
     return Column(
       children: [
         for (final c in checkboxes)

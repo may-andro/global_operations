@@ -15,6 +15,12 @@ class DSCircularIconCardWidget extends StatelessWidget {
   final DSColor color;
   final DSColor backgroundColor;
 
+  static double getHeight(BuildContext context) {
+    final double iconSize = context.iconSize;
+    final double padding = context.space(factor: context.isDesktop ? 0.5 : 1) * 2;
+    return iconSize + padding;
+  }
+
   @override
   Widget build(BuildContext context) {
     return DsCardWidget(

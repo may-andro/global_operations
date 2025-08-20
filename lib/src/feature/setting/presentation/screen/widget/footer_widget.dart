@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class FooterWidget extends StatelessWidget {
   const FooterWidget({super.key});
@@ -10,12 +11,23 @@ class FooterWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        DSTextWidget(
-          context.localizations.appVersion(''),
-          color: context.colorPalette.neutral.grey7,
-          style: context.typography.labelSmall,
-          maxLines: 1,
-          textOverflow: TextOverflow.ellipsis,
+        FutureBuilder<PackageInfo>(
+          future: PackageInfo.fromPlatform(),
+          builder: (_, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return Padding(
+                padding: EdgeInsets.only(left: context.space(factor: 0.25)),
+                child: DSTextWidget(
+                  context.localizations.appVersion(snapshot.data!.version),
+                  color: context.colorPalette.neutral.grey7,
+                  style: context.typography.labelSmall,
+                  maxLines: 1,
+                  textOverflow: TextOverflow.ellipsis,
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
         const DSVerticalSpacerWidget(0.5),
         DSTextWidget(
