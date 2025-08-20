@@ -67,14 +67,17 @@ class FlexibleSpaceWidget extends StatelessWidget {
                           icon: Icons.ad_units_rounded,
                           backgroundColor:
                               context.colorPalette.invertedBackground.onPrimary,
-                          color: context.colorPalette.invertedBackground.primary,
+                          color:
+                              context.colorPalette.invertedBackground.primary,
                         ),
                         const DSHorizontalSpacerWidget(1),
                         Flexible(
                           child: DSTextWidget(
                             adPanel.objectNumber,
-                            color:
-                                context.colorPalette.invertedBackground.onPrimary,
+                            color: context
+                                .colorPalette
+                                .invertedBackground
+                                .onPrimary,
                             style: context.typography.titleLarge,
                             maxLines: 1,
                             textOverflow: TextOverflow.ellipsis,
@@ -104,7 +107,10 @@ class FlexibleSpaceWidget extends StatelessWidget {
                     ],
                     if (!context.isDesktop) ...[
                       const DSVerticalSpacerWidget(2),
-                      _ItemWidget(icon: Icons.my_location, label: adPanel.street),
+                      _ItemWidget(
+                        icon: Icons.my_location,
+                        label: adPanel.street,
+                      ),
                       const DSVerticalSpacerWidget(1),
                       _ItemWidget(
                         icon: Icons.business_rounded,
