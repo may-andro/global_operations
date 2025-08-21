@@ -45,12 +45,7 @@ class UploadImageFileParams {
 }
 
 class UploadImageFileUseCase
-    extends
-        BaseUseCase<
-          String,
-          UploadImageFileParams,
-          UploadImageFileFailure
-        > {
+    extends BaseUseCase<String, UploadImageFileParams, UploadImageFileFailure> {
   UploadImageFileUseCase(this._fbStorageController);
 
   final FbStorageController _fbStorageController;
