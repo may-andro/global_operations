@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:use_case/use_case.dart';
 import 'package:open_file/open_file.dart';
+import 'package:use_case/use_case.dart';
 
 const _supportedTypes = {
   '.png': 'application/image',

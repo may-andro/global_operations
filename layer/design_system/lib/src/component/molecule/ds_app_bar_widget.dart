@@ -38,7 +38,7 @@ class DSAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               Icons.close,
               iconColor: context.colorPalette.background.onPrimary,
               buttonColor: context.colorPalette.background.primary,
-              onPressed: onBackClicked!,
+              onPressed: onBackClicked,
               size: _getIconSize(context),
             )
           : null,
