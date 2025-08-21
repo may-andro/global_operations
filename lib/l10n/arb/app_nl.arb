@@ -136,13 +136,10 @@
   "retry": "Opnieuw proberen",
   "adPanelUpdatingTitle": "Bezig met bijwerken...",
   "adPanelUpdatingDescription": "Even geduld terwijl we uw verzoek verwerken",
-  "adPanelCompressingImagesTitle": "Afbeeldingen comprimeren",
-  "adPanelCompressingImagesDescription": "Even geduld, uw ({currentFileIndex}/{totalFiles}) afbeeldingsbestand wordt voorbereid voor uploaden",
   "adPanelUploadingImagesTitle": "Afbeeldingen uploaden...",
   "adPanelUploadingImagesDescription": "Even geduld, uw ({currentFileIndex}/{totalFiles}) afbeeldingsbestand wordt geüpload",
   "adPanelUpdatingPanelsTitle": "Panelen bijwerken...",
   "adPanelUpdatingPanelsDescription": "Even geduld terwijl we uw reclamepanelen bijwerken",
-  "adPanelUpdateExistWarningCompressingImages": "Afbeeldingen worden gecomprimeerd. Wacht tot het proces is voltooid.",
   "adPanelUpdateExistWarningUploadingImages": "Afbeeldingen worden geüpload. Wacht tot het proces is voltooid.",
   "adPanelUpdateExistWarningUpdatingPanels": "Advertentiepalen worden bijgewerkt. Wacht tot het proces is voltooid.",
   "adPanelUpdateExistWarningUnsavedChanges": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten zonder op te slaan?",
@@ -151,5 +148,11 @@
   "adPanelAllowedImageMaxLengthTitle": "Er zijn slechts 3 foto's toegestaan",
   "adPanelAllowedImageMaxLengthMessage": "Je kunt meer foto's toevoegen door bestaande te verwijderen.",
   "adPanelImageUpdateFailureTitle": "Upload mislukt",
-  "adPanelImageUpdateFailureMessage": "{count, plural, =0{Alle bestanden} =1{1 bestand} other{{count} bestanden konden niet worden geüpload. Probeer de mislukte bestanden opnieuw te uploaden.}}"
+  "adPanelImageUpdateFailureMessage": "{count, plural, =0{Alle bestanden} =1{1 bestand} other{{count} bestanden konden niet worden geüpload. Probeer de mislukte bestanden opnieuw te uploaden.}}",
+  "imageCompressionTitle": "Afbeeldingen comprimeren",
+  "imageCompressionFailureTitle": "Fout bij comprimeren van afbeeldingen",
+  "imageCompressionMessage": "Afbeeldingen worden gecomprimeerd. Even wachten tot het proces is voltooid.",
+  "errorDecodingFile": "Kan het geselecteerde bestand niet decoderen. Probeer een ander bestand.",
+  "errorProcessingFile": "Er is een probleem opgetreden bij het verwerken van het bestand. Probeer het opnieuw.",
+  "errorUnknownFile": "Er is een onbekende fout opgetreden met het bestand."
 }

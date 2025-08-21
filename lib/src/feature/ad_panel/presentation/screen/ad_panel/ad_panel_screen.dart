@@ -4,6 +4,7 @@ import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/exit_warning_widget.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/submit_button_widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/widget.dart';
 import 'package:global_ops/src/module_injector/app_module_configurator.dart';
 
@@ -81,37 +82,10 @@ class _AdPanelScreenContentState extends State<_AdPanelScreenContent>
         backgroundColor: context.colorPalette.background.primary.color,
         appBar: DSAppBarWidget(
           height: DSAppBarWidget.getHeight(context),
-          actions: [
-            BlocBuilder<AdPanelBloc, AdPanelState>(
-              builder: (context, state) {
-                final isLoading = switch (state) {
-                  AdPanelLoadingState() ||
-                  AdPanelImageCompressionProgressState() ||
-                  AdPanelImageUploadProgressState() ||
-                  AdPanelUpdatingPanelsState() => true,
-                  _ => false,
-                };
-
-                return IconButton(
-                  icon: isLoading
-                      ? Padding(
-                          padding: EdgeInsets.all(context.space()),
-                          child: DSLoadingWidget(
-                            size: DSAppBarWidget.getHeight(context),
-                          ),
-                        )
-                      : const Icon(Icons.check_circle),
-                  tooltip: context.localizations.adPanelSubmitUpdateTooltip,
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          context.read<AdPanelBloc>().add(
-                            const UpdateAdPanelsEvent(),
-                          );
-                        },
-                );
-              },
-            ),
+          actions: const [
+            DSHorizontalSpacerWidget(2),
+            SubmitButtonWidget(),
+            DSHorizontalSpacerWidget(2),
           ],
         ),
         body: ContentWidget(tabController: _tabController),

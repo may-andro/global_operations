@@ -1,27 +1,29 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:global_ops/src/feature/file_picker/file_picker.dart';
 
 class ImagePickerWidget extends StatelessWidget {
   const ImagePickerWidget({super.key});
 
-  static Future<ImageSource?> _showAsBottomSheet(BuildContext context) {
-    return showModalBottomSheet<ImageSource>(
+  static Future<ImagePickerSource?> _showAsBottomSheet(BuildContext context) {
+    return showModalBottomSheet<ImagePickerSource>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) => const DSBottomSheetWidget(child: ImagePickerWidget()),
     );
   }
 
-  static Future<ImageSource?> _showAsDialog(BuildContext context) {
-    return showDialog<ImageSource>(
+  static Future<ImagePickerSource?> _showAsDialog(BuildContext context) {
+    return showDialog<ImagePickerSource>(
       context: context,
       builder: (_) => const DSDialogWidget(child: ImagePickerWidget()),
     );
   }
 
-  static Future<ImageSource?> showAsDialogOrBottomSheet(BuildContext context) {
+  static Future<ImagePickerSource?> showAsDialogOrBottomSheet(
+    BuildContext context,
+  ) {
     if (context.isDesktop) {
       return _showAsDialog(context);
     }
@@ -51,7 +53,7 @@ class ImagePickerWidget extends StatelessWidget {
                 style: context.typography.bodyMedium,
                 color: context.colorPalette.background.onPrimary,
               ),
-              onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              onTap: () => Navigator.of(context).pop(ImagePickerSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library),
@@ -60,7 +62,7 @@ class ImagePickerWidget extends StatelessWidget {
                 style: context.typography.bodyMedium,
                 color: context.colorPalette.background.onPrimary,
               ),
-              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+              onTap: () => Navigator.of(context).pop(ImagePickerSource.gallery),
             ),
           ],
         ),

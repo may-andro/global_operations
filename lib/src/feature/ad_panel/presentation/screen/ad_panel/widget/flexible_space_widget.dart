@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/submit_button_widget.dart';
 
 class FlexibleSpaceWidget extends StatelessWidget {
   const FlexibleSpaceWidget({required this.adPanel, super.key});
@@ -54,89 +55,100 @@ class FlexibleSpaceWidget extends StatelessWidget {
         radius: context.dimen.radiusLevel2,
         child: Padding(
           padding: EdgeInsets.all(context.space(factor: 2)),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        DSCircularIconCardWidget(
-                          icon: Icons.ad_units_rounded,
-                          backgroundColor:
-                              context.colorPalette.invertedBackground.onPrimary,
-                          color:
-                              context.colorPalette.invertedBackground.primary,
-                        ),
-                        const DSHorizontalSpacerWidget(1),
-                        Flexible(
-                          child: DSTextWidget(
-                            adPanel.objectNumber,
-                            color: context
-                                .colorPalette
-                                .invertedBackground
-                                .onPrimary,
-                            style: context.typography.titleLarge,
-                            maxLines: 1,
-                            textOverflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (context.isDesktop) ...[
-                      const DSVerticalSpacerWidget(1),
-                      Wrap(
-                        spacing: context.space(factor: 2),
-                        children: [
-                          _ItemWidget(
-                            icon: Icons.my_location,
-                            label: adPanel.street,
-                          ),
-                          _ItemWidget(
-                            icon: Icons.business_rounded,
-                            label: adPanel.station,
-                          ),
-                          _ItemWidget(
-                            icon: Icons.location_city_rounded,
-                            label: adPanel.municipalityPart,
-                          ),
-                        ],
-                      ),
+          child: SingleChildScrollView(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _TitleWidget(adPanel: adPanel),
+                      DSVerticalSpacerWidget(context.isDesktop ? 1 : 2),
+                      _HorizontalWrappedItemWidget(adPanel: adPanel),
                     ],
-                    if (!context.isDesktop) ...[
-                      const DSVerticalSpacerWidget(2),
-                      _ItemWidget(
-                        icon: Icons.my_location,
-                        label: adPanel.street,
-                      ),
-                      const DSVerticalSpacerWidget(1),
-                      _ItemWidget(
-                        icon: Icons.business_rounded,
-                        label: adPanel.station,
-                      ),
-                      const DSVerticalSpacerWidget(1),
-                      _ItemWidget(
-                        icon: Icons.location_city_rounded,
-                        label: adPanel.municipalityPart,
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
-              ),
-              if (context.isDesktop) ...[
-                DSIconButtonWidget(
-                  Icons.check_circle,
-                  iconColor: context.colorPalette.brand.onProminent,
-                  buttonColor: context.colorPalette.brand.prominent,
-                  onPressed: () {},
-                ),
+                const SubmitButtonWidget(isInAppBar: false),
               ],
-            ],
+            ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _TitleWidget extends StatelessWidget {
+  const _TitleWidget({required this.adPanel});
+
+  final AdPanelEntity adPanel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        DSCircularIconCardWidget(
+          icon: Icons.ad_units_rounded,
+          backgroundColor: context.colorPalette.invertedBackground.onPrimary,
+          color: context.colorPalette.invertedBackground.primary,
+        ),
+        const DSHorizontalSpacerWidget(1),
+        Flexible(
+          child: DSTextWidget(
+            adPanel.objectNumber,
+            color: context.colorPalette.invertedBackground.onPrimary,
+            style: context.typography.titleLarge,
+            maxLines: 1,
+            textOverflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HorizontalWrappedItemWidget extends StatelessWidget {
+  const _HorizontalWrappedItemWidget({required this.adPanel});
+
+  final AdPanelEntity adPanel;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: 300.milliseconds,
+      switchInCurve: Curves.easeIn,
+      switchOutCurve: Curves.easeOut,
+      child: context.isDesktop
+          ? Wrap(
+              spacing: context.space(factor: 2),
+              children: [
+                _ItemWidget(icon: Icons.my_location, label: adPanel.street),
+                _ItemWidget(
+                  icon: Icons.business_rounded,
+                  label: adPanel.station,
+                ),
+                _ItemWidget(
+                  icon: Icons.location_city_rounded,
+                  label: adPanel.municipalityPart,
+                ),
+              ],
+            )
+          : Column(
+              children: [
+                _ItemWidget(icon: Icons.my_location, label: adPanel.street),
+                const DSVerticalSpacerWidget(1),
+                _ItemWidget(
+                  icon: Icons.business_rounded,
+                  label: adPanel.station,
+                ),
+                const DSVerticalSpacerWidget(1),
+                _ItemWidget(
+                  icon: Icons.location_city_rounded,
+                  label: adPanel.municipalityPart,
+                ),
+              ],
+            ),
     );
   }
 }

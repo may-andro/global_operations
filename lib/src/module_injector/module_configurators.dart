@@ -4,6 +4,7 @@ import 'package:error_reporter/error_reporter.dart';
 import 'package:firebase/firebase.dart';
 import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
 import 'package:global_ops/src/feature/authentication/authentication.dart';
+import 'package:global_ops/src/feature/file_picker/file_picker.dart';
 import 'package:global_ops/src/feature/home/home.dart';
 import 'package:global_ops/src/feature/locale/locale.dart';
 import 'package:global_ops/src/feature/location/location.dart';
@@ -35,6 +36,7 @@ List<ModuleConfigurator> getModuleConfigurators(BuildConfig buildConfig) => [
     '',
   ),
   LocaleModuleConfigurator(),
+  FilePickerModuleConfigurator(),
   SystemPermissionModuleConfigurator(),
   LocationModuleConfigurator(),
   AuthenticationModuleConfigurator(),

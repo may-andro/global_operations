@@ -508,17 +508,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please wait while we process your request';
 
   @override
-  String get adPanelCompressingImagesTitle => 'Compressing Images';
-
-  @override
-  String adPanelCompressingImagesDescription(
-    int currentFileIndex,
-    int totalFiles,
-  ) {
-    return 'Please wait, your ($currentFileIndex/$totalFiles) image file is being prepared for upload';
-  }
-
-  @override
   String get adPanelUploadingImagesTitle => 'Uploading Images...';
 
   @override
@@ -535,10 +524,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adPanelUpdatingPanelsDescription =>
       'Please wait while we update your ad panels';
-
-  @override
-  String get adPanelUpdateExistWarningCompressingImages =>
-      'Images are being compressed. Please wait until the process is complete.';
 
   @override
   String get adPanelUpdateExistWarningUploadingImages =>
@@ -581,4 +566,25 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get imageCompressionTitle => 'Compressing Images';
+
+  @override
+  String get imageCompressionFailureTitle => 'Compressing Images Failure';
+
+  @override
+  String get imageCompressionMessage =>
+      'Images are being compressed. Please wait until the process is complete.';
+
+  @override
+  String get errorDecodingFile =>
+      'Could not decode the selected file. Please try another.';
+
+  @override
+  String get errorProcessingFile =>
+      'There was a problem processing the file. Please try again.';
+
+  @override
+  String get errorUnknownFile => 'An unknown error occurred with the file.';
 }

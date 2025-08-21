@@ -2,22 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 
-extension UploadAdPanelImageFailureExtension on UploadAdPanelImageFailure {
+extension UploadImageFileFailureExtension on UploadImageFileFailure {
   String getMessage(BuildContext context) {
     return switch (this) {
-      UploadAdPanelImageNetworkFailure() =>
+      UploadImageFileNetworkFailure() =>
         context.localizations.errorNetworkConnection,
-      UploadAdPanelImageSizeExceededFailure() =>
+      UploadImageFileSizeExceededFailure() =>
         context.localizations.errorImageSizeExceeded,
-      UploadAdPanelImageCancelledFailure() =>
+      UploadImageFileCancelledFailure() =>
         context.localizations.errorUploadCancelled,
-      UploadAdPanelImagePermissionFailure() =>
+      UploadImageFilePermissionFailure() =>
         context.localizations.errorPermissionDenied,
-      UploadAdPanelImageValidationFailure() =>
+      UploadImageFileValidationFailure() =>
         context.localizations.errorInvalidFile,
-      UploadAdPanelImageStorageFailure() =>
+      UploadImageFileStorageFailure() =>
         context.localizations.errorStorageService,
-      UploadAdPanelImageUnknownFailure() =>
+      UploadImageFileUnknownFailure() =>
+        context.localizations.errorUploadUnknown,
+    };
+  }
+}
+
+extension UploadRawImageFailureExtension on UploadRawImageFailure {
+  String getMessage(BuildContext context) {
+    return switch (this) {
+      UploadRawImageNetworkFailure() =>
+        context.localizations.errorNetworkConnection,
+      UploadRawImageSizeExceededFailure() =>
+        context.localizations.errorImageSizeExceeded,
+      UploadRawImageCancelledFailure() =>
+        context.localizations.errorUploadCancelled,
+      UploadRawImagePermissionFailure() =>
+        context.localizations.errorPermissionDenied,
+      UploadRawImageValidationFailure() =>
+        context.localizations.errorInvalidFile,
+      UploadRawImageStorageFailure() =>
+        context.localizations.errorStorageService,
+      UploadRawImageUnknownFailure() =>
         context.localizations.errorUploadUnknown,
     };
   }

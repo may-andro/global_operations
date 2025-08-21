@@ -31,6 +31,7 @@ dependencies:
   equatable: any
   error_reporter:
     path: layer/error_reporter
+  file_picker: ^10.3.1
   firebase:
     path: layer/firebase
   flutter:
@@ -50,6 +51,7 @@ dependencies:
   meta: any
   module_injector:
     path: layer/module_injector
+  open_file: ^3.5.10
   package_info_plus: ^8.3.1
   path: ^1.9.1
   permission_handler: ^12.0.1

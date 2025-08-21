@@ -1,3 +1,4 @@
+import 'package:design_system/src/component/atom/ds_loading_widget.dart';
 import 'package:design_system/src/extension/build_context_extension.dart';
 import 'package:design_system/src/foundation/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +8,9 @@ class DSIconButtonWidget extends StatelessWidget {
     this.icon, {
     required this.iconColor,
     required this.buttonColor,
-    required this.onPressed,
     this.size = DSIconButtonSize.small,
+    this.isLoading = false,
+    this.onPressed,
     this.elevation,
     super.key,
   });
@@ -16,8 +18,9 @@ class DSIconButtonWidget extends StatelessWidget {
   final IconData icon;
   final DSColor iconColor;
   final DSColor buttonColor;
-  final VoidCallback onPressed;
   final DSIconButtonSize size;
+  final bool isLoading;
+  final VoidCallback? onPressed;
   final DSElevation? elevation;
 
   @override
@@ -37,11 +40,15 @@ class DSIconButtonWidget extends StatelessWidget {
         padding: EdgeInsets.zero,
         elevation: elevation?.value ?? context.dimen.elevationNone.value,
       ),
-      child: Icon(
-        icon,
-        size: context.space(factor: size.iconSizeFactor),
-        color: iconColor.color,
-      ),
+      child: isLoading
+          ? DSLoadingWidget(size: context.space(factor: size.iconSizeFactor))
+          : Icon(
+              icon,
+              size: context.space(factor: size.iconSizeFactor),
+              color: onPressed != null
+                  ? iconColor.color
+                  : context.colorPalette.background.disabled.color,
+            ),
     );
   }
 }

@@ -4,20 +4,20 @@ import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/route/route.dart';
 
 class UploadFailureWidget extends StatelessWidget {
-  const UploadFailureWidget({super.key, required this.failedFiles});
+  const UploadFailureWidget({super.key, required this.failedFilesCount});
 
-  final List<String> failedFiles;
+  final int failedFilesCount;
 
   static Future<bool?> _showAsBottomSheet(
     BuildContext context,
-    List<String> failedFiles,
+    int failedFilesCount,
   ) {
     return showModalBottomSheet<bool>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return DSBottomSheetWidget(
-          child: UploadFailureWidget(failedFiles: failedFiles),
+          child: UploadFailureWidget(failedFilesCount: failedFilesCount),
         );
       },
     );
@@ -25,13 +25,13 @@ class UploadFailureWidget extends StatelessWidget {
 
   static Future<bool?> _showAsDialog(
     BuildContext context,
-    List<String> failedFiles,
+    int failedFilesCount,
   ) {
     return showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return DSDialogWidget(
-          child: UploadFailureWidget(failedFiles: failedFiles),
+          child: UploadFailureWidget(failedFilesCount: failedFilesCount),
         );
       },
     );
@@ -39,13 +39,13 @@ class UploadFailureWidget extends StatelessWidget {
 
   static Future<bool?> showAsDialogOrBottomSheet(
     BuildContext context,
-    List<String> failedFiles,
+    int failedFilesCount,
   ) {
     if (context.isDesktop) {
-      return _showAsDialog(context, failedFiles);
+      return _showAsDialog(context, failedFilesCount);
     }
 
-    return _showAsBottomSheet(context, failedFiles);
+    return _showAsBottomSheet(context, failedFilesCount);
   }
 
   @override
@@ -65,7 +65,7 @@ class UploadFailureWidget extends StatelessWidget {
             const DSVerticalSpacerWidget(2),
             DSTextWidget(
               context.localizations.adPanelImageUpdateFailureMessage(
-                failedFiles.length,
+                failedFilesCount,
               ),
               style: context.typography.bodyMedium,
               color: context.colorPalette.background.onPrimary,

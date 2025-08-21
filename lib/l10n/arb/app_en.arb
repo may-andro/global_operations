@@ -617,24 +617,6 @@
   "@adPanelUpdatingDescription": {
     "description": "Message shown while updating ad panels"
   },
-  "adPanelCompressingImagesTitle": "Compressing Images",
-  "@adPanelCompressingImagesTitle": {
-    "description": "Title shown while images are being compressed"
-  },
-  "adPanelCompressingImagesDescription": "Please wait, your ({currentFileIndex}/{totalFiles}) image file is being prepared for upload",
-  "@adPanelCompressingImagesDescription": {
-    "description": "Message shown when compressing multiple images",
-    "placeholders": {
-      "currentFileIndex": {
-        "type": "int",
-        "example": "1"
-      },
-      "totalFiles": {
-        "type": "int",
-        "example": "5"
-      }
-    }
-  },
   "adPanelUploadingImagesTitle": "Uploading Images...",
   "@adPanelUploadingImagesTitle": {
     "description": "Title shown while images are being uploaded"
@@ -660,10 +642,6 @@
   "adPanelUpdatingPanelsDescription": "Please wait while we update your ad panels",
   "@adPanelUpdatingPanelsDescription": {
     "description": "Message shown while updating ad panels"
-  },
-  "adPanelUpdateExistWarningCompressingImages": "Images are being compressed. Please wait until the process is complete.",
-  "@adPanelUpdateExistWarningCompressingImages": {
-    "description": "Warning message when images are being compressed and user tries to exit."
   },
   "adPanelUpdateExistWarningUploadingImages": "Images are being uploaded. Please wait until the process is complete.",
   "@adPanelUpdateExistWarningUploadingImages": {
@@ -693,7 +671,6 @@
   "@adPanelAllowedImageMaxLengthMessage": {
     "description": "Warning message shown when user tries to add an image that exceeds the maximum allowed size"
   },
-
   "adPanelImageUpdateFailureTitle": "Upload Failure",
   "@adPanelImageUpdateFailureTitle": {
     "description": "Title shown when image update fails for ad panels"
@@ -707,5 +684,29 @@
         "example": "3"
       }
     }
+  },
+  "imageCompressionTitle": "Compressing Images",
+  "@imageCompressionTitle": {
+    "description": "Title shown while images are being compressed"
+  },
+  "imageCompressionFailureTitle": "Compressing Images Failure",
+  "@imageCompressionFailureTitle": {
+    "description": "Title shown while images compression failed"
+  },
+  "imageCompressionMessage": "Images are being compressed. Please wait until the process is complete.",
+  "@imageCompressionMessage": {
+    "description": "Warning message when images are being compressed and user tries to exit."
+  },
+  "errorDecodingFile": "Could not decode the selected file. Please try another.",
+  "@errorDecodingFile": {
+    "description": "Message shown when a file cannot be decoded."
+  },
+  "errorProcessingFile": "There was a problem processing the file. Please try again.",
+  "@errorProcessingFile": {
+    "description": "Message shown when a file cannot be processed."
+  },
+  "errorUnknownFile": "An unknown error occurred with the file.",
+  "@errorUnknownFile": {
+    "description": "Message shown when an unknown file error occurs."
   }
 }

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:design_system/design_system.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
@@ -8,13 +11,17 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/wid
 
 class FaceTabContentWidget extends StatelessWidget {
   const FaceTabContentWidget({
-    required this.adPanel,
     required this.index,
+    required this.adPanel,
+    required this.filesToUpload,
+    required this.rawFilesToUpload,
     super.key,
   });
 
-  final AdPanelEntity adPanel;
   final int index;
+  final AdPanelEntity adPanel;
+  final List<File> filesToUpload;
+  final List<Uint8List> rawFilesToUpload;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +66,12 @@ class FaceTabContentWidget extends StatelessWidget {
             ],
           ),
           const DSVerticalSpacerWidget(1),
-          ImageCarousalWidget(adPanel: adPanel, index: index),
+          ImageCarousalWidget(
+            index: index,
+            adPanel: adPanel,
+            filesToUpload: filesToUpload,
+            rawFilesToUpload: rawFilesToUpload,
+          ),
         ],
       ),
     );

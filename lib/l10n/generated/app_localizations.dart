@@ -920,21 +920,6 @@ abstract class AppLocalizations {
   /// **'Please wait while we process your request'**
   String get adPanelUpdatingDescription;
 
-  /// Title shown while images are being compressed
-  ///
-  /// In en, this message translates to:
-  /// **'Compressing Images'**
-  String get adPanelCompressingImagesTitle;
-
-  /// Message shown when compressing multiple images
-  ///
-  /// In en, this message translates to:
-  /// **'Please wait, your ({currentFileIndex}/{totalFiles}) image file is being prepared for upload'**
-  String adPanelCompressingImagesDescription(
-    int currentFileIndex,
-    int totalFiles,
-  );
-
   /// Title shown while images are being uploaded
   ///
   /// In en, this message translates to:
@@ -961,12 +946,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please wait while we update your ad panels'**
   String get adPanelUpdatingPanelsDescription;
-
-  /// Warning message when images are being compressed and user tries to exit.
-  ///
-  /// In en, this message translates to:
-  /// **'Images are being compressed. Please wait until the process is complete.'**
-  String get adPanelUpdateExistWarningCompressingImages;
 
   /// Warning message when images are being uploaded and user tries to exit.
   ///
@@ -1021,6 +1000,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =0{All files} =1{1 file} other{{count} failed to upload. Please try uploading the failed files again.}}'**
   String adPanelImageUpdateFailureMessage(int count);
+
+  /// Title shown while images are being compressed
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing Images'**
+  String get imageCompressionTitle;
+
+  /// Title shown while images compression failed
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing Images Failure'**
+  String get imageCompressionFailureTitle;
+
+  /// Warning message when images are being compressed and user tries to exit.
+  ///
+  /// In en, this message translates to:
+  /// **'Images are being compressed. Please wait until the process is complete.'**
+  String get imageCompressionMessage;
+
+  /// Message shown when a file cannot be decoded.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not decode the selected file. Please try another.'**
+  String get errorDecodingFile;
+
+  /// Message shown when a file cannot be processed.
+  ///
+  /// In en, this message translates to:
+  /// **'There was a problem processing the file. Please try again.'**
+  String get errorProcessingFile;
+
+  /// Message shown when an unknown file error occurs.
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred with the file.'**
+  String get errorUnknownFile;
 }
 
 class _AppLocalizationsDelegate
