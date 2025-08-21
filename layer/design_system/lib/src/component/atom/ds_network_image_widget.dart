@@ -71,6 +71,7 @@ class _DSNetworkImageWidgetState extends State<DSNetworkImageWidget> {
       fit: widget.fit,
       shape: widget.shape,
       borderRadius: widget.borderRadius,
+      cache: true,
       loadStateChanged: (ExtendedImageState state) {
         imageState = state;
         switch (state.extendedImageLoadState) {

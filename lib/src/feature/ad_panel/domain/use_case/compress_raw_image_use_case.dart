@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart';
-import 'package:path/path.dart';
 import 'package:use_case/use_case.dart';
 
 sealed class CompressRawImageFailure extends BasicFailure {
@@ -199,9 +198,7 @@ Image _processImage(Image image) {
 
 /// Parameters for image processing isolate
 class _ImageProcessingParams {
-  _ImageProcessingParams({
-    required this.imageBytes,
-  });
+  _ImageProcessingParams({required this.imageBytes});
 
   final Uint8List imageBytes;
 }
