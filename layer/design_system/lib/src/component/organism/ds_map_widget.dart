@@ -476,6 +476,12 @@ class _DSMapWidgetState extends State<DSMapWidget> {
       style: _mapStyle,
       myLocationEnabled: true,
       minMaxZoomPreference: const MinMaxZoomPreference(7.0, 18.0),
+      cameraTargetBounds: CameraTargetBounds(
+        LatLngBounds(
+          southwest: const LatLng(50.75, 3.36), // bottom-left corner of NL
+          northeast: const LatLng(53.55, 7.22), // top-right corner of NL
+        ),
+      ),
       circles: widget.circleRadius > 0 ? {circle} : {},
       markers: _displayMarkers,
       onMapCreated: _onMapCreated,

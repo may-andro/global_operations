@@ -136,7 +136,7 @@ mixin LocationUtilities {
         panels.first.latitude,
         panels.first.longitude,
       );
-      if(distance < radialInKm * 1.5) {
+      if (distance < radialInKm * 1.5) {
         final updatedPanels = panels.map((panel) {
           return panel.copyWith(distanceInKm: distance);
         }).toList();
