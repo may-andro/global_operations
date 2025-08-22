@@ -3,13 +3,14 @@ import 'package:design_system/src/component/organism/ds_map_marker_generator.dar
 import 'package:design_system/src/extension/build_context_extension.dart';
 import 'package:design_system/src/service/map_style_service.dart';
 import 'package:design_system/src/theme/theme.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// Represents a single item to be displayed on the map
-class DSMapItem {
+class DSMapItem extends Equatable {
   const DSMapItem({
     required this.id,
     required this.latitude,
@@ -21,6 +22,9 @@ class DSMapItem {
   final double latitude;
   final double longitude;
   final bool isSelected;
+
+  @override
+  List<Object?> get props => [id, latitude, longitude, isSelected];
 }
 
 /// A customizable Google Maps widget with clustering and theming support
