@@ -90,14 +90,15 @@ class ImageCompressionFailureWidget extends StatelessWidget {
               color: context.colorPalette.background.onPrimary,
             ),
             const DSVerticalSpacerWidget(2),
-            FittedBox(
-              child: DSButtonWidget(
-                label: context.localizations.close,
-                onPressed: () {
-                  context.pop();
-                },
-                variant: DSButtonVariant.secondary,
-                size: DSButtonSize.small,
+            Align(
+              alignment: Alignment.bottomRight,
+              child: FittedBox(
+                child: DSButtonWidget(
+                  label: context.localizations.close,
+                  onPressed: () => context.pop(),
+                  variant: DSButtonVariant.secondary,
+                  size: DSButtonSize.small,
+                ),
               ),
             ),
           ],

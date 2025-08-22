@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class MaxImageWarningWidget extends StatelessWidget {
   const MaxImageWarningWidget({super.key});
@@ -48,13 +49,13 @@ class MaxImageWarningWidget extends StatelessWidget {
               style: context.typography.bodyMedium,
               color: context.colorPalette.background.onPrimary,
             ),
-            const DSVerticalSpacerWidget(3),
+            const DSVerticalSpacerWidget(2),
             Align(
               alignment: Alignment.bottomRight,
               child: FittedBox(
                 child: DSButtonWidget(
                   label: context.localizations.close,
-                  onPressed: () => Navigator.of(context).pop(false),
+                  onPressed: () => context.pop(),
                   variant: DSButtonVariant.secondary,
                   size: DSButtonSize.small,
                 ),

@@ -42,7 +42,7 @@ class ImageCarousalWidget extends StatelessWidget {
             itemWidget = _ButtonItemWidget(
               adPanel: adPanel,
               index: index,
-              totalItems: totalItems - 1,
+              totalItems: totalItems,
             );
           } else if (i <= filesToUpload.length) {
             final fileIndex = i - 1;
