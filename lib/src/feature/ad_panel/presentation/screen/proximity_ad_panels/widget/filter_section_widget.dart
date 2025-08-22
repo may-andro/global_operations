@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/dto/dto.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/widget/widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/bloc.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/widget/radius_slider_widget.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/widget/radius_button_widget.dart';
 
 class FilterSectionWidget extends StatefulWidget {
   const FilterSectionWidget({super.key, required this.isEnabled});
@@ -14,15 +14,15 @@ class FilterSectionWidget extends StatefulWidget {
   State<FilterSectionWidget> createState() => _FilterSectionWidgetState();
 }
 
+const List<AdPanelSortOption> _sortOptions = [
+  DistanceSortOption(),
+  LastEditedSortOption(),
+  ObjectNumberSortOption(),
+  StreetSortOption(),
+];
+
 class _FilterSectionWidgetState extends State<FilterSectionWidget> {
   late TextEditingController _searchController;
-
-  final List<AdPanelSortOption> _sortOptions = const [
-    DistanceSortOption(),
-    LastEditedSortOption(),
-    ObjectNumberSortOption(),
-    StreetSortOption(),
-  ];
 
   @override
   void initState() {
@@ -55,50 +55,6 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
     }
   }
 
-  /// Checks if widget should be visible based on state
-  bool _shouldShowWidget(ProximityAdPanelsState state) {
-    return state is AdPanelsLoadedState || state is AdPanelsListLoadingState;
-  }
-
-  /// Gets the loaded state from current state
-  AdPanelsLoadedState? _getLoadedState(ProximityAdPanelsState state) {
-    return switch (state) {
-      AdPanelsLoadedState() => state,
-      AdPanelsListLoadingState() => state.previousState,
-      _ => null,
-    };
-  }
-
-  /// Extracts filter values from the current state
-  ({
-    String searchQuery,
-    AdPanelSortOption sortOption,
-    AdPanelViewType viewType,
-    double radiusInKm,
-    int resultCount,
-  })
-  _extractFilterData(ProximityAdPanelsState state) {
-    final loadedState = _getLoadedState(state);
-
-    final searchQuery = loadedState?.searchQuery ?? '';
-
-    final sortOption = loadedState?.sortOption ?? _sortOptions.first;
-
-    final viewType = loadedState?.viewType ?? AdPanelViewType.list;
-
-    final radiusInKm = loadedState?.radiusInKm ?? 5.0;
-
-    final resultCount = loadedState?.filteredAdPanelsMap.entries.length ?? 0;
-
-    return (
-      searchQuery: searchQuery,
-      sortOption: sortOption,
-      viewType: viewType,
-      radiusInKm: radiusInKm,
-      resultCount: resultCount,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProximityAdPanelsBloc, ProximityAdPanelsState>(
@@ -107,7 +63,7 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
         _updateSearchController(searchQuery);
       },
       builder: (context, state) {
-        if (!_shouldShowWidget(state)) {
+        if (!state.shouldShowWidget) {
           return const SizedBox.shrink();
         }
 
@@ -118,7 +74,7 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
 
   /// Builds the main content widget
   Widget _buildContent(BuildContext context, ProximityAdPanelsState state) {
-    final filterData = _extractFilterData(state);
+    final filterData = state.extractFilterData;
 
     // Ensure the controller has the correct text
     _updateSearchController(filterData.searchQuery);
@@ -138,7 +94,8 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSearchAndSortRow(filterData),
-            RadiusSliderWidget(isEnabled: widget.isEnabled),
+            const DSVerticalSpacerWidget(1),
+            //RadiusSliderWidget(isEnabled: widget.isEnabled),
             ResultCountWidget(
               count: filterData.resultCount,
               radiusInKm: filterData.radiusInKm,
@@ -155,7 +112,7 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
       String searchQuery,
       AdPanelSortOption sortOption,
       AdPanelViewType viewType,
-      double radiusInKm,
+      int radiusInKm,
       int resultCount,
     })
     filterData,
@@ -174,6 +131,15 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
             isEnabled: widget.isEnabled,
           ),
         ),
+        RadiusButtonWidget(
+          selected: filterData.radiusInKm,
+          onSelected: (radiusInKm) {
+            context.read<ProximityAdPanelsBloc>().add(
+              UpdateSearchRadiusEvent(radiusInKm),
+            );
+          },
+          isEnabled: widget.isEnabled,
+        ),
         SortButtonWidget(
           selected: filterData.sortOption,
           sortOptions: _sortOptions,
@@ -187,5 +153,51 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
         ),
       ],
     );
+  }
+}
+
+extension on ProximityAdPanelsState {
+  /// Checks if widget should be visible based on state
+  bool get shouldShowWidget {
+    return this is AdPanelsLoadedState || this is AdPanelsListLoadingState;
+  }
+
+  /// Extracts filter values from the current state
+  ({
+    String searchQuery,
+    AdPanelSortOption sortOption,
+    AdPanelViewType viewType,
+    int radiusInKm,
+    int resultCount,
+  })
+  get extractFilterData {
+    final loadedState = _getLoadedState;
+
+    final searchQuery = loadedState?.searchQuery ?? '';
+
+    final sortOption = loadedState?.sortOption ?? _sortOptions.first;
+
+    final viewType = loadedState?.viewType ?? AdPanelViewType.list;
+
+    final radiusInKm = loadedState?.radiusInKm ?? defaultSearchRadius;
+
+    final resultCount = loadedState?.filteredAdPanelsMap.entries.length ?? 0;
+
+    return (
+      searchQuery: searchQuery,
+      sortOption: sortOption,
+      viewType: viewType,
+      radiusInKm: radiusInKm,
+      resultCount: resultCount,
+    );
+  }
+
+  /// Gets the loaded state from current state
+  AdPanelsLoadedState? get _getLoadedState {
+    return switch (this) {
+      final AdPanelsLoadedState state => state,
+      final AdPanelsListLoadingState state => state.previousState,
+      _ => null,
+    };
   }
 }

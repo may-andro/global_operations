@@ -115,11 +115,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get adPanelSearchHint => 'Zoek advertentiepanelen...';
 
   @override
-  String adPanelSearchRadiusLabel(String radius) {
-    return '$radius km';
-  }
-
-  @override
   String adPanelSearchResultCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -594,4 +589,20 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get errorUnknownFile =>
       'Er is een onbekende fout opgetreden met het bestand.';
+
+  @override
+  String get adPanelSearchRadiusTitle => 'Selecteer de zoekradius';
+
+  @override
+  String get adPanelSearchRadiusLocationUpdateDescription =>
+      'Nieuwe advertentiepaneel worden bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.';
+
+  @override
+  String get adPanelSearchRadiusNoLocationUpdateDescription =>
+      'Nieuwe panelen worden niet bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.';
+
+  @override
+  String adPanelSearchRadiusLabel(String radius) {
+    return 'Radius: $radius km';
+  }
 }

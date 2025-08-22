@@ -114,11 +114,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adPanelSearchHint => 'Search advertising panels...';
 
   @override
-  String adPanelSearchRadiusLabel(String radius) {
-    return '$radius km';
-  }
-
-  @override
   String adPanelSearchResultCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -587,4 +582,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorUnknownFile => 'An unknown error occurred with the file.';
+
+  @override
+  String get adPanelSearchRadiusTitle => 'Select the search radius';
+
+  @override
+  String get adPanelSearchRadiusLocationUpdateDescription =>
+      'New advertisement panels will be updated when user movement is detected.';
+
+  @override
+  String get adPanelSearchRadiusNoLocationUpdateDescription =>
+      'New panels won\'t be updated when user movement is detected.';
+
+  @override
+  String adPanelSearchRadiusLabel(String radius) {
+    return 'Radius: $radius km';
+  }
 }

@@ -147,16 +147,6 @@
   "@adPanelSearchHint": {
     "description": "Hint text for search input"
   },
-  "adPanelSearchRadiusLabel": "{radius} km",
-  "@adPanelSearchRadiusLabel": {
-    "description": "Label showing search radius in kilometers",
-    "placeholders": {
-      "radius": {
-        "type": "String",
-        "example": "10"
-      }
-    }
-  },
   "adPanelSearchResultCount": "{count, plural, =0{No advertising panels found} =1{1 advertising panel found} other{{count} advertising panels found}}",
   "@adPanelSearchResultCount": {
     "description": "Message showing number of advertising panels found",
@@ -708,5 +698,27 @@
   "errorUnknownFile": "An unknown error occurred with the file.",
   "@errorUnknownFile": {
     "description": "Message shown when an unknown file error occurs."
+  },
+  "adPanelSearchRadiusTitle": "Select the search radius",
+  "@adPanelSearchRadiusTitle": {
+    "description": "Title for search radius selection dialog"
+  },
+  "adPanelSearchRadiusLocationUpdateDescription": "New advertisement panels will be updated when user movement is detected.",
+  "@adPanelSearchRadiusLocationUpdateDescription": {
+    "description": "Description for search radius location update information"
+  },
+  "adPanelSearchRadiusNoLocationUpdateDescription": "New panels won't be updated when user movement is detected.",
+  "@adPanelSearchRadiusNoLocationUpdateDescription": {
+    "description": "Description for search radius no location update information"
+  },
+  "adPanelSearchRadiusLabel": "Radius: {radius} km",
+  "@adPanelSearchRadiusLabel": {
+    "description": "Label showing search radius in kilometers",
+    "placeholders": {
+      "radius": {
+        "type": "String",
+        "example": "10"
+      }
+    }
   }
 }

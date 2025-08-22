@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/dto/dto.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_config.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_event.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_exceptions.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_state.dart';
@@ -145,12 +144,8 @@ class ProximityAdPanelsBloc
         return;
       }
 
-      // Check if location change is significant
-      if (!isLocationChangeSignificant(
-        _lastLocation,
-        event.location,
-        ProximityAdPanelsConfig.minLocationChangeThreshold,
-      )) {
+      // Only proceed if radius is 5km or less
+      if ((state as AdPanelsLoadedState).radiusInKm > defaultSearchRadius) {
         return;
       }
 
@@ -291,13 +286,13 @@ class ProximityAdPanelsBloc
     required LocationEntity location,
     required Emitter<ProximityAdPanelsState> emit,
     required String searchQuery,
-    double? radiusInKm,
+    int? radiusInKm,
   }) async {
     await emit.forEach<List<AdPanelEntity>>(
       _getAdPanelsWithinDistanceStreamUseCase(
         GetAdPanelsWithinDistanceStreamParams(
           location: location,
-          radiusInKm: radiusInKm ?? _getCurrentRadius(),
+          radiusInKm: (radiusInKm ?? _currentRadius).toDouble(),
         ),
       ),
       onData: (adPanelsList) => _buildStateFromAdPanelsList(
@@ -313,7 +308,7 @@ class ProximityAdPanelsBloc
   ProximityAdPanelsState _buildStateFromAdPanelsList({
     required List<AdPanelEntity> adPanelsList,
     required String searchQuery,
-    double? radiusInKm,
+    int? radiusInKm,
   }) {
     final adPanelsMap = groupPanelsByObjectNumber(adPanelsList);
     final sortedMap = sortPanelsMap(adPanelsMap, _currentSortOption);
@@ -325,7 +320,7 @@ class ProximityAdPanelsBloc
       searchQuery: searchQuery,
       sortOption: _currentSortOption,
       viewType: _currentViewType,
-      radiusInKm: radiusInKm ?? _getCurrentRadius(),
+      radiusInKm: radiusInKm ?? _currentRadius,
     );
   }
 
@@ -341,16 +336,25 @@ class ProximityAdPanelsBloc
       _getAdPanelsWithinDistanceStreamUseCase(
         GetAdPanelsWithinDistanceStreamParams(
           location: location,
-          radiusInKm: currentState.radiusInKm,
+          radiusInKm: currentState.radiusInKm.toDouble(),
         ),
       ),
       onData: (newAdPanelsList) => _mergeWithExistingData(
         newAdPanelsList: newAdPanelsList,
         currentState: currentState,
         location: location,
+        radiusInKm: currentState.radiusInKm,
       ),
-      onError: (error, stackTrace) =>
-          currentState.copyWith(isRefreshing: false),
+      /*onData: (newAdPanelsList) {
+        return _buildStateFromAdPanelsList(
+          adPanelsList: newAdPanelsList,
+          searchQuery: currentState.searchQuery,
+          radiusInKm: currentState.radiusInKm,
+        );
+      },*/
+      onError: (error, stackTrace) {
+        return currentState.copyWith(isRefreshing: false);
+      },
     );
   }
 
@@ -359,42 +363,45 @@ class ProximityAdPanelsBloc
     required List<AdPanelEntity> newAdPanelsList,
     required AdPanelsLoadedState currentState,
     required LocationEntity location,
+    required int radiusInKm,
   }) {
-    if (newAdPanelsList.isEmpty) {
-      final updatedPanelsMap = updateDistancesForLocation(
-        currentState.adPanelsMap,
-        location,
-      );
-      final sortedMap = sortPanelsMap(updatedPanelsMap, _currentSortOption);
-      final filteredMap = applySearchFilter(
-        sortedMap,
-        currentState.searchQuery,
-      );
-
-      return currentState.copyWith(
-        adPanelsMap: sortedMap,
-        filteredAdPanelsMap: filteredMap,
-        isRefreshing: false,
-      );
-    }
-
-    final newPanelsMap = groupPanelsByObjectNumber(newAdPanelsList);
-    /*final mergedPanelsMap = mergeAdPanelsMaps(
+    final updatedPanelsMap = updateDistancesForLocation(
       currentState.adPanelsMap,
-      newPanelsMap,
-    );*/
-    final updatedPanelsMap = updateDistancesForLocation(newPanelsMap, location);
-    final sortedMap = sortPanelsMap(updatedPanelsMap, _currentSortOption);
+      location,
+      radiusInKm,
+    );
+
+    final mergedMap = _getMergeMapFromList(updatedPanelsMap, newAdPanelsList);
+
+    final sortedMap = sortPanelsMap(mergedMap, _currentSortOption);
     final filteredMap = applySearchFilter(sortedMap, currentState.searchQuery);
 
-    return AdPanelsLoadedState(
+    return currentState.copyWith(
       adPanelsMap: sortedMap,
       filteredAdPanelsMap: filteredMap,
-      searchQuery: currentState.searchQuery,
-      sortOption: _currentSortOption,
-      viewType: _currentViewType,
-      radiusInKm: currentState.radiusInKm,
+      isRefreshing: false,
     );
+  }
+
+  Map<String, List<AdPanelEntity>> _getMergeMapFromList(
+    Map<String, List<AdPanelEntity>> map,
+    List<AdPanelEntity> list,
+  ) {
+    if (list.isNotEmpty) {
+      final newPanelsMap = groupPanelsByObjectNumber(list);
+      final mergedPanelsMap = Map<String, List<AdPanelEntity>>.from(map);
+      for (final entry in newPanelsMap.entries) {
+        if (!mergedPanelsMap.containsKey(entry.key)) {
+          print(
+            'ProximityAdPanelsBloc._getMergeMapFromList New entry: ${entry.key}',
+          );
+          mergedPanelsMap[entry.key] = entry.value;
+        }
+      }
+      return mergedPanelsMap;
+    }
+
+    return groupPanelsByObjectNumber(list);
   }
 
   /// Extracts search query from current state
@@ -406,10 +413,10 @@ class ProximityAdPanelsBloc
   }
 
   /// Gets current radius from state or default
-  double _getCurrentRadius() {
+  int get _currentRadius {
     return switch (state) {
       final AdPanelsLoadedState loadedState => loadedState.radiusInKm,
-      _ => ProximityAdPanelsConfig.defaultSearchRadius,
+      _ => defaultSearchRadius,
     };
   }
 }

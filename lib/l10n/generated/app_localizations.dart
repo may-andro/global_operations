@@ -266,12 +266,6 @@ abstract class AppLocalizations {
   /// **'Search advertising panels...'**
   String get adPanelSearchHint;
 
-  /// Label showing search radius in kilometers
-  ///
-  /// In en, this message translates to:
-  /// **'{radius} km'**
-  String adPanelSearchRadiusLabel(String radius);
-
   /// Message showing number of advertising panels found
   ///
   /// In en, this message translates to:
@@ -1036,6 +1030,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An unknown error occurred with the file.'**
   String get errorUnknownFile;
+
+  /// Title for search radius selection dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Select the search radius'**
+  String get adPanelSearchRadiusTitle;
+
+  /// Description for search radius location update information
+  ///
+  /// In en, this message translates to:
+  /// **'New advertisement panels will be updated when user movement is detected.'**
+  String get adPanelSearchRadiusLocationUpdateDescription;
+
+  /// Description for search radius no location update information
+  ///
+  /// In en, this message translates to:
+  /// **'New panels won\'t be updated when user movement is detected.'**
+  String get adPanelSearchRadiusNoLocationUpdateDescription;
+
+  /// Label showing search radius in kilometers
+  ///
+  /// In en, this message translates to:
+  /// **'Radius: {radius} km'**
+  String adPanelSearchRadiusLabel(String radius);
 }
 
 class _AppLocalizationsDelegate

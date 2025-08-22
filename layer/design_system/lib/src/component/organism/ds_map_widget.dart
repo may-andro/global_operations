@@ -475,6 +475,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
       ),
       style: _mapStyle,
       myLocationEnabled: true,
+      minMaxZoomPreference: const MinMaxZoomPreference(7.0, 18.0),
       circles: widget.circleRadius > 0 ? {circle} : {},
       markers: _displayMarkers,
       onMapCreated: _onMapCreated,

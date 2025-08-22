@@ -27,7 +27,6 @@
   "adPanelRefresh": "Vernieuwen",
   "adPanelRunningCampaign": "Lopende campagne: {campaign}",
   "adPanelSearchHint": "Zoek advertentiepanelen...",
-  "adPanelSearchRadiusLabel": "{radius} km",
   "adPanelSearchResultCount": "{count, plural, =0{Geen advertentiepanelen gevonden} =1{1 advertentiepaneel gevonden} other{{count} advertentiepanelen gevonden}}",
   "adPanelSearchResultCountWithRadius": "{count, plural, =0{Geen advertentiepanelen gevonden binnen {radius} km} =1{1 advertentiepaneel gevonden binnen {radius} km} other{{count} advertentiepanelen gevonden binnen {radius} km}}",
   "adPanelSeeDetails": "Bekijk details",
@@ -154,5 +153,9 @@
   "imageCompressionMessage": "Afbeeldingen worden gecomprimeerd. Even wachten tot het proces is voltooid.",
   "errorDecodingFile": "Kan het geselecteerde bestand niet decoderen. Probeer een ander bestand.",
   "errorProcessingFile": "Er is een probleem opgetreden bij het verwerken van het bestand. Probeer het opnieuw.",
-  "errorUnknownFile": "Er is een onbekende fout opgetreden met het bestand."
+  "errorUnknownFile": "Er is een onbekende fout opgetreden met het bestand.",
+  "adPanelSearchRadiusTitle": "Selecteer de zoekradius",
+  "adPanelSearchRadiusLocationUpdateDescription": "Nieuwe advertentiepaneel worden bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.",
+  "adPanelSearchRadiusNoLocationUpdateDescription": "Nieuwe panelen worden niet bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.",
+  "adPanelSearchRadiusLabel": "Radius: {radius} km"
 }

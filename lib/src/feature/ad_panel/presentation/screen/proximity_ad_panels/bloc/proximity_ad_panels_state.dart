@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/dto/dto.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_config.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_exceptions.dart';
+
+const int defaultSearchRadius = 5;
 
 /// Base class for all ad panels states
 sealed class ProximityAdPanelsState extends Equatable {
@@ -40,7 +41,7 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
     this.searchQuery = '',
     this.isRefreshing = false,
     this.viewType = AdPanelViewType.list,
-    this.radiusInKm = ProximityAdPanelsConfig.defaultSearchRadius,
+    this.radiusInKm = defaultSearchRadius,
     this.sortOption,
   });
 
@@ -48,13 +49,13 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
   factory AdPanelsLoadedState.initial({
     required Map<String, List<AdPanelEntity>> adPanelsMap,
     AdPanelSortOption? sortOption,
-    double? radiusInKm,
+    int? radiusInKm,
   }) {
     return AdPanelsLoadedState(
       adPanelsMap: adPanelsMap,
       filteredAdPanelsMap: adPanelsMap,
       sortOption: sortOption,
-      radiusInKm: radiusInKm ?? ProximityAdPanelsConfig.defaultSearchRadius,
+      radiusInKm: radiusInKm ?? defaultSearchRadius,
     );
   }
 
@@ -65,7 +66,7 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
     required String searchQuery,
     AdPanelSortOption? sortOption,
     AdPanelViewType? viewType,
-    double? radiusInKm,
+    int? radiusInKm,
   }) {
     return AdPanelsLoadedState(
       adPanelsMap: adPanelsMap,
@@ -73,7 +74,7 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
       searchQuery: searchQuery,
       sortOption: sortOption,
       viewType: viewType ?? AdPanelViewType.list,
-      radiusInKm: radiusInKm ?? ProximityAdPanelsConfig.defaultSearchRadius,
+      radiusInKm: radiusInKm ?? defaultSearchRadius,
     );
   }
 
@@ -83,7 +84,7 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
   final bool isRefreshing;
   final AdPanelViewType viewType;
   final AdPanelSortOption? sortOption;
-  final double radiusInKm;
+  final int radiusInKm;
 
   /// Check if any filters are applied
   bool get hasActiveFilters => searchQuery.isNotEmpty;
@@ -110,7 +111,7 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
     bool? isRefreshing,
     AdPanelViewType? viewType,
     AdPanelSortOption? sortOption,
-    double? radiusInKm,
+    int? radiusInKm,
   }) {
     return AdPanelsLoadedState(
       adPanelsMap: adPanelsMap ?? this.adPanelsMap,

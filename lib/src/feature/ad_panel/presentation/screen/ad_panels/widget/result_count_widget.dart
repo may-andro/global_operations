@@ -6,7 +6,7 @@ class ResultCountWidget extends StatelessWidget {
   const ResultCountWidget({super.key, required this.count, this.radiusInKm});
 
   final int count;
-  final double? radiusInKm;
+  final int? radiusInKm;
 
   @override
   Widget build(BuildContext context) {
