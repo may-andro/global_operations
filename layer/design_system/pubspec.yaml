@@ -16,6 +16,7 @@ dependencies:
   collection: ^1.19.1
   connectivity_plus: ^6.1.4
   cupertino_icons: ^1.0.8
+  equatable: any
   extended_image: ^10.0.1
   flutter:
     sdk: flutter
