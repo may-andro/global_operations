@@ -38,7 +38,7 @@ class TrackLocationUseCase {
 
     while (retryCount <= maxRetries) {
       try {
-        yield* _attemptLocationStream(timeout, distanceFilterInMeters.toInt());
+        yield* _attemptLocationStream(timeout, distanceFilterInMeters);
         break; // Success, exit retry loop
       } catch (e, st) {
         retryCount++;

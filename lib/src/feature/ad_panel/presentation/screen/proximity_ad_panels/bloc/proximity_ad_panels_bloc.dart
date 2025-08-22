@@ -392,9 +392,6 @@ class ProximityAdPanelsBloc
       final mergedPanelsMap = Map<String, List<AdPanelEntity>>.from(map);
       for (final entry in newPanelsMap.entries) {
         if (!mergedPanelsMap.containsKey(entry.key)) {
-          print(
-            'ProximityAdPanelsBloc._getMergeMapFromList New entry: ${entry.key}',
-          );
           mergedPanelsMap[entry.key] = entry.value;
         }
       }
