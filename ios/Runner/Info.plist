@@ -59,5 +59,9 @@
         <string>We need access to your camera to capture photos.</string>
         <key>NSPhotoLibraryUsageDescription</key>
         <string>We need access to your gallery to pick images.</string>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>This app needs access to your location while using the app.</string>
+        <key>NSLocationAlwaysUsageDescription</key>
+        <string>This app needs access to your location even when running in the background.</string>
 	</dict>
 </plist>

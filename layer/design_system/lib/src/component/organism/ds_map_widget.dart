@@ -225,7 +225,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
       _displayMarkers = displayMarkers;
     });
     if (fitBounds) {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(100.ms);
       await _fitBoundsToClusters(clusters);
     }
   }
@@ -238,7 +238,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
 
     // On web, add extra delay to ensure map is fully ready
     if (kIsWeb) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      await Future<void>.delayed(500.ms);
     }
 
     double? minLat;

@@ -65,7 +65,7 @@ class FlexibleSpaceWidget extends StatelessWidget {
                     children: [
                       _TitleWidget(adPanel: adPanel),
                       DSVerticalSpacerWidget(context.isDesktop ? 1 : 2),
-                      _HorizontalWrappedItemWidget(adPanel: adPanel),
+                      _WrappedItemWidget(adPanel: adPanel),
                     ],
                   ),
                 ),
@@ -108,8 +108,8 @@ class _TitleWidget extends StatelessWidget {
   }
 }
 
-class _HorizontalWrappedItemWidget extends StatelessWidget {
-  const _HorizontalWrappedItemWidget({required this.adPanel});
+class _WrappedItemWidget extends StatelessWidget {
+  const _WrappedItemWidget({required this.adPanel});
 
   final AdPanelEntity adPanel;
 
@@ -135,6 +135,8 @@ class _HorizontalWrappedItemWidget extends StatelessWidget {
               ],
             )
           : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _ItemWidget(icon: Icons.my_location, label: adPanel.street),
                 const DSVerticalSpacerWidget(1),
