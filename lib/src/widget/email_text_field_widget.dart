@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:global_ops/l10n/l10n.dart';
 
 class EmailTextFieldWidget extends StatelessWidget {
   const EmailTextFieldWidget({
@@ -21,17 +22,19 @@ class EmailTextFieldWidget extends StatelessWidget {
       key: const Key('email_input_widget'),
       controller: textController,
       hintText: 'bob@global.com',
-      labelText: 'Email',
+      labelText: context.localizations.email,
       enabled: isEnabled,
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
       validator: (input) {
         if (input == null || input.isEmpty) {
-          return const TextFieldValidationData.error('Email can not be empty');
+          return TextFieldValidationData.error(
+            context.localizations.errorEmptyEmail,
+          );
         }
         if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(input)) {
-          return const TextFieldValidationData.error(
-            'Please enter a valid email',
+          return TextFieldValidationData.error(
+            context.localizations.errorInvalidEmail,
           );
         }
 

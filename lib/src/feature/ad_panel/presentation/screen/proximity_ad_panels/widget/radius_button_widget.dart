@@ -132,10 +132,10 @@ class _ItemWidget extends StatelessWidget {
       ),
       subtitle: DSTextWidget(
         radius > defaultSearchRadius
-            ? context.localizations.adPanelSearchRadiusLocationUpdateDescription
+            ? context.localizations.adPanelSearchRadiusNoLocationUpdateDescription
             : context
                   .localizations
-                  .adPanelSearchRadiusNoLocationUpdateDescription,
+                  .adPanelSearchRadiusLocationUpdateDescription,
         style: context.typography.labelSmall,
         color: color,
       ),

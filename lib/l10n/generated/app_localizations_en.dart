@@ -598,4 +598,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String adPanelSearchRadiusLabel(String radius) {
     return 'Radius: $radius km';
   }
+
+  @override
+  String get errorEmptyPassword => 'Password can not be empty';
+
+  @override
+  String get errorPasswordTooSmall =>
+      'Password cannot be less than 6 characters';
+
+  @override
+  String get errorPasswordTooLarge =>
+      'Password cannot be more than 12 characters';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get errorInvalidEmail => 'Please enter a valid email';
+
+  @override
+  String get errorEmptyEmail => 'Email can not be empty';
 }

@@ -591,6 +591,7 @@
   "@errorWeakPassword": {
     "description": "Message shown when password strength is insufficient"
   },
+
   "close": "Close",
   "@close": {
     "description": "Generic close button text"
@@ -720,5 +721,33 @@
         "example": "10"
       }
     }
+  },
+  "errorEmptyPassword": "Password can not be empty",
+  "@errorEmptyPassword": {
+    "description": "Message shown when password is empty"
+  },
+  "errorPasswordTooSmall": "Password cannot be less than 6 characters",
+  "@errorPasswordTooSmall": {
+    "description": "Message shown when password is smaller than minimum length"
+  },
+  "errorPasswordTooLarge": "Password cannot be more than 12 characters",
+  "@errorPasswordTooLarge": {
+    "description": "Message shown when password is larger than maximum length"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Label for password"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Label for email"
+  },
+  "errorInvalidEmail": "Please enter a valid email",
+  "@errorInvalidEmail": {
+    "description": "Message shown when email is incorrectly formatted"
+  },
+  "errorEmptyEmail": "Email can not be empty",
+  "@errorEmptyEmail": {
+    "description": "Message shown when email is empty"
   }
 }

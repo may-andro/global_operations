@@ -1054,6 +1054,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Radius: {radius} km'**
   String adPanelSearchRadiusLabel(String radius);
+
+  /// Message shown when password is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Password can not be empty'**
+  String get errorEmptyPassword;
+
+  /// Message shown when password is smaller than minimum length
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be less than 6 characters'**
+  String get errorPasswordTooSmall;
+
+  /// Message shown when password is larger than maximum length
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be more than 12 characters'**
+  String get errorPasswordTooLarge;
+
+  /// Label for password
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// Label for email
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// Message shown when email is incorrectly formatted
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get errorInvalidEmail;
+
+  /// Message shown when email is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Email can not be empty'**
+  String get errorEmptyEmail;
 }
 
 class _AppLocalizationsDelegate

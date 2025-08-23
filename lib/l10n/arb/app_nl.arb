@@ -157,5 +157,12 @@
   "adPanelSearchRadiusTitle": "Selecteer de zoekradius",
   "adPanelSearchRadiusLocationUpdateDescription": "Nieuwe advertentiepaneel worden bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.",
   "adPanelSearchRadiusNoLocationUpdateDescription": "Nieuwe panelen worden niet bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.",
-  "adPanelSearchRadiusLabel": "Radius: {radius} km"
+  "adPanelSearchRadiusLabel": "Radius: {radius} km",
+  "errorEmptyPassword": "Wachtwoord mag niet leeg zijn",
+  "errorPasswordTooSmall": "Wachtwoord moet minimaal 6 tekens bevatten",
+  "errorPasswordTooLarge": "Wachtwoord mag niet meer dan 12 tekens bevatten",
+  "password": "Wachtwoord",
+  "email": "E-mail",
+  "errorInvalidEmail": "Voer een geldig e-mailadres in",
+  "errorEmptyEmail": "E-mail mag niet leeg zijn"
 }

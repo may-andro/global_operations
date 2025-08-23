@@ -14,11 +14,11 @@ class FooterWidget extends StatelessWidget {
         FutureBuilder<PackageInfo>(
           future: PackageInfo.fromPlatform(),
           builder: (_, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
+            if (snapshot.data case final PackageInfo packageInfo when snapshot.hasData) {
               return Padding(
                 padding: EdgeInsets.only(left: context.space(factor: 0.25)),
                 child: DSTextWidget(
-                  context.localizations.appVersion(snapshot.data!.version),
+                  context.localizations.appVersion(packageInfo.version),
                   color: context.colorPalette.neutral.grey7,
                   style: context.typography.labelSmall,
                   maxLines: 1,

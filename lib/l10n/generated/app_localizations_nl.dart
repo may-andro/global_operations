@@ -605,4 +605,27 @@ class AppLocalizationsNl extends AppLocalizations {
   String adPanelSearchRadiusLabel(String radius) {
     return 'Radius: $radius km';
   }
+
+  @override
+  String get errorEmptyPassword => 'Wachtwoord mag niet leeg zijn';
+
+  @override
+  String get errorPasswordTooSmall =>
+      'Wachtwoord moet minimaal 6 tekens bevatten';
+
+  @override
+  String get errorPasswordTooLarge =>
+      'Wachtwoord mag niet meer dan 12 tekens bevatten';
+
+  @override
+  String get password => 'Wachtwoord';
+
+  @override
+  String get email => 'E-mail';
+
+  @override
+  String get errorInvalidEmail => 'Voer een geldig e-mailadres in';
+
+  @override
+  String get errorEmptyEmail => 'E-mail mag niet leeg zijn';
 }
