@@ -31,7 +31,7 @@ void main() {
       final finder = find.textContaining('Find me');
       final Text widget = tester.widget(finder);
       expect(widget.style?.color, isNotNull);
-      expect(widget.style?.color, const DSColor(0xFF990B2C).color);
+      expect(widget.style?.color, const DSColor(0xFF0B78BE).color);
     });
   });
 }

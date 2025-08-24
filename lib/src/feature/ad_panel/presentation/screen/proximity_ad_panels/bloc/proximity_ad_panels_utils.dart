@@ -121,8 +121,40 @@ mixin AdPanelsBusinessLogic {
 
 /// Utility mixin for location and distance calculations
 mixin LocationUtilities {
+  /// Updates distances for all panels based on current location
+  Map<String, List<AdPanelEntity>> updateDistancesForLocation(
+    Map<String, List<AdPanelEntity>> panelsMap,
+    LocationEntity currentLocation,
+    int radialInKm,
+  ) {
+    final updatedMap = <String, List<AdPanelEntity>>{};
+
+    panelsMap.forEach((objectNumber, panels) {
+      final distance = _calculateDistance(
+        currentLocation.latitude,
+        currentLocation.longitude,
+        panels.first.latitude,
+        panels.first.longitude,
+      );
+      if (distance < radialInKm * 1.5) {
+        final updatedPanels = panels.map((panel) {
+          return panel.copyWith(distanceInKm: distance);
+        }).toList();
+
+        updatedMap[objectNumber] = updatedPanels;
+      }
+    });
+
+    return updatedMap;
+  }
+
   /// Calculates accurate distance using Haversine formula
-  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistance(
+    double lat1,
+    double lon1,
+    double lat2,
+    double lon2,
+  ) {
     const double earthRadius = 6371; // Earth's radius in kilometers
 
     final double dLat = _degreesToRadians(lat2 - lat1);
@@ -138,48 +170,6 @@ mixin LocationUtilities {
     final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
 
     return earthRadius * c;
-  }
-
-  /// Simple distance calculation between two locations
-  double calculateSimpleDistance(LocationEntity loc1, LocationEntity loc2) {
-    final latDiff = loc1.latitude - loc2.latitude;
-    final lonDiff = loc1.longitude - loc2.longitude;
-    return (latDiff * latDiff + lonDiff * lonDiff) * 111; // Rough km conversion
-  }
-
-  /// Updates distances for all panels based on current location
-  Map<String, List<AdPanelEntity>> updateDistancesForLocation(
-    Map<String, List<AdPanelEntity>> panelsMap,
-    LocationEntity currentLocation,
-  ) {
-    final updatedMap = <String, List<AdPanelEntity>>{};
-
-    panelsMap.forEach((objectNumber, panels) {
-      final updatedPanels = panels.map((panel) {
-        final distance = calculateDistance(
-          currentLocation.latitude,
-          currentLocation.longitude,
-          panel.latitude,
-          panel.longitude,
-        );
-        return panel.copyWith(distanceInKm: distance);
-      }).toList();
-
-      updatedMap[objectNumber] = updatedPanels;
-    });
-
-    return updatedMap;
-  }
-
-  /// Checks if location change is significant enough to warrant an update
-  bool isLocationChangeSignificant(
-    LocationEntity? lastLocation,
-    LocationEntity newLocation,
-    double threshold,
-  ) {
-    if (lastLocation == null) return true;
-
-    return calculateSimpleDistance(lastLocation, newLocation) >= threshold;
   }
 
   double _degreesToRadians(double degrees) => degrees * (math.pi / 180);

@@ -10,12 +10,14 @@ class DSAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     this.onBackClicked,
     this.backgroundColor,
     this.actions,
+    this.iconColor,
   });
 
   final double height;
   final VoidCallback? onBackClicked;
   final DSColor? backgroundColor;
   final List<Widget>? actions;
+  final DSColor? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,9 @@ class DSAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       shadowColor:
           backgroundColor?.color ??
           context.colorPalette.background.onPrimary.color,
+      iconTheme: iconColor != null
+          ? IconThemeData(color: iconColor?.color)
+          : null,
       centerTitle: true,
       toolbarHeight: height,
       elevation: 0,
@@ -38,11 +43,11 @@ class DSAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               Icons.close,
               iconColor: context.colorPalette.background.onPrimary,
               buttonColor: context.colorPalette.background.primary,
-              onPressed: onBackClicked!,
+              onPressed: onBackClicked,
               size: _getIconSize(context),
             )
           : null,
-      title: DSLogoImageWidget.rectangle(height: height),
+      title: DSLogoImageWidget.rectangle(height: height, color: iconColor),
       actions: actions,
     );
   }

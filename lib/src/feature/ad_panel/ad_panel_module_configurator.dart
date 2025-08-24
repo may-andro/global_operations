@@ -32,8 +32,11 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
       () => AdPanelRepositoryImpl(serviceLocator.get(), serviceLocator.get()),
     );
 
-    serviceLocator.registerFactory<CompressImageUseCase>(
-      () => CompressImageUseCase(),
+    serviceLocator.registerFactory<CompressImageFileUseCase>(
+      () => CompressImageFileUseCase(),
+    );
+    serviceLocator.registerFactory<CompressRawImageUseCase>(
+      () => CompressRawImageUseCase(),
     );
     serviceLocator.registerFactory<GetAdPanelsUseCase>(
       () => GetAdPanelsUseCase(serviceLocator.get()),
@@ -47,8 +50,11 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     serviceLocator.registerFactory<UpdateAdPanelsUseCase>(
       () => UpdateAdPanelsUseCase(serviceLocator.get(), serviceLocator.get()),
     );
-    serviceLocator.registerFactory<UploadAdPanelImageUseCase>(
-      () => UploadAdPanelImageUseCase(serviceLocator.get()),
+    serviceLocator.registerFactory<UploadImageFileUseCase>(
+      () => UploadImageFileUseCase(serviceLocator.get()),
+    );
+    serviceLocator.registerFactory<UploadRawImageUseCase>(
+      () => UploadRawImageUseCase(serviceLocator.get()),
     );
     serviceLocator.registerFactory<DeleteAdPanelImageUseCase>(
       () => DeleteAdPanelImageUseCase(serviceLocator.get()),
@@ -65,6 +71,9 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     );
     serviceLocator.registerFactory<AdPanelBloc>(
       () => AdPanelBloc(
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),

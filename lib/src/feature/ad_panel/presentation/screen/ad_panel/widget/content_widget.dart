@@ -8,7 +8,8 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/wid
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/face_tab_content_widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/flexible_space_widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/progress_info_card_widget.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/upload_failure_widget.dart';
+import 'package:global_ops/src/feature/file_picker/file_picker.dart';
+import 'package:go_router/go_router.dart';
 
 class ContentWidget extends StatelessWidget {
   const ContentWidget({super.key, required this.tabController});
@@ -30,7 +31,10 @@ class ContentWidget extends StatelessWidget {
           case AdPanelUploadErrorState():
             context.showSnackBar(
               snackBar: DSSnackBar(
-                message: state.failure.getMessage(context),
+                message:
+                    state.uploadImageFileFailure?.getMessage(context) ??
+                    state.uploadRawImageFailure?.getMessage(context) ??
+                    context.localizations.errorUploadUnknown,
                 type: DSSnackBarType.error,
               ),
             );
@@ -41,10 +45,15 @@ class ContentWidget extends StatelessWidget {
                 type: DSSnackBarType.error,
               ),
             );
-          case AdPanelPartialFailureState():
-            UploadFailureWidget.showAsDialogOrBottomSheet(
+          case AdPanelImageCompressionProgressState():
+            ImageCompressionProgressWidget.showAsDialogOrBottomSheet(context);
+          case DismissAdPanelImageCompressionProgressState():
+            context.pop();
+          case AdPanelImageCompressionErrorState():
+            ImageCompressionFailureWidget.showAsDialogOrBottomSheet(
               context,
-              state.failedFiles,
+              filePickerFailure: state.filePickerFailure,
+              imagePickerFailure: state.imagePickerFailure,
             );
           case AdPanelSuccessState():
             context.showSnackBar(
@@ -53,6 +62,8 @@ class ContentWidget extends StatelessWidget {
                 type: DSSnackBarType.success,
               ),
             );
+            context.pop();
+
           default:
             // Do nothing for other states
             break;
@@ -64,16 +75,6 @@ class ContentWidget extends StatelessWidget {
             return ProgressInfoCardWidget(
               title: context.localizations.adPanelUpdatingTitle,
               description: context.localizations.adPanelUpdatingDescription,
-            );
-          case AdPanelImageCompressionProgressState():
-            return ProgressInfoCardWidget(
-              title: context.localizations.adPanelCompressingImagesTitle,
-              description: context.localizations
-                  .adPanelCompressingImagesDescription(
-                    state.currentFileIndex,
-                    state.totalFiles,
-                  ),
-              progress: state.currentFileIndex / state.totalFiles,
             );
           case AdPanelImageUploadProgressState():
             return ProgressInfoCardWidget(
@@ -96,6 +97,9 @@ class ContentWidget extends StatelessWidget {
               return const SizedBox.shrink();
             }
             final adPanels = state.adPanels;
+            final filesToUpload = state.filesToUpload;
+            final rawFilesToUpload = state.rawFilesToUpload;
+
             return NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
@@ -118,8 +122,10 @@ class ContentWidget extends StatelessWidget {
                   children: adPanels
                       .mapIndexed(
                         (index, adPanel) => FaceTabContentWidget(
-                          adPanel: adPanel,
                           index: index,
+                          adPanel: adPanel,
+                          filesToUpload: filesToUpload[adPanel.key] ?? [],
+                          rawFilesToUpload: rawFilesToUpload[adPanel.key] ?? [],
                         ),
                       )
                       .toList(),

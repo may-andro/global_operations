@@ -256,7 +256,6 @@ void main() {
         () async {
           const email = 'test@example.com';
           const password = 'password123';
-          final mockCredential = MockAuthCredential();
 
           when(() => mockFirebaseAuth.currentUser).thenReturn(mockUser);
           when(
@@ -437,7 +436,7 @@ void main() {
             code: code,
             newPassword: newPassword,
           ),
-          throwsA(isA<UnknownAuthException>()),
+          throwsA(isA<InvalidPasswordResetCodeException>()),
         );
       });
     });
@@ -466,7 +465,7 @@ void main() {
 
         expect(
           () => authController.verifyPasswordResetCode(code: code),
-          throwsA(isA<UnknownAuthException>()),
+          throwsA(isA<InvalidPasswordResetCodeException>()),
         );
       });
     });

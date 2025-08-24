@@ -114,11 +114,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adPanelSearchHint => 'Search advertising panels...';
 
   @override
-  String adPanelSearchRadiusLabel(String radius) {
-    return '$radius km';
-  }
-
-  @override
   String adPanelSearchResultCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -508,17 +503,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please wait while we process your request';
 
   @override
-  String get adPanelCompressingImagesTitle => 'Compressing Images';
-
-  @override
-  String adPanelCompressingImagesDescription(
-    int currentFileIndex,
-    int totalFiles,
-  ) {
-    return 'Please wait, your ($currentFileIndex/$totalFiles) image file is being prepared for upload';
-  }
-
-  @override
   String get adPanelUploadingImagesTitle => 'Uploading Images...';
 
   @override
@@ -535,10 +519,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get adPanelUpdatingPanelsDescription =>
       'Please wait while we update your ad panels';
-
-  @override
-  String get adPanelUpdateExistWarningCompressingImages =>
-      'Images are being compressed. Please wait until the process is complete.';
 
   @override
   String get adPanelUpdateExistWarningUploadingImages =>
@@ -581,4 +561,64 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get imageCompressionTitle => 'Compressing Images';
+
+  @override
+  String get imageCompressionFailureTitle => 'Compressing Images Failure';
+
+  @override
+  String get imageCompressionMessage =>
+      'Images are being compressed. Please wait until the process is complete.';
+
+  @override
+  String get errorDecodingFile =>
+      'Could not decode the selected file. Please try another.';
+
+  @override
+  String get errorProcessingFile =>
+      'There was a problem processing the file. Please try again.';
+
+  @override
+  String get errorUnknownFile => 'An unknown error occurred with the file.';
+
+  @override
+  String get adPanelSearchRadiusTitle => 'Select the search radius';
+
+  @override
+  String get adPanelSearchRadiusLocationUpdateDescription =>
+      'New advertisement panels will be updated when user movement is detected.';
+
+  @override
+  String get adPanelSearchRadiusNoLocationUpdateDescription =>
+      'New panels won\'t be updated when user movement is detected.';
+
+  @override
+  String adPanelSearchRadiusLabel(String radius) {
+    return 'Radius: $radius km';
+  }
+
+  @override
+  String get errorEmptyPassword => 'Password can not be empty';
+
+  @override
+  String get errorPasswordTooSmall =>
+      'Password cannot be less than 6 characters';
+
+  @override
+  String get errorPasswordTooLarge =>
+      'Password cannot be more than 12 characters';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get errorInvalidEmail => 'Please enter a valid email';
+
+  @override
+  String get errorEmptyEmail => 'Email can not be empty';
 }

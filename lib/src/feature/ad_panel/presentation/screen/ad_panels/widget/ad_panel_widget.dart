@@ -5,7 +5,8 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/widget/ad_panel_detail_widget.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/route/route.dart';
+import 'package:go_router/go_router.dart';
 
 class AdPanelWidget extends StatelessWidget {
   const AdPanelWidget({required this.adPanels, super.key});
@@ -73,10 +74,7 @@ class AdPanelWidget extends StatelessWidget {
       elevation: context.dimen.elevationLevel1,
       margin: EdgeInsets.only(bottom: context.space()),
       onTap: () {
-        AdPanelDetailWidget.showAsDialogOrBottomSheet(
-          context,
-          adPanels: adPanels,
-        );
+        context.push(AdPanelModuleRoute.adPanel.path, extra: adPanels);
       },
       child: Padding(
         padding: EdgeInsets.all(

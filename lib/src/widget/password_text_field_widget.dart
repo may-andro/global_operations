@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:global_ops/l10n/l10n.dart';
 
 class PasswordTextFieldWidget extends StatelessWidget {
   const PasswordTextFieldWidget({
@@ -25,25 +26,25 @@ class PasswordTextFieldWidget extends StatelessWidget {
       key: Key('${labelText ?? ''}password_input_widget'),
       controller: textController,
       hintText: 'xxxxxx',
-      labelText: labelText ?? 'Password',
+      labelText: labelText ?? context.localizations.password,
       enabled: isEnabled,
       textFieldType: TextFieldType.password,
       textInputAction: TextInputAction.done,
       onFieldSubmitted: onFieldSubmitted,
       validator: (input) {
         if (input == null || input.isEmpty) {
-          return const TextFieldValidationData.error(
-            'Password  can not be empty',
+          return TextFieldValidationData.error(
+            context.localizations.errorEmptyPassword,
           );
         }
         if (input.length < 6) {
-          return const TextFieldValidationData.error(
-            'Password must be at least 6 characters',
+          return TextFieldValidationData.error(
+            context.localizations.errorPasswordTooSmall,
           );
         }
         if (input.length > 12) {
-          return const TextFieldValidationData.error(
-            'Password must be at most 12 characters',
+          return TextFieldValidationData.error(
+            context.localizations.errorPasswordTooLarge,
           );
         }
 

@@ -13,4 +13,9 @@ class AdPanelModuleRoute extends ModuleRoute {
     'adPanel',
     '/ad_panel',
   );
+
+  static const AdPanelModuleRoute searchAdPanels = AdPanelModuleRoute._(
+    'search_ad_panel',
+    '/search_ad_panel',
+  );
 }

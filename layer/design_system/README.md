@@ -6,7 +6,6 @@
 - [Foundations](#foundations)
 - [Components](#components)
 - [Golden Test](#golden-test)
-- [Storybook](#storybook)
 
 ## Getting Started
 
@@ -221,7 +220,3 @@ or use the `melos` command
 ```
 melos run_golden_test
 ```
-
-## Storybook
-
-The components are demonstrated in the `Storybook` project. Visit the storybook from [here](https://storybook.wahlanalytics.es/).

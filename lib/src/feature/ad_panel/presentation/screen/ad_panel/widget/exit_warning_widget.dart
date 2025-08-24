@@ -46,13 +46,8 @@ class ExitWarningWidget extends StatelessWidget {
       listener: (context, state) {
         switch (state) {
           case AdPanelErrorState():
-            context.pop();
           case AdPanelUploadErrorState():
-            context.pop();
           case AdPanelUpdateErrorState():
-            context.pop();
-          case AdPanelPartialFailureState():
-            context.pop();
           case AdPanelSuccessState():
             context.pop();
           default:
@@ -101,12 +96,12 @@ class ExitWarningWidget extends StatelessWidget {
                         label: context.localizations.yes,
                         onPressed: () => Navigator.of(context).pop(true),
                         size: DSButtonSize.small,
+                        variant: DSButtonVariant.secondary,
                       ),
                       const DSHorizontalSpacerWidget(1),
                       DSButtonWidget(
                         label: context.localizations.no,
                         onPressed: () => Navigator.of(context).pop(false),
-                        variant: DSButtonVariant.secondary,
                         size: DSButtonSize.small,
                       ),
                     ],
@@ -123,7 +118,7 @@ class ExitWarningWidget extends StatelessWidget {
   String _getMessageForState(AdPanelState state, BuildContext context) {
     return switch (state) {
       AdPanelImageCompressionProgressState() =>
-        context.localizations.adPanelUpdateExistWarningCompressingImages,
+        context.localizations.imageCompressionMessage,
       AdPanelImageUploadProgressState() =>
         context.localizations.adPanelUpdateExistWarningUploadingImages,
       AdPanelUpdatingPanelsState() =>

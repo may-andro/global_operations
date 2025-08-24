@@ -159,14 +159,10 @@ class _NavigationFooter extends StatelessWidget {
                 vertical: context.space(factor: 1.5),
               ),
               decoration: BoxDecoration(
-                color: context.colorPalette.semantic.info.color.withOpacity(
-                  0.1,
-                ),
+                color: context.colorPalette.semantic.info.color.withAlpha(10),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: context.colorPalette.semantic.info.color.withOpacity(
-                    0.3,
-                  ),
+                  color: context.colorPalette.semantic.info.color.withAlpha(30),
                 ),
               ),
               child: Column(

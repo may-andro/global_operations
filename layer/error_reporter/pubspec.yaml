@@ -14,9 +14,9 @@ dependencies:
     sdk: flutter
   log_reporter:
     path: ../log_reporter
+  meta: any
   module_injector:
     path: ../module_injector
-  meta: any
 
 dev_dependencies:
   flutter_test:

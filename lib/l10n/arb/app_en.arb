@@ -147,16 +147,6 @@
   "@adPanelSearchHint": {
     "description": "Hint text for search input"
   },
-  "adPanelSearchRadiusLabel": "{radius} km",
-  "@adPanelSearchRadiusLabel": {
-    "description": "Label showing search radius in kilometers",
-    "placeholders": {
-      "radius": {
-        "type": "String",
-        "example": "10"
-      }
-    }
-  },
   "adPanelSearchResultCount": "{count, plural, =0{No advertising panels found} =1{1 advertising panel found} other{{count} advertising panels found}}",
   "@adPanelSearchResultCount": {
     "description": "Message showing number of advertising panels found",
@@ -601,6 +591,7 @@
   "@errorWeakPassword": {
     "description": "Message shown when password strength is insufficient"
   },
+
   "close": "Close",
   "@close": {
     "description": "Generic close button text"
@@ -616,24 +607,6 @@
   "adPanelUpdatingDescription": "Please wait while we process your request",
   "@adPanelUpdatingDescription": {
     "description": "Message shown while updating ad panels"
-  },
-  "adPanelCompressingImagesTitle": "Compressing Images",
-  "@adPanelCompressingImagesTitle": {
-    "description": "Title shown while images are being compressed"
-  },
-  "adPanelCompressingImagesDescription": "Please wait, your ({currentFileIndex}/{totalFiles}) image file is being prepared for upload",
-  "@adPanelCompressingImagesDescription": {
-    "description": "Message shown when compressing multiple images",
-    "placeholders": {
-      "currentFileIndex": {
-        "type": "int",
-        "example": "1"
-      },
-      "totalFiles": {
-        "type": "int",
-        "example": "5"
-      }
-    }
   },
   "adPanelUploadingImagesTitle": "Uploading Images...",
   "@adPanelUploadingImagesTitle": {
@@ -660,10 +633,6 @@
   "adPanelUpdatingPanelsDescription": "Please wait while we update your ad panels",
   "@adPanelUpdatingPanelsDescription": {
     "description": "Message shown while updating ad panels"
-  },
-  "adPanelUpdateExistWarningCompressingImages": "Images are being compressed. Please wait until the process is complete.",
-  "@adPanelUpdateExistWarningCompressingImages": {
-    "description": "Warning message when images are being compressed and user tries to exit."
   },
   "adPanelUpdateExistWarningUploadingImages": "Images are being uploaded. Please wait until the process is complete.",
   "@adPanelUpdateExistWarningUploadingImages": {
@@ -693,7 +662,6 @@
   "@adPanelAllowedImageMaxLengthMessage": {
     "description": "Warning message shown when user tries to add an image that exceeds the maximum allowed size"
   },
-
   "adPanelImageUpdateFailureTitle": "Upload Failure",
   "@adPanelImageUpdateFailureTitle": {
     "description": "Title shown when image update fails for ad panels"
@@ -707,5 +675,79 @@
         "example": "3"
       }
     }
+  },
+  "imageCompressionTitle": "Compressing Images",
+  "@imageCompressionTitle": {
+    "description": "Title shown while images are being compressed"
+  },
+  "imageCompressionFailureTitle": "Compressing Images Failure",
+  "@imageCompressionFailureTitle": {
+    "description": "Title shown while images compression failed"
+  },
+  "imageCompressionMessage": "Images are being compressed. Please wait until the process is complete.",
+  "@imageCompressionMessage": {
+    "description": "Warning message when images are being compressed and user tries to exit."
+  },
+  "errorDecodingFile": "Could not decode the selected file. Please try another.",
+  "@errorDecodingFile": {
+    "description": "Message shown when a file cannot be decoded."
+  },
+  "errorProcessingFile": "There was a problem processing the file. Please try again.",
+  "@errorProcessingFile": {
+    "description": "Message shown when a file cannot be processed."
+  },
+  "errorUnknownFile": "An unknown error occurred with the file.",
+  "@errorUnknownFile": {
+    "description": "Message shown when an unknown file error occurs."
+  },
+  "adPanelSearchRadiusTitle": "Select the search radius",
+  "@adPanelSearchRadiusTitle": {
+    "description": "Title for search radius selection dialog"
+  },
+  "adPanelSearchRadiusLocationUpdateDescription": "New advertisement panels will be updated when user movement is detected.",
+  "@adPanelSearchRadiusLocationUpdateDescription": {
+    "description": "Description for search radius location update information"
+  },
+  "adPanelSearchRadiusNoLocationUpdateDescription": "New panels won't be updated when user movement is detected.",
+  "@adPanelSearchRadiusNoLocationUpdateDescription": {
+    "description": "Description for search radius no location update information"
+  },
+  "adPanelSearchRadiusLabel": "Radius: {radius} km",
+  "@adPanelSearchRadiusLabel": {
+    "description": "Label showing search radius in kilometers",
+    "placeholders": {
+      "radius": {
+        "type": "String",
+        "example": "10"
+      }
+    }
+  },
+  "errorEmptyPassword": "Password can not be empty",
+  "@errorEmptyPassword": {
+    "description": "Message shown when password is empty"
+  },
+  "errorPasswordTooSmall": "Password cannot be less than 6 characters",
+  "@errorPasswordTooSmall": {
+    "description": "Message shown when password is smaller than minimum length"
+  },
+  "errorPasswordTooLarge": "Password cannot be more than 12 characters",
+  "@errorPasswordTooLarge": {
+    "description": "Message shown when password is larger than maximum length"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Label for password"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Label for email"
+  },
+  "errorInvalidEmail": "Please enter a valid email",
+  "@errorInvalidEmail": {
+    "description": "Message shown when email is incorrectly formatted"
+  },
+  "errorEmptyEmail": "Email can not be empty",
+  "@errorEmptyEmail": {
+    "description": "Message shown when email is empty"
   }
 }

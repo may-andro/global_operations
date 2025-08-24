@@ -52,7 +52,7 @@ final class UpdateLocationEvent extends ProximityAdPanelsEvent {
 final class UpdateSearchRadiusEvent extends ProximityAdPanelsEvent {
   const UpdateSearchRadiusEvent(this.radiusInKm);
 
-  final double radiusInKm;
+  final int radiusInKm;
 
   @override
   List<Object?> get props => [radiusInKm];

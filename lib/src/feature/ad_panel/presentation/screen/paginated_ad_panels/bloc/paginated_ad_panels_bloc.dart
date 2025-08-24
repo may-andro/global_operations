@@ -269,7 +269,6 @@ class PaginatedAdPanelsBloc
 
   /// Convert error to user-friendly message
   String _getErrorMessage(dynamic error) {
-    // TODO: Implement proper error handling based on error types
     if (error.toString().contains('network')) {
       return 'Network error. Please check your connection.';
     } else if (error.toString().contains('timeout')) {

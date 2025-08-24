@@ -78,6 +78,7 @@ web/firebase-config.base64
 ios/Runner/GoogleService-Info.plist
 ios/firebase_app_id_file.json
 android/app/google-services.json
+android/app/google_services.base64
 firebase_config.js
 firebase-config.base64
 firebase-service-account.json

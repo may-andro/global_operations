@@ -20,6 +20,7 @@ class DeleteAccountScreen extends StatelessWidget {
       appBar: DSAppBarWidget(
         height: DSAppBarWidget.getHeight(context),
         backgroundColor: context.colorPalette.brand.prominent,
+        iconColor: context.colorPalette.neutral.white,
       ),
       body: BlocProvider(
         create: (_) =>

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
@@ -29,6 +30,13 @@ class MapContentWidget extends StatefulWidget {
 
 class _MapContentWidgetState extends State<MapContentWidget> {
   late final DSMapController _mapController;
+  List<DSMapItem>? _lastMapItems;
+
+  final SetEquality<DSMapItem> _setEquality = const SetEquality();
+
+  bool _areMapItemsEqual(List<DSMapItem> a, List<DSMapItem> b) {
+    return _setEquality.equals(a.toSet(), b.toSet());
+  }
 
   @override
   void initState() {
@@ -49,9 +57,13 @@ class _MapContentWidgetState extends State<MapContentWidget> {
         .map((e) => e.first)
         .dsMapItems;
 
-    // Ensure markers update when state changes
+    // Only update markers if mapItems changed
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _mapController.updateMarkers(mapItems);
+      if (_lastMapItems == null ||
+          !_areMapItemsEqual(_lastMapItems!, mapItems)) {
+        _mapController.updateMarkers(mapItems);
+        _lastMapItems = List<DSMapItem>.from(mapItems);
+      }
     });
 
     return Stack(

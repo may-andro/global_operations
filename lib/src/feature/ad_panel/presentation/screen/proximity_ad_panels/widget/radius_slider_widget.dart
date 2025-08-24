@@ -25,9 +25,9 @@ class RadiusSliderWidget extends StatelessWidget {
             Expanded(
               child: Slider(
                 min: 1.0,
-                max: 20.0,
+                max: 10.0,
                 divisions: 5,
-                value: radius,
+                value: radius.toDouble(),
                 label: '${radius.toStringAsFixed(2)} km',
                 activeColor: isEnabled
                     ? context.colorPalette.brand.primary.color
@@ -36,7 +36,7 @@ class RadiusSliderWidget extends StatelessWidget {
                 onChanged: isEnabled
                     ? (value) {
                         context.read<ProximityAdPanelsBloc>().add(
-                          UpdateSearchRadiusEvent(value),
+                          UpdateSearchRadiusEvent(value.toInt()),
                         );
                       }
                     : null,
@@ -56,14 +56,14 @@ class RadiusSliderWidget extends StatelessWidget {
   }
 
   /// Extracts radius value from the current state
-  double _extractRadius(ProximityAdPanelsState state) {
+  int _extractRadius(ProximityAdPanelsState state) {
     switch (state) {
       case AdPanelsLoadedState():
         return state.radiusInKm;
       case AdPanelsListLoadingState():
         return state.previousState.radiusInKm;
       default:
-        return 5.0;
+        return 2;
     }
   }
 }

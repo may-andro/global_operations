@@ -3,13 +3,14 @@ import 'package:design_system/src/component/organism/ds_map_marker_generator.dar
 import 'package:design_system/src/extension/build_context_extension.dart';
 import 'package:design_system/src/service/map_style_service.dart';
 import 'package:design_system/src/theme/theme.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// Represents a single item to be displayed on the map
-class DSMapItem {
+class DSMapItem extends Equatable {
   const DSMapItem({
     required this.id,
     required this.latitude,
@@ -21,6 +22,9 @@ class DSMapItem {
   final double latitude;
   final double longitude;
   final bool isSelected;
+
+  @override
+  List<Object?> get props => [id, latitude, longitude, isSelected];
 }
 
 /// A customizable Google Maps widget with clustering and theming support
@@ -112,9 +116,8 @@ class _DSMapWidgetState extends State<DSMapWidget> {
     }
 
     // Setup controller callbacks
-    widget.controller?._attachUpdateMarkersCallback(
-      (items) => _updateClustersCommon(items, fitBounds: true),
-    );
+    widget.controller?._attachUpdateMarkersCallback = (items) =>
+        _updateClustersCommon(items, fitBounds: true);
 
     // Initial marker setup
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -167,7 +170,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
         final markerId = cluster.markers.first.markerId.value;
         final icon = await DsMapMarkerGenerator.createBitmap(
           markerId,
-          false,
+          cluster.items.first.isSelected,
           1,
           _theme,
         );
@@ -176,6 +179,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
           onTapParam: () {
             widget.onMarkerTap?.call(cluster.markers.first, cluster.items);
           },
+          infoWindowParam: InfoWindow(title: cluster.items.first.id),
         );
         displayMarkers.add(marker);
       } else if (allSame && cluster.markers.length > 1) {
@@ -225,7 +229,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
       _displayMarkers = displayMarkers;
     });
     if (fitBounds) {
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(100.ms);
       await _fitBoundsToClusters(clusters);
     }
   }
@@ -238,7 +242,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
 
     // On web, add extra delay to ensure map is fully ready
     if (kIsWeb) {
-      await Future<void>.delayed(const Duration(milliseconds: 500));
+      await Future<void>.delayed(500.ms);
     }
 
     double? minLat;
@@ -289,7 +293,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
       // Original logic for mobile platforms
       final visibleRegion = await _mapController!.getVisibleRegion();
       final currentZoom = _currentZoom;
-      final bool boundsContain =
+      final boundsContain =
           visibleRegion.southwest.latitude <= minLat &&
           visibleRegion.northeast.latitude >= maxLat &&
           visibleRegion.southwest.longitude <= minLng &&
@@ -475,6 +479,13 @@ class _DSMapWidgetState extends State<DSMapWidget> {
       ),
       style: _mapStyle,
       myLocationEnabled: true,
+      minMaxZoomPreference: const MinMaxZoomPreference(7.0, 18.0),
+      cameraTargetBounds: CameraTargetBounds(
+        LatLngBounds(
+          southwest: const LatLng(50.75, 3.36), // bottom-left corner of NL
+          northeast: const LatLng(53.55, 7.22), // top-right corner of NL
+        ),
+      ),
       circles: widget.circleRadius > 0 ? {circle} : {},
       markers: _displayMarkers,
       onMapCreated: _onMapCreated,
@@ -498,7 +509,7 @@ class _DSMapWidgetState extends State<DSMapWidget> {
   /// Handle map creation
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    widget.controller?._attachMapController(controller);
+    widget.controller?._attachMapController = controller;
     _updateClusters();
   }
 
@@ -518,12 +529,14 @@ class DSMapController extends ChangeNotifier {
   void Function(List<DSMapItem>)? _updateMarkersCallback;
 
   // Called by DSMapWidget to register the GoogleMapController
-  void _attachMapController(GoogleMapController controller) {
+  // ignore: avoid_setters_without_getters
+  set _attachMapController(GoogleMapController controller) {
     _googleMapController = controller;
   }
 
   // Called by DSMapWidget to register a callback for updating markers
-  void _attachUpdateMarkersCallback(void Function(List<DSMapItem>) callback) {
+  // ignore: avoid_setters_without_getters
+  set _attachUpdateMarkersCallback(void Function(List<DSMapItem>) callback) {
     _updateMarkersCallback = callback;
   }
 

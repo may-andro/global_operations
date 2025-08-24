@@ -115,11 +115,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get adPanelSearchHint => 'Zoek advertentiepanelen...';
 
   @override
-  String adPanelSearchRadiusLabel(String radius) {
-    return '$radius km';
-  }
-
-  @override
   String adPanelSearchResultCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -511,17 +506,6 @@ class AppLocalizationsNl extends AppLocalizations {
       'Even geduld terwijl we uw verzoek verwerken';
 
   @override
-  String get adPanelCompressingImagesTitle => 'Afbeeldingen comprimeren';
-
-  @override
-  String adPanelCompressingImagesDescription(
-    int currentFileIndex,
-    int totalFiles,
-  ) {
-    return 'Even geduld, uw ($currentFileIndex/$totalFiles) afbeeldingsbestand wordt voorbereid voor uploaden';
-  }
-
-  @override
   String get adPanelUploadingImagesTitle => 'Afbeeldingen uploaden...';
 
   @override
@@ -538,10 +522,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get adPanelUpdatingPanelsDescription =>
       'Even geduld terwijl we uw reclamepanelen bijwerken';
-
-  @override
-  String get adPanelUpdateExistWarningCompressingImages =>
-      'Afbeeldingen worden gecomprimeerd. Wacht tot het proces is voltooid.';
 
   @override
   String get adPanelUpdateExistWarningUploadingImages =>
@@ -586,4 +566,66 @@ class AppLocalizationsNl extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get imageCompressionTitle => 'Afbeeldingen comprimeren';
+
+  @override
+  String get imageCompressionFailureTitle =>
+      'Fout bij comprimeren van afbeeldingen';
+
+  @override
+  String get imageCompressionMessage =>
+      'Afbeeldingen worden gecomprimeerd. Even wachten tot het proces is voltooid.';
+
+  @override
+  String get errorDecodingFile =>
+      'Kan het geselecteerde bestand niet decoderen. Probeer een ander bestand.';
+
+  @override
+  String get errorProcessingFile =>
+      'Er is een probleem opgetreden bij het verwerken van het bestand. Probeer het opnieuw.';
+
+  @override
+  String get errorUnknownFile =>
+      'Er is een onbekende fout opgetreden met het bestand.';
+
+  @override
+  String get adPanelSearchRadiusTitle => 'Selecteer de zoekradius';
+
+  @override
+  String get adPanelSearchRadiusLocationUpdateDescription =>
+      'Nieuwe advertentiepaneel worden bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.';
+
+  @override
+  String get adPanelSearchRadiusNoLocationUpdateDescription =>
+      'Nieuwe panelen worden niet bijgewerkt wanneer beweging van de gebruiker wordt gedetecteerd.';
+
+  @override
+  String adPanelSearchRadiusLabel(String radius) {
+    return 'Radius: $radius km';
+  }
+
+  @override
+  String get errorEmptyPassword => 'Wachtwoord mag niet leeg zijn';
+
+  @override
+  String get errorPasswordTooSmall =>
+      'Wachtwoord moet minimaal 6 tekens bevatten';
+
+  @override
+  String get errorPasswordTooLarge =>
+      'Wachtwoord mag niet meer dan 12 tekens bevatten';
+
+  @override
+  String get password => 'Wachtwoord';
+
+  @override
+  String get email => 'E-mail';
+
+  @override
+  String get errorInvalidEmail => 'Voer een geldig e-mailadres in';
+
+  @override
+  String get errorEmptyEmail => 'E-mail mag niet leeg zijn';
 }

@@ -266,12 +266,6 @@ abstract class AppLocalizations {
   /// **'Search advertising panels...'**
   String get adPanelSearchHint;
 
-  /// Label showing search radius in kilometers
-  ///
-  /// In en, this message translates to:
-  /// **'{radius} km'**
-  String adPanelSearchRadiusLabel(String radius);
-
   /// Message showing number of advertising panels found
   ///
   /// In en, this message translates to:
@@ -920,21 +914,6 @@ abstract class AppLocalizations {
   /// **'Please wait while we process your request'**
   String get adPanelUpdatingDescription;
 
-  /// Title shown while images are being compressed
-  ///
-  /// In en, this message translates to:
-  /// **'Compressing Images'**
-  String get adPanelCompressingImagesTitle;
-
-  /// Message shown when compressing multiple images
-  ///
-  /// In en, this message translates to:
-  /// **'Please wait, your ({currentFileIndex}/{totalFiles}) image file is being prepared for upload'**
-  String adPanelCompressingImagesDescription(
-    int currentFileIndex,
-    int totalFiles,
-  );
-
   /// Title shown while images are being uploaded
   ///
   /// In en, this message translates to:
@@ -961,12 +940,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please wait while we update your ad panels'**
   String get adPanelUpdatingPanelsDescription;
-
-  /// Warning message when images are being compressed and user tries to exit.
-  ///
-  /// In en, this message translates to:
-  /// **'Images are being compressed. Please wait until the process is complete.'**
-  String get adPanelUpdateExistWarningCompressingImages;
 
   /// Warning message when images are being uploaded and user tries to exit.
   ///
@@ -1021,6 +994,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =0{All files} =1{1 file} other{{count} failed to upload. Please try uploading the failed files again.}}'**
   String adPanelImageUpdateFailureMessage(int count);
+
+  /// Title shown while images are being compressed
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing Images'**
+  String get imageCompressionTitle;
+
+  /// Title shown while images compression failed
+  ///
+  /// In en, this message translates to:
+  /// **'Compressing Images Failure'**
+  String get imageCompressionFailureTitle;
+
+  /// Warning message when images are being compressed and user tries to exit.
+  ///
+  /// In en, this message translates to:
+  /// **'Images are being compressed. Please wait until the process is complete.'**
+  String get imageCompressionMessage;
+
+  /// Message shown when a file cannot be decoded.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not decode the selected file. Please try another.'**
+  String get errorDecodingFile;
+
+  /// Message shown when a file cannot be processed.
+  ///
+  /// In en, this message translates to:
+  /// **'There was a problem processing the file. Please try again.'**
+  String get errorProcessingFile;
+
+  /// Message shown when an unknown file error occurs.
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred with the file.'**
+  String get errorUnknownFile;
+
+  /// Title for search radius selection dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Select the search radius'**
+  String get adPanelSearchRadiusTitle;
+
+  /// Description for search radius location update information
+  ///
+  /// In en, this message translates to:
+  /// **'New advertisement panels will be updated when user movement is detected.'**
+  String get adPanelSearchRadiusLocationUpdateDescription;
+
+  /// Description for search radius no location update information
+  ///
+  /// In en, this message translates to:
+  /// **'New panels won\'t be updated when user movement is detected.'**
+  String get adPanelSearchRadiusNoLocationUpdateDescription;
+
+  /// Label showing search radius in kilometers
+  ///
+  /// In en, this message translates to:
+  /// **'Radius: {radius} km'**
+  String adPanelSearchRadiusLabel(String radius);
+
+  /// Message shown when password is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Password can not be empty'**
+  String get errorEmptyPassword;
+
+  /// Message shown when password is smaller than minimum length
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be less than 6 characters'**
+  String get errorPasswordTooSmall;
+
+  /// Message shown when password is larger than maximum length
+  ///
+  /// In en, this message translates to:
+  /// **'Password cannot be more than 12 characters'**
+  String get errorPasswordTooLarge;
+
+  /// Label for password
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// Label for email
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// Message shown when email is incorrectly formatted
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get errorInvalidEmail;
+
+  /// Message shown when email is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Email can not be empty'**
+  String get errorEmptyEmail;
 }
 
 class _AppLocalizationsDelegate

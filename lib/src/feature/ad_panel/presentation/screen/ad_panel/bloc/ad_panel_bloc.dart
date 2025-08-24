@@ -1,30 +1,46 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/ad_panel_bloc_utils.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/ad_panel_event.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/ad_panel_state.dart';
+import 'package:global_ops/src/feature/file_picker/file_picker.dart';
+import 'package:log_reporter/log_reporter.dart';
 
-class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState> {
+class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState>
+    with AdPanelBusinessLogic {
   AdPanelBloc(
-    this._updateAdPanelsUseCase,
-    this._compressImageUseCase,
-    this._uploadAdPanelImageUseCase,
-    this._deleteAdPanelImageUseCase,
+    this.updateAdPanelsUseCase,
+    this.uploadImageFileUseCase,
+    this.uploadRawImageUseCase,
+    this.deleteAdPanelImageUseCase,
+    this._imagePickerUseCase,
+    this._filePickerUseCase,
+    this.logReporter,
   ) : super(const AdPanelInitialState()) {
     on<LoadAdPanelsEvent>(_mapLoadAdPanelsEventToState);
     on<EditAdPanelEvent>(_mapEditAdPanelEventToState);
     on<UpdateAdPanelsEvent>(_mapUpdateAdPanelsEventToState);
     on<DeleteImageEvent>(_mapDeleteImageEventToState);
+    on<PickImageFileOnWebEvent>(_mapPickImageFileOnWebEventToState);
+    on<PickImageFileOnMobileEvent>(_mapPickImageFileOnMobileEventToState);
   }
 
-  final UpdateAdPanelsUseCase _updateAdPanelsUseCase;
-  final CompressImageUseCase _compressImageUseCase;
-  final UploadAdPanelImageUseCase _uploadAdPanelImageUseCase;
-  final DeleteAdPanelImageUseCase _deleteAdPanelImageUseCase;
-
-  final List<String> _imagesToDelete = [];
+  @override
+  final UpdateAdPanelsUseCase updateAdPanelsUseCase;
+  @override
+  final UploadImageFileUseCase uploadImageFileUseCase;
+  @override
+  final UploadRawImageUseCase uploadRawImageUseCase;
+  @override
+  final DeleteAdPanelImageUseCase deleteAdPanelImageUseCase;
+  final ImagePickerUseCase _imagePickerUseCase;
+  final FilePickerUseCase _filePickerUseCase;
+  @override
+  final LogReporter logReporter;
 
   Future<void> _mapUpdateAdPanelsEventToState(
     UpdateAdPanelsEvent event,
@@ -35,163 +51,33 @@ class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState> {
 
     emit(const AdPanelLoadingState());
 
-    try {
-      final processResult = await _processAdPanelsWithImages(
-        currentState.adPanels,
-        emit,
-      );
-
-      if (processResult.hasFailures) {
-        // Some files failed but others succeeded
-        emit(
-          AdPanelPartialFailureState(
-            successfulPanels: processResult.successfulPanels,
-            failedFiles: processResult.failedFiles,
-          ),
-        );
-
-        // Update with successful panels only
-        if (processResult.successfulPanels.isNotEmpty) {
-          await _updateAdPanels(processResult.successfulPanels, emit);
-        }
-      } else {
-        // All files processed successfully
-        await _updateAdPanels(processResult.successfulPanels, emit);
-      }
-    } catch (e) {
-      emit(AdPanelErrorState('An unexpected error occurred', cause: e));
-    }
-  }
-
-  Future<_ProcessResult> _processAdPanelsWithImages(
-    List<AdPanelEntity> panels,
-    Emitter<AdPanelState> emit,
-  ) async {
+    final filePathsToUpload = currentState.filesToUpload;
+    final rawFilesToUpload = currentState.rawFilesToUpload;
+    final panels = List<AdPanelEntity>.from(currentState.adPanels);
     final successfulPanels = <AdPanelEntity>[];
-    final failedFiles = <String>[];
 
-    // Calculate total files for progress tracking
-    final totalFiles = _calculateTotalFiles(panels);
-    var processedFiles = 0;
-
-    for (final panel in panels) {
-      final result = await _processPanelImages(
-        panel,
-        emit,
-        processedFiles,
-        totalFiles,
+    for (final adPanel in panels) {
+      final key = adPanel.key;
+      final updatedAdPanel = await processAdPanelImages(
+        adPanel: adPanel,
+        emit: emit,
+        filesToUpload: List<File>.from(filePathsToUpload[key] ?? []),
+        onSuccessfulFileUpload: (file) {
+          filePathsToUpload[key]?.remove(file);
+        },
+        rawFilesToUpload: List<Uint8List>.from(rawFilesToUpload[key] ?? []),
+        onSuccessfulRawFileUpload: (file) {
+          rawFilesToUpload[key]?.remove(file);
+        },
       );
-
-      if (result.panel != null) {
-        successfulPanels.add(result.panel!);
-      }
-
-      failedFiles.addAll(result.failedFiles);
-      processedFiles += result.processedFileCount;
+      successfulPanels.add(updatedAdPanel);
     }
 
-    return _ProcessResult(
-      successfulPanels: successfulPanels,
-      failedFiles: failedFiles,
-    );
-  }
+    // Delete files that are marked for deletion
+    await deleteFiles(currentState.filesToDelete);
 
-  Future<_PanelProcessResult> _processPanelImages(
-    AdPanelEntity panel,
-    Emitter<AdPanelState> emit,
-    int startFileIndex,
-    int totalFiles,
-  ) async {
-    final images = panel.images ?? [];
-    final localFiles = images.where((img) => !img.startsWith('http')).toList();
-    final urlImages = images.where((img) => img.startsWith('http')).toList();
-
-    if (localFiles.isEmpty) {
-      return _PanelProcessResult(
-        panel: panel,
-        failedFiles: [],
-        processedFileCount: 0,
-      );
-    }
-
-    final successfulUploads = <String>[];
-    final failedFiles = <String>[];
-    var currentFileIndex = startFileIndex;
-
-    for (final filePath in localFiles) {
-      final file = File(filePath);
-      final fileName = file.path.split('/').last;
-
-      try {
-        // Step 1: Compress image
-        emit(
-          AdPanelImageCompressionProgressState(
-            currentFileIndex: currentFileIndex + 1,
-            totalFiles: totalFiles,
-            fileName: fileName,
-          ),
-        );
-
-        final compressResult = await _compressImageUseCase(file);
-        final compressedFile = compressResult.fold(
-          (failure) =>
-              throw Exception('Compression failed: ${failure.message}'),
-          (compressed) => compressed,
-        );
-
-        // Step 2: Upload compressed image
-        emit(
-          AdPanelImageUploadProgressState(
-            currentFileIndex: currentFileIndex + 1,
-            totalFiles: totalFiles,
-            fileName: fileName,
-          ),
-        );
-
-        final uploadResult = await _uploadAdPanelImageUseCase(
-          UploadAdPanelImageParams(file: compressedFile, abPanel: panel),
-        );
-
-        final uploadedUrl = uploadResult.fold(
-          (failure) => throw Exception('Upload failed: ${failure.message}'),
-          (url) => url,
-        );
-
-        successfulUploads.add(uploadedUrl);
-
-        // Clean up compressed file
-        try {
-          if (await compressedFile.exists()) {
-            await compressedFile.delete();
-          }
-        } catch (_) {
-          // Ignore cleanup errors
-        }
-      } catch (e) {
-        // File processing failed, add to failed list
-        failedFiles.add(filePath);
-      }
-
-      currentFileIndex++;
-    }
-
-    // Create updated panel with successful uploads only
-    final newImages = [...urlImages, ...successfulUploads];
-    final updatedPanel = panel.copyWith(images: newImages);
-
-    return _PanelProcessResult(
-      panel: updatedPanel,
-      failedFiles: failedFiles,
-      processedFileCount: localFiles.length,
-    );
-  }
-
-  int _calculateTotalFiles(List<AdPanelEntity> panels) {
-    return panels.fold(0, (total, panel) {
-      final images = panel.images ?? [];
-      final localFiles = images.where((img) => !img.startsWith('http'));
-      return total + localFiles.length;
-    });
+    // Update the state with successful panels
+    await updateAdPanels(successfulPanels, emit);
   }
 
   FutureOr<void> _mapLoadAdPanelsEventToState(
@@ -204,7 +90,15 @@ class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState> {
     final sortedPanels = List<AdPanelEntity>.from(event.adPanels)
       ..sort((a, b) => a.faceNumber.compareTo(b.faceNumber));
 
-    emit(AdPanelsLoadedState(adPanels: sortedPanels, hasBeenEdited: false));
+    emit(
+      AdPanelsLoadedState(
+        adPanels: sortedPanels,
+        hasBeenEdited: false,
+        filesToUpload: const {},
+        filesToDelete: const {},
+        rawFilesToUpload: const {},
+      ),
+    );
   }
 
   FutureOr<void> _mapEditAdPanelEventToState(
@@ -212,60 +106,165 @@ class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState> {
     Emitter<AdPanelState> emit,
   ) {
     final currentState = state;
-    if (currentState is AdPanelsLoadedState) {
-      final updatedPanels = List<AdPanelEntity>.from(currentState.adPanels);
-      updatedPanels[event.index] = event.updatedPanel;
-      emit(AdPanelsLoadedState(adPanels: updatedPanels, hasBeenEdited: true));
+    if (currentState is! AdPanelsLoadedState) {
+      return null;
     }
-  }
 
-  Future<void> _updateAdPanels(
-    List<AdPanelEntity> adPanels,
-    Emitter<AdPanelState> emit,
-  ) async {
-    emit(const AdPanelUpdatingPanelsState());
-
-    final deletedFiles = <String>[];
-
-    for (final fileUrl in _imagesToDelete) {
-      await _deleteAdPanelImageUseCase(fileUrl);
-      deletedFiles.add(fileUrl);
-    }
-    _imagesToDelete.removeWhere((url) => deletedFiles.contains(url));
-
-    final updateResult = await _updateAdPanelsUseCase(adPanels);
-
-    updateResult.fold((failure) => emit(AdPanelUpdateErrorState(failure)), (_) {
-      emit(const AdPanelSuccessState());
-      emit(AdPanelsLoadedState(adPanels: adPanels, hasBeenEdited: false));
-    });
+    final updatedPanels = List<AdPanelEntity>.from(currentState.adPanels);
+    updatedPanels[event.index] = event.updatedPanel;
+    emit(currentState.copyWith(adPanels: updatedPanels, hasBeenEdited: true));
   }
 
   FutureOr<void> _mapDeleteImageEventToState(
     DeleteImageEvent event,
     Emitter<AdPanelState> emit,
   ) {
-    _imagesToDelete.add(event.fileUrl);
+    final currentState = state;
+    if (currentState is! AdPanelsLoadedState) {
+      return null;
+    }
+
+    final adPanel = event.adPanel;
+    final key = adPanel.key;
+
+    // File urls are uploaded files in firebase storage
+    if (event.url case final String url) {
+      final filesToDelete = List<String>.from(
+        currentState.filesToDelete[key] ?? [],
+      );
+      filesToDelete.add(url);
+
+      final updatedFilesToDelete = Map<String, List<String>>.from(
+        currentState.filesToDelete,
+      );
+      updatedFilesToDelete[key] = filesToDelete;
+
+      emit(
+        currentState.copyWith(
+          filesToDelete: updatedFilesToDelete,
+          hasBeenEdited: true,
+        ),
+      );
+
+      final updatedPanel = adPanel.copyWith(
+        images: List<String>.from(adPanel.images ?? [])..remove(url),
+      );
+      add(EditAdPanelEvent(event.index, updatedPanel));
+    }
+
+    // Local file which is not uploaded yet
+    if (event.file case final File file) {
+      final filesToUpload = List<File>.from(
+        currentState.filesToUpload[key] ?? [],
+      );
+      filesToUpload.remove(file);
+
+      final updatedFilesToUpload = Map<String, List<File>>.from(
+        currentState.filesToUpload,
+      );
+      updatedFilesToUpload[key] = filesToUpload;
+      emit(
+        currentState.copyWith(
+          filesToUpload: updatedFilesToUpload,
+          hasBeenEdited: true,
+        ),
+      );
+    }
+
+    // Local raw file which is not uploaded yet
+    if (event.rawFile case final Uint8List rawFile) {
+      final rawFilesToUpload = List<Uint8List>.from(
+        currentState.rawFilesToUpload[key] ?? [],
+      );
+      rawFilesToUpload.remove(rawFile);
+
+      final updatedRawFilesToUpload = Map<String, List<Uint8List>>.from(
+        currentState.rawFilesToUpload,
+      );
+      updatedRawFilesToUpload[key] = rawFilesToUpload;
+      emit(
+        currentState.copyWith(
+          rawFilesToUpload: updatedRawFilesToUpload,
+          hasBeenEdited: true,
+        ),
+      );
+    }
   }
-}
 
-class _ProcessResult {
-  _ProcessResult({required this.successfulPanels, required this.failedFiles});
+  FutureOr<void> _mapPickImageFileOnWebEventToState(
+    PickImageFileOnWebEvent event,
+    Emitter<AdPanelState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! AdPanelsLoadedState) {
+      return null;
+    }
 
-  final List<AdPanelEntity> successfulPanels;
-  final List<String> failedFiles;
+    emit(const AdPanelImageCompressionProgressState());
+    emit(currentState);
 
-  bool get hasFailures => failedFiles.isNotEmpty;
-}
+    final eitherResult = await _filePickerUseCase();
+    emit(const DismissAdPanelImageCompressionProgressState());
+    eitherResult.fold(
+      (failure) {
+        emit(AdPanelImageCompressionErrorState(filePickerFailure: failure));
+        emit(currentState);
+      },
+      (bytes) {
+        final key = event.adPanel.key;
+        final rawFilesToUpload = List<Uint8List>.from(
+          currentState.rawFilesToUpload[key] ?? [],
+        )..add(bytes);
+        final updatedRawFilesToUpload = Map<String, List<Uint8List>>.from(
+          currentState.rawFilesToUpload,
+        );
+        updatedRawFilesToUpload[key] = rawFilesToUpload;
 
-class _PanelProcessResult {
-  _PanelProcessResult({
-    this.panel,
-    required this.failedFiles,
-    required this.processedFileCount,
-  });
+        emit(
+          currentState.copyWith(
+            rawFilesToUpload: updatedRawFilesToUpload,
+            hasBeenEdited: true,
+          ),
+        );
+      },
+    );
+  }
 
-  final AdPanelEntity? panel;
-  final List<String> failedFiles;
-  final int processedFileCount;
+  FutureOr<void> _mapPickImageFileOnMobileEventToState(
+    PickImageFileOnMobileEvent event,
+    Emitter<AdPanelState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is! AdPanelsLoadedState) {
+      return null;
+    }
+
+    emit(const AdPanelImageCompressionProgressState());
+    emit(currentState);
+
+    final eitherResult = await _imagePickerUseCase(event.imagePickerSource);
+    emit(const DismissAdPanelImageCompressionProgressState());
+    eitherResult.fold(
+      (failure) {
+        emit(AdPanelImageCompressionErrorState(imagePickerFailure: failure));
+        emit(currentState);
+      },
+      (file) {
+        final filesToUpload = List<File>.from(
+          currentState.filesToUpload[event.adPanel.key] ?? [],
+        )..add(file);
+        final updatedFilesToUpload = Map<String, List<File>>.from(
+          currentState.filesToUpload,
+        );
+        updatedFilesToUpload[event.adPanel.key] = filesToUpload;
+
+        emit(
+          currentState.copyWith(
+            filesToUpload: updatedFilesToUpload,
+            hasBeenEdited: true,
+          ),
+        );
+      },
+    );
+  }
 }

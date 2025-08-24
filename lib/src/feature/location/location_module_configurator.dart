@@ -25,7 +25,7 @@ class LocationModuleConfigurator implements ModuleConfigurator {
       () => GetCurrentLocationUseCase(serviceLocator.get()),
     );
     serviceLocator.registerFactory<TrackLocationUseCase>(
-      () => TrackLocationUseCase(serviceLocator.get()),
+      () => TrackLocationUseCase(serviceLocator.get(), serviceLocator.get()),
     );
     serviceLocator.registerFactory<IsLocationBasedSearchEnabledUseCase>(
       () => IsLocationBasedSearchEnabledUseCase(serviceLocator.get()),

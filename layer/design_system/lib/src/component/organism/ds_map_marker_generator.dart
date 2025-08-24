@@ -9,13 +9,11 @@ class DsMapMarkerGenerator {
 
   static final Map<String, BitmapDescriptor> _iconCache = {};
 
-  static double get _markerSize => 36.0 * _markerSizeModifier;
+  static double get _markerSize => 36.0 * _optimalMarkerSizeModifier;
 
-  static double get _strokeWidth => 2.0 * _markerSizeModifier;
+  static double get _strokeWidth => 2.0 * _optimalMarkerSizeModifier;
 
   static double get _iconSize => _markerSize * 0.5;
-
-  static double _markerSizeModifier = 1;
 
   /// Gets the optimal marker size modifier based on the current platform
   static double get _optimalMarkerSizeModifier {
@@ -25,7 +23,7 @@ class DsMapMarkerGenerator {
     } else if (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.android) {
       // Mobile devices can handle larger markers and need them for touch interaction
-      return 2.5;
+      return 1;
     } else {
       // Desktop platforms (macOS, Windows, Linux)
       return 2.0;
@@ -44,8 +42,6 @@ class DsMapMarkerGenerator {
     if (cachedIcon != null) {
       return cachedIcon;
     }
-
-    _markerSizeModifier = _optimalMarkerSizeModifier;
 
     final pictureRecorder = PictureRecorder();
     final canvas = Canvas(pictureRecorder);
@@ -68,7 +64,8 @@ class DsMapMarkerGenerator {
     if (bytes == null) {
       return null;
     }
-    final icon = BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+
+    final icon = BitmapDescriptor.bytes(bytes.buffer.asUint8List());
     _setCachedIcon('${markerId}_$clusterCount', isSelected, icon);
     return icon;
   }
@@ -98,8 +95,8 @@ class DsMapMarkerGenerator {
     final color = isClustered
         ? theme.colorPalette.brand.primary.color
         : isSelected
-        ? theme.colorPalette.semantic.info.color
-        : theme.colorPalette.brand.secondary.color;
+        ? theme.colorPalette.brand.secondary.color
+        : theme.colorPalette.invertedBackground.primary.color;
     final paint = Paint()
       ..style = PaintingStyle.fill
       ..color = color;
@@ -117,10 +114,10 @@ class DsMapMarkerGenerator {
     bool isClustered,
   ) {
     final color = isClustered
-        ? theme.colorPalette.brand.primary.color
+        ? theme.colorPalette.brand.onPrimary.color
         : isSelected
-        ? theme.colorPalette.semantic.infoContainer.color
-        : theme.colorPalette.brand.secondary.color;
+        ? theme.colorPalette.brand.onSecondary.color
+        : theme.colorPalette.invertedBackground.onPrimary.color;
     final paint = Paint()
       ..style = PaintingStyle.stroke
       ..color = color
@@ -135,8 +132,8 @@ class DsMapMarkerGenerator {
   static void _paintIcon(Canvas canvas, DSTheme theme, bool isSelected) {
     const icon = Icons.ad_units_rounded;
     final color = isSelected
-        ? theme.colorPalette.semantic.infoContainer.color
-        : theme.colorPalette.neutral.white.color;
+        ? theme.colorPalette.brand.onSecondary.color
+        : theme.colorPalette.invertedBackground.onPrimary.color;
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
     final centreOffset = _markerSize * 0.5;
     textPainter.text = TextSpan(

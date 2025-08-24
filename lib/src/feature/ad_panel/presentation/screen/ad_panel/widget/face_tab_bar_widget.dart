@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
@@ -22,6 +23,7 @@ class FaceTabBarWidget extends StatelessWidget implements PreferredSizeWidget {
       color: context.colorPalette.background.primary.color,
       child: TabBar(
         controller: tabController,
+        isScrollable: kIsWeb,
         tabs: [
           for (final panel in adPanels)
             Tab(
