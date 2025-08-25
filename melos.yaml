@@ -226,14 +226,14 @@ scripts:
     run: |
       cd tool/privacy_policy
       echo "Deploying to Firebase"
-      firebase deploy --only hosting:privacy-policy-320bf
+      firebase deploy --only hosting:privacy-policy-19c96
     description: Host static privacy policy web page
 
   host_terms_and_conditions:
     run: |
       cd tool/terms_and_condition
       echo "Deploying to Firebase"
-      firebase deploy --only hosting:terms-and-condition-320bf
+      firebase deploy --only hosting:terms-and-condition-19c96
     description: Host static privacy policy web page
 
   # Firebase function deploy
