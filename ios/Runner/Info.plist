@@ -5,7 +5,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Global Ops</string>
+		<string>Global NL</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -48,20 +48,20 @@
 		<key>UIStatusBarHidden</key>
 		<false/>
 		<key>GoogleMapsAPIKey</key>
-        <string>$(GOOGLE_MAPS_API_KEY)</string>
-        <key>UIBackgroundModes</key>
-        <array>
-          <string>location</string>
-        </array>
-        <key>io.flutter.embedded_views_preview</key>
-        <true/>
-        <key>NSCameraUsageDescription</key>
-        <string>We need access to your camera to capture photos.</string>
-        <key>NSPhotoLibraryUsageDescription</key>
-        <string>We need access to your gallery to pick images.</string>
-        <key>NSLocationWhenInUseUsageDescription</key>
-        <string>This app needs access to your location while using the app.</string>
-        <key>NSLocationAlwaysUsageDescription</key>
-        <string>This app needs access to your location even when running in the background.</string>
+		<string>$(GOOGLE_MAPS_API_KEY)</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>location</string>
+		</array>
+		<key>io.flutter.embedded_views_preview</key>
+		<true/>
+		<key>NSCameraUsageDescription</key>
+		<string>We need access to your camera to capture photos.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>We need access to your gallery to pick images.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>This app needs access to your location while using the app.</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>This app needs access to your location even when running in the background.</string>
 	</dict>
 </plist>

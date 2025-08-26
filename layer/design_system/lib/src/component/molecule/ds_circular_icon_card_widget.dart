@@ -17,7 +17,8 @@ class DSCircularIconCardWidget extends StatelessWidget {
 
   static double getHeight(BuildContext context) {
     final double iconSize = context.iconSize;
-    final double padding = context.space(factor: context.isDesktop ? 0.5 : 1) * 2;
+    final double padding =
+        context.space(factor: context.isDesktop ? 0.5 : 1) * 2;
     return iconSize + padding;
   }
 

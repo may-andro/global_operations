@@ -1,4 +1,4 @@
-name: Host Wahl Analytics to firebase
+name: Host PWA to firebase
 
 on:
   workflow_call:

@@ -59,15 +59,16 @@ class FormCardWidget extends StatelessWidget {
                 textEditingController: passwordController,
               ),
             ],
-            additionalActions: [
-              Center(
+            additionalAction: Align(
+              alignment: Alignment.topRight,
+              child: FittedBox(
                 child: DSButtonWidget(
                   onPressed: () => ResetPasswordScreen.navigate(context),
                   label: 'Forgot Password?',
                   variant: DSButtonVariant.text,
                 ),
               ),
-            ],
+            ),
             submitButtonLabel: 'Login',
             onSubmit: () => _handleLogin(context),
             isLoading: isLoading,

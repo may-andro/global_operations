@@ -17,7 +17,7 @@ class FlexibleSpaceWidget extends StatelessWidget {
     // card padding
     final cardInternalPadding = context.space(factor: 2) * 2;
     // spacing between content
-    final contentSpacing = context.space(factor: context.isDesktop ? 0 : 4);
+    final contentSpacing = context.space(factor: context.isDesktop ? 0 : 2);
     // Calculate item height based on text style and text scale factor
     final itemTextHeight = context.getTextHeight(
       context.typography.bodyMedium,

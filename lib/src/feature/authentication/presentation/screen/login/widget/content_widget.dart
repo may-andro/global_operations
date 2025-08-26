@@ -46,46 +46,80 @@ class _ContentWidgetState extends State<ContentWidget> {
       passwordFocusNode: _passwordFocusNode,
     );
 
-    if (context.isDesktop) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const DSHorizontalSpacerWidget(5),
-          const Expanded(
-            child: AnimatedIconWidget(iconAsset: DSSvgAssetImage.iconLogoDark),
-          ),
-          Expanded(
-            flex: 2,
-            child: Center(child: SingleChildScrollView(child: formWidget)),
-          ),
-          const DSHorizontalSpacerWidget(5),
-        ],
-      );
-    }
-
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const DSVerticalSpacerWidget(5),
-            const AnimatedIconWidget(iconAsset: DSSvgAssetImage.logoDark),
-            const DSVerticalSpacerWidget(5),
-            Flexible(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.space(factor: 3),
-                  ),
-                  child: formWidget,
+      child: DSResponsiveWidthContainerWidget(
+        xsBuilder: (_) {
+          return _SmallDeviceWidget(formWidget);
+        },
+        sBuilder: (_) {
+          return _SmallDeviceWidget(formWidget);
+        },
+        mBuilder: (_) {
+          return _LargeDevice(formWidget);
+        },
+        lBuilder: (_) {
+          return _LargeDevice(formWidget);
+        },
+        xlBuilder: (_) {
+          return _LargeDevice(formWidget);
+        },
+      ),
+    );
+  }
+}
+
+class _LargeDevice extends StatelessWidget {
+  const _LargeDevice(this.formWidget);
+
+  final Widget formWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const DSHorizontalSpacerWidget(5),
+        const Expanded(
+          child: AnimatedIconWidget(iconAsset: DSSvgAssetImage.iconLogoDark),
+        ),
+        Expanded(
+          flex: 2,
+          child: Center(child: SingleChildScrollView(child: formWidget)),
+        ),
+        const DSHorizontalSpacerWidget(5),
+      ],
+    );
+  }
+}
+
+class _SmallDeviceWidget extends StatelessWidget {
+  const _SmallDeviceWidget(this.formWidget);
+
+  final Widget formWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const DSVerticalSpacerWidget(5),
+          const AnimatedIconWidget(iconAsset: DSSvgAssetImage.logoDark),
+          const DSVerticalSpacerWidget(5),
+          Flexible(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.space(factor: 3),
                 ),
+                child: formWidget,
               ),
             ),
-            const DSVerticalSpacerWidget(5),
-          ],
-        ),
+          ),
+          const DSVerticalSpacerWidget(5),
+        ],
       ),
     );
   }

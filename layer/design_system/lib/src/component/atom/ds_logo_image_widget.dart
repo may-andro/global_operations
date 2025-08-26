@@ -4,12 +4,7 @@ import 'package:design_system/src/foundation/foundation.dart';
 import 'package:flutter/material.dart';
 
 class DSLogoImageWidget extends StatelessWidget {
-  const DSLogoImageWidget._({
-    this.height,
-    this.width,
-    this.fit,
-    this.color,
-  });
+  const DSLogoImageWidget._({this.height, this.width, this.fit, this.color});
 
   factory DSLogoImageWidget.square({double? size, DSColor? color}) {
     return DSLogoImageWidget._(height: size, width: size, color: color);
