@@ -749,5 +749,17 @@
   "errorEmptyEmail": "Email can not be empty",
   "@errorEmptyEmail": {
     "description": "Message shown when email is empty"
+  },
+  "resetPasswordTitle": "Forgot your password?",
+  "@resetPasswordTitle": {
+    "description": "Reset password title in the reset password screen form"
+  },
+  "resetPasswordSubtitle": "Enter your email address below and we will send you instructions to reset your password.",
+  "@resetPasswordSubtitle": {
+    "description": "Reset password instructions subtitle in the reset password screen form"
+  },
+  "resetPasswordSuccessMessage": "Password email sent successfully. Please check your inbox.",
+  "@resetPasswordSuccessMessage": {
+    "description": "Message shown when reset password is successful"
   }
 }

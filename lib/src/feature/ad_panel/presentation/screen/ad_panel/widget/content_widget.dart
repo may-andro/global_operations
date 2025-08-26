@@ -107,8 +107,9 @@ class ContentWidget extends StatelessWidget {
                   floating: true,
                   backgroundColor:
                       context.colorPalette.background.primary.color,
+                  foregroundColor: context.colorPalette.background.primary.color,
+                  surfaceTintColor: context.colorPalette.background.primary.color,
                   expandedHeight: FlexibleSpaceWidget.height(context),
-                  automaticallyImplyLeading: false,
                   flexibleSpace: FlexibleSpaceWidget(adPanel: adPanels.first),
                   bottom: FaceTabBarWidget(
                     tabController: tabController!,

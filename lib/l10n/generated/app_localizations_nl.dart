@@ -628,4 +628,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get errorEmptyEmail => 'E-mail mag niet leeg zijn';
+
+  @override
+  String get resetPasswordTitle => 'Wachtwoord vergeten?';
+
+  @override
+  String get resetPasswordSubtitle =>
+      'Vul hieronder je e-mailadres in en we sturen je instructies om je wachtwoord te resetten.';
+
+  @override
+  String get resetPasswordSuccessMessage =>
+      'Wachtwoord-e-mail succesvol verzonden. Controleer je inbox.';
 }

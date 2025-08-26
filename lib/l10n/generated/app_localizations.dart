@@ -1096,6 +1096,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Email can not be empty'**
   String get errorEmptyEmail;
+
+  /// Reset password title in the reset password screen form
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get resetPasswordTitle;
+
+  /// Reset password instructions subtitle in the reset password screen form
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address below and we will send you instructions to reset your password.'**
+  String get resetPasswordSubtitle;
+
+  /// Message shown when reset password is successful
+  ///
+  /// In en, this message translates to:
+  /// **'Password email sent successfully. Please check your inbox.'**
+  String get resetPasswordSuccessMessage;
 }
 
 class _AppLocalizationsDelegate

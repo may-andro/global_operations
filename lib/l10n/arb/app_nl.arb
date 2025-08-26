@@ -164,5 +164,8 @@
   "password": "Wachtwoord",
   "email": "E-mail",
   "errorInvalidEmail": "Voer een geldig e-mailadres in",
-  "errorEmptyEmail": "E-mail mag niet leeg zijn"
+  "errorEmptyEmail": "E-mail mag niet leeg zijn",
+  "resetPasswordTitle": "Wachtwoord vergeten?",
+  "resetPasswordSubtitle": "Vul hieronder je e-mailadres in en we sturen je instructies om je wachtwoord te resetten.",
+  "resetPasswordSuccessMessage": "Wachtwoord-e-mail succesvol verzonden. Controleer je inbox."
 }

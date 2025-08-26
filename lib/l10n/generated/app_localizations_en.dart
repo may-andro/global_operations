@@ -621,4 +621,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorEmptyEmail => 'Email can not be empty';
+
+  @override
+  String get resetPasswordTitle => 'Forgot your password?';
+
+  @override
+  String get resetPasswordSubtitle =>
+      'Enter your email address below and we will send you instructions to reset your password.';
+
+  @override
+  String get resetPasswordSuccessMessage =>
+      'Password email sent successfully. Please check your inbox.';
 }

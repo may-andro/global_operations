@@ -70,7 +70,7 @@ class StaticFormWidget extends StatelessWidget {
     required this.onSubmit,
     this.isLoading = false,
     this.subTitle,
-    this.additionalActions = const [],
+    this.additionalAction,
   });
 
   final GlobalKey<FormState> formKey;
@@ -80,7 +80,7 @@ class StaticFormWidget extends StatelessWidget {
   final VoidCallback onSubmit;
   final bool isLoading;
   final String? subTitle;
-  final List<Widget> additionalActions;
+  final Widget? additionalAction;
 
   @override
   Widget build(BuildContext context) {
@@ -129,10 +129,9 @@ class StaticFormWidget extends StatelessWidget {
             isLoading: isLoading,
             isDisabled: isLoading,
           ),
-          const DSVerticalSpacerWidget(3),
-          if (additionalActions.isNotEmpty) ...[
-            const DSVerticalSpacerWidget(2),
-            Column(children: additionalActions),
+          if (additionalAction case final Widget additionalAction) ...[
+            const DSVerticalSpacerWidget(1),
+            additionalAction,
           ],
           const DSVerticalSpacerWidget(3),
         ],
