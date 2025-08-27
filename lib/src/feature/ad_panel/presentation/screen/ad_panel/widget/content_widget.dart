@@ -113,6 +113,7 @@ class ContentWidget extends StatelessWidget {
                       context.colorPalette.background.primary.color,
                   expandedHeight: FlexibleSpaceWidget.height(context),
                   flexibleSpace: FlexibleSpaceWidget(adPanel: adPanels.first),
+                  automaticallyImplyLeading: false,
                   bottom: FaceTabBarWidget(
                     tabController: tabController!,
                     adPanels: adPanels,

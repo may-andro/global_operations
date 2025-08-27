@@ -67,7 +67,7 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
       () => PaginatedAdPanelsBloc(serviceLocator.get()),
     );
     serviceLocator.registerFactory<ProximityAdPanelsBloc>(
-      () => ProximityAdPanelsBloc(serviceLocator.get()),
+      () => ProximityAdPanelsBloc(serviceLocator.get(), serviceLocator.get()),
     );
     serviceLocator.registerFactory<AdPanelBloc>(
       () => AdPanelBloc(

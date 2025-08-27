@@ -20,8 +20,10 @@ import 'package:global_ops/src/feature/location/location.dart';
 class ProximityAdPanelsBloc
     extends Bloc<ProximityAdPanelsEvent, ProximityAdPanelsState>
     with AdPanelsBusinessLogic, LocationUtilities, ErrorHandling {
-  ProximityAdPanelsBloc(this._getAdPanelsWithinDistanceStreamUseCase)
-    : super(const AdPanelsInitialState()) {
+  ProximityAdPanelsBloc(
+    this._getAdPanelsWithinDistanceStreamUseCase,
+    this._updateLocationBasedSearchEnabledUseCase,
+  ) : super(const AdPanelsInitialState()) {
     _registerEventHandlers();
   }
 
@@ -31,6 +33,8 @@ class ProximityAdPanelsBloc
 
   final GetAdPanelsWithinDistanceStreamUseCase
   _getAdPanelsWithinDistanceStreamUseCase;
+  final UpdateLocationBasedSearchEnabledUseCase
+  _updateLocationBasedSearchEnabledUseCase;
 
   // ============================================================================
   // PRIVATE STATE
@@ -53,6 +57,9 @@ class ProximityAdPanelsBloc
     // Location events
     on<UpdateLocationEvent>(_mapUpdateLocationEventToState);
     on<UpdateSearchRadiusEvent>(_mapUpdateSearchRadiusEventToState);
+    on<DisableLocationBasedSearchEvent>(
+      _mapDisableLocationBasedSearchEventToState,
+    );
 
     // Filtering and search events
     on<UpdateSearchQueryEvent>(_mapUpdateSearchQueryEventToState);
@@ -194,6 +201,13 @@ class ProximityAdPanelsBloc
     } catch (error) {
       emit(AdPanelsErrorState.fromError(error));
     }
+  }
+
+  FutureOr<void> _mapDisableLocationBasedSearchEventToState(
+    DisableLocationBasedSearchEvent event,
+    Emitter<ProximityAdPanelsState> emit,
+  ) async {
+    await _updateLocationBasedSearchEnabledUseCase(false);
   }
 
   // ============================================================================
@@ -345,13 +359,6 @@ class ProximityAdPanelsBloc
         location: location,
         radiusInKm: currentState.radiusInKm,
       ),
-      /*onData: (newAdPanelsList) {
-        return _buildStateFromAdPanelsList(
-          adPanelsList: newAdPanelsList,
-          searchQuery: currentState.searchQuery,
-          radiusInKm: currentState.radiusInKm,
-        );
-      },*/
       onError: (error, stackTrace) {
         return currentState.copyWith(isRefreshing: false);
       },

@@ -10,10 +10,19 @@ class GetAdPanelsFailure extends BasicFailure {
 }
 
 class GetAdPanelsParams {
-  const GetAdPanelsParams({this.page = 1, this.refresh = false});
+  const GetAdPanelsParams({
+    this.page = 1,
+    this.refresh = false,
+    this.field,
+    this.query,
+    this.limit,
+  });
 
   final int page;
   final bool refresh;
+  final String? field;
+  final String? query;
+  final int? limit;
 }
 
 class GetAdPanelsUseCase
@@ -35,6 +44,9 @@ class GetAdPanelsUseCase
     final adPanels = await _adPanelRepository.fetchAdPanels(
       page: input.page,
       refresh: input.refresh,
+      field: input.field,
+      query: input.query?.toUpperCase(),
+      limit: input.limit,
     );
 
     return Right(adPanels);

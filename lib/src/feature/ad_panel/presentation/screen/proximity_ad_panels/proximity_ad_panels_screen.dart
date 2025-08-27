@@ -1,6 +1,5 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/dto/dto.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/widget/widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/widget/widget.dart';
@@ -145,16 +144,20 @@ class _ViewTypeContentWidget extends StatelessWidget {
     final viewType = state.viewType;
     return Stack(
       children: [
-        if (viewType == AdPanelViewType.map) ...[
-          MapContentWidget(
-            location: location,
-            adPanelsMap: state.filteredAdPanelsMap,
-            isLoading: isLoading,
-            circleRadius: state.radiusInKm * 1000,
+        Positioned.fill(
+          child: IndexedStack(
+            index: viewType.positionIndex,
+            children: [
+              MapContentWidget(
+                location: location,
+                adPanelsMap: state.filteredAdPanelsMap,
+                isLoading: isLoading,
+                circleRadius: state.radiusInKm * 1000,
+              ),
+              ListContentWidget(state: state, isLoading: isLoading),
+            ],
           ),
-        ] else ...[
-          ListContentWidget(state: state, isLoading: isLoading),
-        ],
+        ),
         Positioned(
           left: 0,
           right: 0,

@@ -9,6 +9,10 @@ sealed class PaginatedAdPanelsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+// ============================================================================
+// DATA LOADING EVENTS
+// ============================================================================
+
 /// Event to load ad panels
 final class LoadAdPanelsEvent extends PaginatedAdPanelsEvent {
   const LoadAdPanelsEvent();
@@ -24,6 +28,15 @@ final class RefreshAdPanelsEvent extends PaginatedAdPanelsEvent {
   const RefreshAdPanelsEvent();
 }
 
+/// Event to retry loading after error
+final class RetryLoadAdPanelsEvent extends PaginatedAdPanelsEvent {
+  const RetryLoadAdPanelsEvent();
+}
+
+// ============================================================================
+// FILTERING AND SEARCH EVENTS
+// ============================================================================
+
 /// Event to update search query
 final class UpdateSearchQueryEvent extends PaginatedAdPanelsEvent {
   const UpdateSearchQueryEvent(this.query);
@@ -38,10 +51,29 @@ final class ClearAdPanelsFiltersEvent extends PaginatedAdPanelsEvent {
   const ClearAdPanelsFiltersEvent();
 }
 
-/// Event to retry loading after error
-final class RetryLoadAdPanelsEvent extends PaginatedAdPanelsEvent {
-  const RetryLoadAdPanelsEvent();
+/// Event to update sort option
+final class UpdateSortOptionEvent extends PaginatedAdPanelsEvent {
+  const UpdateSortOptionEvent(this.sortOption);
+
+  final AdPanelSortOption sortOption;
+
+  @override
+  List<Object?> get props => [sortOption];
 }
+
+/// Event to update the filter option
+final class UpdateFilterOptionEvent extends PaginatedAdPanelsEvent {
+  const UpdateFilterOptionEvent(this.filterOption);
+
+  final AdPanelFilterOption filterOption;
+
+  @override
+  List<Object?> get props => [filterOption];
+}
+
+// ============================================================================
+// UI STATE EVENTS
+// ============================================================================
 
 /// Event to set view type (list or map)
 final class SetAdPanelsViewTypeEvent extends PaginatedAdPanelsEvent {
@@ -51,14 +83,4 @@ final class SetAdPanelsViewTypeEvent extends PaginatedAdPanelsEvent {
 
   @override
   List<Object?> get props => [viewType];
-}
-
-/// Event to update sort option
-final class UpdateSortOptionEvent extends PaginatedAdPanelsEvent {
-  const UpdateSortOptionEvent(this.sortOption);
-
-  final AdPanelSortOption sortOption;
-
-  @override
-  List<Object?> get props => [sortOption];
 }

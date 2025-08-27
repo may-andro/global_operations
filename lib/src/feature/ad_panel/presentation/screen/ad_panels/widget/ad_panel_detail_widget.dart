@@ -2,7 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/route/route.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/ad_panel_screen.dart';
 import 'package:global_ops/src/route/route.dart';
 
 class AdPanelDetailWidget extends StatelessWidget {
@@ -116,7 +116,7 @@ class AdPanelDetailWidget extends StatelessWidget {
           (adPanel) => _ListItemWidget(
             adPanel: adPanel,
             onTap: () {
-              context.push(AdPanelModuleRoute.adPanel.path, extra: adPanels);
+              AdPanelScreen.navigate(context, adPanels: adPanels);
               context.pop();
             },
           ),

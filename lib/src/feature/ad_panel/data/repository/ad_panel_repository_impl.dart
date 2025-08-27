@@ -10,7 +10,7 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
   final AdPanelMapper _adPanelMapper;
 
   final List<AdPanelEntity> cachedAdPanels = [];
-  static const int _pageSize = 30;
+
   String? _lastDocumentId;
   bool _hasMoreData = true;
 
@@ -18,6 +18,9 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
   Future<List<AdPanelEntity>> fetchAdPanels({
     int page = 1,
     bool refresh = false,
+    String? field,
+    String? query,
+    int? limit,
   }) async {
     // If refreshing or first page, clear cache and reset pagination
     if (refresh || page == 1) {
@@ -26,7 +29,11 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
 
     // If requesting cached data and we have it, return it
     if (!refresh && page == 1 && cachedAdPanels.isNotEmpty) {
-      return cachedAdPanels.take(_pageSize).toList();
+      if (limit != null && limit < cachedAdPanels.length) {
+        return cachedAdPanels.take(limit).toList();
+      }
+
+      return cachedAdPanels;
     }
 
     // If no more data available, return empty list
@@ -37,8 +44,12 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
     try {
       final dataMaps = await _fbFirestoreController.getCollectionQuerySnapshot(
         _collectionPath,
-        limit: _pageSize,
+        field: field,
+        isGreaterThanOrEqualTo: query,
+        isLessThan: query != null ? '$query\uf8ff' : null,
+        limit: limit,
         startAfterDocumentId: _lastDocumentId,
+        orderBy: _lastDocumentId != null ? field : null,
       );
 
       if (dataMaps.isEmpty) {
@@ -52,7 +63,7 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
           .toList();
 
       // Update pagination state
-      if (remotePanels.length < _pageSize) {
+      if(limit == null || (remotePanels.length < limit)) {
         _hasMoreData = false;
       }
 
@@ -69,7 +80,6 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
     }
   }
 
-  // Make clearCache private to hide implementation details
   void _clearCache() {
     cachedAdPanels.clear();
     _lastDocumentId = null;

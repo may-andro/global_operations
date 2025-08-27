@@ -1,16 +1,25 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/route/route.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/exit_warning_widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/submit_button_widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/widget/widget.dart';
 import 'package:global_ops/src/module_injector/app_module_configurator.dart';
+import 'package:global_ops/src/route/route.dart';
 
 class AdPanelScreen extends StatelessWidget {
   const AdPanelScreen({required this.adPanels, super.key});
 
   final List<AdPanelEntity> adPanels;
+
+  static void navigate(
+    BuildContext context, {
+    required List<AdPanelEntity> adPanels,
+  }) {
+    context.push(AdPanelModuleRoute.adPanel.path, extra: adPanels);
+  }
 
   @override
   Widget build(BuildContext context) {

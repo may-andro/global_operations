@@ -1114,6 +1114,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password email sent successfully. Please check your inbox.'**
   String get resetPasswordSuccessMessage;
+
+  /// Label for search options section
+  ///
+  /// In en, this message translates to:
+  /// **'Search Options'**
+  String get adPanelSearchFilterTitle;
+
+  /// Filter option to search by object number
+  ///
+  /// In en, this message translates to:
+  /// **'Object Number'**
+  String get adPanelSearchFilterObjectNumber;
+
+  /// Filter option description to search by object number
+  ///
+  /// In en, this message translates to:
+  /// **'Search based on object number'**
+  String get adPanelSearchFilterObjectNumberDescription;
+
+  /// Text field hint to search by object number
+  ///
+  /// In en, this message translates to:
+  /// **'Search object number'**
+  String get adPanelSearchFilterObjectNumberHint;
+
+  /// Filter option to search by street name
+  ///
+  /// In en, this message translates to:
+  /// **'Street'**
+  String get adPanelSearchFilterStreet;
+
+  /// Filter option description to search by street name
+  ///
+  /// In en, this message translates to:
+  /// **'Search based on street name'**
+  String get adPanelSearchFilterStreetDescription;
+
+  /// Text field hint to search by street name
+  ///
+  /// In en, this message translates to:
+  /// **'Search street'**
+  String get adPanelSearchFilterStreetHint;
+
+  /// Filter option to search by municipality name
+  ///
+  /// In en, this message translates to:
+  /// **'Municipality'**
+  String get adPanelSearchFilterMunicipality;
+
+  /// Filter option description to search by municipality name
+  ///
+  /// In en, this message translates to:
+  /// **'Search based on municipality name'**
+  String get adPanelSearchFilterMunicipalityDescription;
+
+  /// Text field hint to search by municipality name
+  ///
+  /// In en, this message translates to:
+  /// **'Search municipality'**
+  String get adPanelSearchFilterMunicipalityHint;
+
+  /// Button label for disabling the location based search
+  ///
+  /// In en, this message translates to:
+  /// **'Disable Location Based Search'**
+  String get adPanelDisableLocationBasedSearch;
+
+  /// Message for no panel found in given radius
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn’t find any ad panels nearby. Try expanding your search radius or turn off location filtering to explore all panels.'**
+  String get adPanelNoPanelFoundWithinRadius;
+
+  /// Message for no panel found for search filter within in given radius
+  ///
+  /// In en, this message translates to:
+  /// **'No ad panels found with your current filters and radius. You can adjust the filters, increase the radius, or turn off location-based search to view all available panels.'**
+  String get adPanelNoPanelFoundWithinRadiusFilter;
 }
 
 class _AppLocalizationsDelegate

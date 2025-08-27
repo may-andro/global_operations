@@ -7,6 +7,8 @@ class SearchWidget extends StatelessWidget {
     required this.searchQuery,
     required this.onSearch,
     this.isEnabled = true,
+    this.hintText,
+    this.focusNode,
     super.key,
   });
 
@@ -14,13 +16,16 @@ class SearchWidget extends StatelessWidget {
   final String searchQuery;
   final void Function(String) onSearch;
   final bool isEnabled;
+  final String? hintText;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: searchController,
+      focusNode: focusNode,
       decoration: InputDecoration(
-        hintText: context.localizations.adPanelSearchHint,
+        hintText: hintText ?? context.localizations.adPanelSearchHint,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: searchQuery.isNotEmpty
             ? IconButton(
