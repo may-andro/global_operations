@@ -63,7 +63,7 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
           .toList();
 
       // Update pagination state
-      if(limit == null || (remotePanels.length < limit)) {
+      if (limit == null || (remotePanels.length < limit)) {
         _hasMoreData = false;
       }
 
