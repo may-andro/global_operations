@@ -639,4 +639,49 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get resetPasswordSuccessMessage =>
       'Wachtwoord-e-mail succesvol verzonden. Controleer je inbox.';
+
+  @override
+  String get adPanelSearchFilterTitle => 'Zoekopties';
+
+  @override
+  String get adPanelSearchFilterObjectNumber => 'Objectnummer';
+
+  @override
+  String get adPanelSearchFilterObjectNumberDescription =>
+      'Zoeken op basis van objectnummer';
+
+  @override
+  String get adPanelSearchFilterObjectNumberHint => 'Zoek objectnummer';
+
+  @override
+  String get adPanelSearchFilterStreet => 'Straat';
+
+  @override
+  String get adPanelSearchFilterStreetDescription =>
+      'Zoeken op basis van straatnaam';
+
+  @override
+  String get adPanelSearchFilterStreetHint => 'Zoek straat';
+
+  @override
+  String get adPanelSearchFilterMunicipality => 'Gemeente';
+
+  @override
+  String get adPanelSearchFilterMunicipalityDescription =>
+      'Zoeken op basis van gemeentenaam';
+
+  @override
+  String get adPanelSearchFilterMunicipalityHint => 'Zoek gemeente';
+
+  @override
+  String get adPanelDisableLocationBasedSearch =>
+      'Locatiegebaseerd zoeken uitschakelen';
+
+  @override
+  String get adPanelNoPanelFoundWithinRadius =>
+      'We hebben geen reclamepanelen in de buurt gevonden. Probeer de zoekradius te vergroten of schakel locatiegebaseerd zoeken uit om alle panelen te bekijken.';
+
+  @override
+  String get adPanelNoPanelFoundWithinRadiusFilter =>
+      'Er zijn geen reclamepanelen gevonden met je huidige filters en radius. Pas de filters aan, vergroot de radius of schakel locatiegebaseerd zoeken uit om alle beschikbare panelen te zien.';
 }

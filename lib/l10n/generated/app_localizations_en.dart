@@ -632,4 +632,49 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get resetPasswordSuccessMessage =>
       'Password email sent successfully. Please check your inbox.';
+
+  @override
+  String get adPanelSearchFilterTitle => 'Search Options';
+
+  @override
+  String get adPanelSearchFilterObjectNumber => 'Object Number';
+
+  @override
+  String get adPanelSearchFilterObjectNumberDescription =>
+      'Search based on object number';
+
+  @override
+  String get adPanelSearchFilterObjectNumberHint => 'Search object number';
+
+  @override
+  String get adPanelSearchFilterStreet => 'Street';
+
+  @override
+  String get adPanelSearchFilterStreetDescription =>
+      'Search based on street name';
+
+  @override
+  String get adPanelSearchFilterStreetHint => 'Search street';
+
+  @override
+  String get adPanelSearchFilterMunicipality => 'Municipality';
+
+  @override
+  String get adPanelSearchFilterMunicipalityDescription =>
+      'Search based on municipality name';
+
+  @override
+  String get adPanelSearchFilterMunicipalityHint => 'Search municipality';
+
+  @override
+  String get adPanelDisableLocationBasedSearch =>
+      'Disable Location Based Search';
+
+  @override
+  String get adPanelNoPanelFoundWithinRadius =>
+      'We couldn’t find any ad panels nearby. Try expanding your search radius or turn off location filtering to explore all panels.';
+
+  @override
+  String get adPanelNoPanelFoundWithinRadiusFilter =>
+      'No ad panels found with your current filters and radius. You can adjust the filters, increase the radius, or turn off location-based search to view all available panels.';
 }

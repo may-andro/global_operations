@@ -15,11 +15,6 @@ class AdPanelModuleRouteConfigurator implements ModuleRouteConfigurator {
           return AdPanelScreen(adPanels: adPanels ?? const []);
         },
       ),
-      GoRoute(
-        name: AdPanelModuleRoute.searchAdPanels.name,
-        path: AdPanelModuleRoute.searchAdPanels.path,
-        builder: (context, state) => const SearchAdPanelsScreen(),
-      ),
     ];
   }
 

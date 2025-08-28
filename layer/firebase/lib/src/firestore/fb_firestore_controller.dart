@@ -30,6 +30,7 @@ class FbFirestoreController {
     Object? isEqualTo,
     Object? isLessThan,
     Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
     Object? isNotEqualTo,
     bool? descending,
     String? orderBy,
@@ -51,6 +52,12 @@ class FbFirestoreController {
       if (field != null && isGreaterThan != null) {
         query = query.where(field, isGreaterThan: isGreaterThan);
       }
+      if (field != null && isGreaterThanOrEqualTo != null) {
+        query = query.where(
+          field,
+          isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        );
+      }
       if (field != null && isNotEqualTo != null) {
         query = query.where(field, isNotEqualTo: isNotEqualTo);
       }
@@ -59,6 +66,14 @@ class FbFirestoreController {
       if (orderBy != null) {
         query = query.orderBy(orderBy, descending: descending ?? false);
       }
+      /* // Add ordering if specified, or if paginating with a field filter
+      String? effectiveOrderBy = orderBy;
+      if (effectiveOrderBy == null && field != null && startAfterDocumentId != null) {
+        effectiveOrderBy = field;
+      }
+      if (effectiveOrderBy != null) {
+        query = query.orderBy(effectiveOrderBy, descending: descending ?? false);
+      }*/
 
       // Add limit if specified
       if (limit != null) {

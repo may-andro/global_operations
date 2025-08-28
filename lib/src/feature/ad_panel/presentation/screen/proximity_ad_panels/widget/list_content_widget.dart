@@ -2,9 +2,11 @@ import 'dart:ui';
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/widget/widget.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/bloc.dart';
+import 'package:global_ops/src/widget/widget.dart';
 
 class ListContentWidget extends StatefulWidget {
   const ListContentWidget({
@@ -21,7 +23,7 @@ class ListContentWidget extends StatefulWidget {
 }
 
 class _ListContentWidgetState extends State<ListContentWidget> {
-  late ScrollController _scrollController;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
@@ -47,26 +49,40 @@ class _ListContentWidgetState extends State<ListContentWidget> {
       child: Stack(
         children: [
           if (widget.state.isFilteredEmpty && widget.state.hasActiveFilters)
-            NoResultFoundWidget(
-              onRefresh: () {
+            InfoCardWidget(
+              icon: Icons.search_off,
+              iconColor: context.colorPalette.neutral.grey1,
+              title: context.localizations.adPanelNoResultTitle,
+              description:
+                  context.localizations.adPanelNoPanelFoundWithinRadiusFilter,
+              action: context.localizations.adPanelDisableLocationBasedSearch,
+              actionIcon: Icons.location_off_rounded,
+              onPressed: () {
                 context.read<ProximityAdPanelsBloc>().add(
-                  const ClearAdPanelsFiltersEvent(),
+                  const DisableLocationBasedSearchEvent(),
                 );
               },
             )
           else if (panelObjectNumbers.isEmpty)
-            EmptyContentWidget(
-              onRefresh: () {
+            InfoCardWidget(
+              icon: Icons.inbox_outlined,
+              iconColor: context.colorPalette.neutral.grey1,
+              title: context.localizations.adPanelEmptyTitle,
+              description:
+                  context.localizations.adPanelNoPanelFoundWithinRadius,
+              action: context.localizations.adPanelDisableLocationBasedSearch,
+              actionIcon: Icons.location_off_rounded,
+              onPressed: () {
                 context.read<ProximityAdPanelsBloc>().add(
-                  const RefreshAdPanelsEvent(),
+                  const DisableLocationBasedSearchEvent(),
                 );
               },
             )
           else
             SafeArea(
-              child: context.isDesktop
-                  ? _buildGridView(context, panelObjectNumbers, panelsMap)
-                  : _buildListView(context, panelObjectNumbers, panelsMap),
+              child: context.isMobile
+                  ? _buildListView(context, panelObjectNumbers, panelsMap)
+                  : _buildGridView(context, panelObjectNumbers, panelsMap),
             ),
 
           AnimatedSwitcher(
@@ -87,7 +103,6 @@ class _ListContentWidgetState extends State<ListContentWidget> {
                   )
                 : const SizedBox.shrink(key: ValueKey('not_loading')),
           ),
-          //if (widget.state.isRefreshing) const LoadingContentWidget(),
         ],
       ),
     );

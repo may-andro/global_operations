@@ -5,6 +5,13 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/wi
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/widget/radius_button_widget.dart';
 
+const List<AdPanelSortOption> _sortOptions = [
+  DistanceSortOption(),
+  LastEditedSortOption(),
+  ObjectNumberSortOption(),
+  StreetSortOption(),
+];
+
 class FilterSectionWidget extends StatefulWidget {
   const FilterSectionWidget({super.key, required this.isEnabled});
 
@@ -13,13 +20,6 @@ class FilterSectionWidget extends StatefulWidget {
   @override
   State<FilterSectionWidget> createState() => _FilterSectionWidgetState();
 }
-
-const List<AdPanelSortOption> _sortOptions = [
-  DistanceSortOption(),
-  LastEditedSortOption(),
-  ObjectNumberSortOption(),
-  StreetSortOption(),
-];
 
 class _FilterSectionWidgetState extends State<FilterSectionWidget> {
   late TextEditingController _searchController;
@@ -95,7 +95,6 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
           children: [
             _buildSearchAndSortRow(filterData),
             const DSVerticalSpacerWidget(1),
-            //RadiusSliderWidget(isEnabled: widget.isEnabled),
             ResultCountWidget(
               count: filterData.resultCount,
               radiusInKm: filterData.radiusInKm,

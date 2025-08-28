@@ -58,6 +58,11 @@ final class UpdateSearchRadiusEvent extends ProximityAdPanelsEvent {
   List<Object?> get props => [radiusInKm];
 }
 
+/// Event to disable location based search and show all ad panels
+final class DisableLocationBasedSearchEvent extends ProximityAdPanelsEvent {
+  const DisableLocationBasedSearchEvent();
+}
+
 // ============================================================================
 // FILTERING AND SEARCH EVENTS
 // ============================================================================

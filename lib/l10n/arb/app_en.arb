@@ -591,7 +591,6 @@
   "@errorWeakPassword": {
     "description": "Message shown when password strength is insufficient"
   },
-
   "close": "Close",
   "@close": {
     "description": "Generic close button text"
@@ -761,5 +760,57 @@
   "resetPasswordSuccessMessage": "Password email sent successfully. Please check your inbox.",
   "@resetPasswordSuccessMessage": {
     "description": "Message shown when reset password is successful"
+  },
+  "adPanelSearchFilterTitle": "Search Options",
+  "@adPanelSearchFilterTitle": {
+    "description": "Label for search options section"
+  },
+  "adPanelSearchFilterObjectNumber": "Object Number",
+  "@adPanelSearchFilterObjectNumber": {
+    "description": "Filter option to search by object number"
+  },
+  "adPanelSearchFilterObjectNumberDescription": "Search based on object number",
+  "@adPanelSearchFilterObjectNumberDescription": {
+    "description": "Filter option description to search by object number"
+  },
+  "adPanelSearchFilterObjectNumberHint": "Search object number",
+  "@adPanelSearchFilterObjectNumberHint": {
+    "description": "Text field hint to search by object number"
+  },
+  "adPanelSearchFilterStreet": "Street",
+  "@adPanelSearchFilterStreet": {
+    "description": "Filter option to search by street name"
+  },
+  "adPanelSearchFilterStreetDescription": "Search based on street name",
+  "@adPanelSearchFilterStreetDescription": {
+    "description": "Filter option description to search by street name"
+  },
+  "adPanelSearchFilterStreetHint": "Search street",
+  "@adPanelSearchFilterStreetHint": {
+    "description": "Text field hint to search by street name"
+  },
+  "adPanelSearchFilterMunicipality": "Municipality",
+  "@adPanelSearchFilterMunicipality": {
+    "description": "Filter option to search by municipality name"
+  },
+  "adPanelSearchFilterMunicipalityDescription": "Search based on municipality name",
+  "@adPanelSearchFilterMunicipalityDescription": {
+    "description": "Filter option description to search by municipality name"
+  },
+  "adPanelSearchFilterMunicipalityHint": "Search municipality",
+  "@adPanelSearchFilterMunicipalityHint": {
+    "description": "Text field hint to search by municipality name"
+  },
+  "adPanelDisableLocationBasedSearch": "Disable Location Based Search",
+  "@adPanelDisableLocationBasedSearch": {
+    "description": "Button label for disabling the location based search"
+  },
+  "adPanelNoPanelFoundWithinRadius": "We couldn’t find any ad panels nearby. Try expanding your search radius or turn off location filtering to explore all panels.",
+  "@adPanelNoPanelFoundWithinRadius": {
+    "description": "Message for no panel found in given radius"
+  },
+  "adPanelNoPanelFoundWithinRadiusFilter": "No ad panels found with your current filters and radius. You can adjust the filters, increase the radius, or turn off location-based search to view all available panels.",
+  "@adPanelNoPanelFoundWithinRadiusFilter": {
+    "description": "Message for no panel found for search filter within in given radius"
   }
 }

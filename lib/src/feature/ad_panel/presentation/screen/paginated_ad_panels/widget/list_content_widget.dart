@@ -5,16 +5,21 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/wi
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/paginated_ad_panels/bloc/bloc.dart';
 
 class ListContentWidget extends StatefulWidget {
-  const ListContentWidget({super.key, required this.state});
+  const ListContentWidget({
+    super.key,
+    required this.state,
+    required this.isLoading,
+  });
 
   final AdPanelsLoadedState state;
+  final bool isLoading;
 
   @override
   State<ListContentWidget> createState() => _ListContentWidgetState();
 }
 
 class _ListContentWidgetState extends State<ListContentWidget> {
-  late ScrollController _scrollController;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
@@ -45,13 +50,17 @@ class _ListContentWidgetState extends State<ListContentWidget> {
   Widget build(BuildContext context) {
     final panelsMap = widget.state.filteredAdPanelsMap;
     final panelObjectNumbers = panelsMap.keys.toList();
+
     return RefreshIndicator(
       onRefresh: () async {
         context.read<PaginatedAdPanelsBloc>().add(const RefreshAdPanelsEvent());
       },
       child: Stack(
         children: [
-          if (widget.state.isFilteredEmpty && widget.state.hasActiveFilters)
+          if (widget.isLoading)
+            DSLoadingWidget(size: context.space(factor: 5))
+          else if (widget.state.isFilteredEmpty &&
+              widget.state.hasActiveFilters)
             NoResultFoundWidget(
               onRefresh: () {
                 context.read<PaginatedAdPanelsBloc>().add(
@@ -69,18 +78,68 @@ class _ListContentWidgetState extends State<ListContentWidget> {
             )
           else
             SafeArea(
-              child: _ListWidget(
-                panelsMap: panelsMap,
-                panelObjectNumbers: panelObjectNumbers,
-                scrollController: _scrollController,
-                hasMoreData: widget.state.hasMoreData,
-                isLoadingMore: widget.state.isLoadingMore,
-              ),
+              child: context.isMobile
+                  ? _ListWidget(
+                      panelsMap: panelsMap,
+                      panelObjectNumbers: panelObjectNumbers,
+                      scrollController: _scrollController,
+                      hasMoreData: widget.state.hasMoreData,
+                      isLoadingMore: widget.state.isLoadingMore,
+                    )
+                  : _GridWidget(
+                      panelsMap: panelsMap,
+                      panelObjectNumbers: panelObjectNumbers,
+                      scrollController: _scrollController,
+                      hasMoreData: widget.state.hasMoreData,
+                      isLoadingMore: widget.state.isLoadingMore,
+                    ),
             ),
-
-          // Show refresh indicator overlay
-          if (widget.state.isRefreshing) const LoadingContentWidget(),
         ],
+      ),
+    );
+  }
+}
+
+class _GridWidget extends StatelessWidget {
+  const _GridWidget({
+    required this.panelsMap,
+    required this.panelObjectNumbers,
+    required this.scrollController,
+    required this.hasMoreData,
+    required this.isLoadingMore,
+  });
+
+  final Map<String, List<AdPanelEntity>> panelsMap;
+  final List<String> panelObjectNumbers;
+  final ScrollController scrollController;
+  final bool hasMoreData;
+  final bool isLoadingMore;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(context.space(factor: 2)),
+      child: GridView.builder(
+        controller: scrollController,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: context.crossAxisCount,
+          crossAxisSpacing: context.space(),
+          mainAxisExtent: AdPanelWidget.getHeight(context),
+        ),
+        itemCount: panelObjectNumbers.length + (hasMoreData ? 1 : 0),
+        itemBuilder: (context, index) {
+          // Show loading indicator at the bottom
+          if (index == panelObjectNumbers.length) {
+            return _LoadingMoreWidget(isLoading: isLoadingMore);
+          }
+
+          final key = panelObjectNumbers[index];
+          final adPanels = panelsMap[key];
+          if (adPanels == null || adPanels.isEmpty) {
+            return const SizedBox.shrink();
+          }
+          return AdPanelWidget(adPanels: adPanels);
+        },
       ),
     );
   }
@@ -138,5 +197,22 @@ class _LoadingMoreWidget extends StatelessWidget {
       padding: EdgeInsets.all(context.space(factor: 2)),
       child: Center(child: DSLoadingWidget(size: context.space(factor: 3))),
     );
+  }
+}
+
+extension on BuildContext {
+  int get crossAxisCount {
+    switch (deviceWidth) {
+      case DSDeviceWidthResolution.xs:
+        return 1;
+      case DSDeviceWidthResolution.s:
+        return 1;
+      case DSDeviceWidthResolution.m:
+        return 2;
+      case DSDeviceWidthResolution.l:
+        return 3;
+      case DSDeviceWidthResolution.xl:
+        return 4;
+    }
   }
 }

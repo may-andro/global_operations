@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/dto/dto.dart';
 
-class SortButtonWidget extends StatelessWidget {
-  const SortButtonWidget({
-    required this.sortOptions,
+const List<AdPanelFilterOption> _filterOptions = [
+  ObjectNumberFilterOption(),
+  StreetFilterOption(),
+  MunicipalityFilterOption(),
+];
+
+class FilterButtonWidget extends StatelessWidget {
+  const FilterButtonWidget({
     required this.selected,
     required this.onSelected,
     required this.isVisible,
@@ -13,9 +18,8 @@ class SortButtonWidget extends StatelessWidget {
     super.key,
   });
 
-  final List<AdPanelSortOption> sortOptions;
-  final AdPanelSortOption selected;
-  final void Function(AdPanelSortOption) onSelected;
+  final AdPanelFilterOption selected;
+  final void Function(AdPanelFilterOption) onSelected;
   final bool isVisible;
   final bool isEnabled;
 
@@ -28,21 +32,20 @@ class SortButtonWidget extends StatelessWidget {
       child: isVisible
           ? IconButton(
               icon: Icon(
-                Icons.sort,
+                Icons.filter_alt_rounded,
                 color: isEnabled
                     ? context.colorPalette.background.onPrimary.color
                     : context.colorPalette.neutral.grey5.color,
               ),
-              tooltip: context.localizations.adPanelSortTooltip,
               onPressed: isEnabled
                   ? () async {
                       final option =
                           await _OptionsWidget.showAsDialogOrBottomSheet(
                             context,
                             selected,
-                            sortOptions,
+                            _filterOptions,
                           );
-                      if (option case final AdPanelSortOption option) {
+                      if (option case final AdPanelFilterOption option) {
                         onSelected(option);
                       }
                     }
@@ -54,51 +57,54 @@ class SortButtonWidget extends StatelessWidget {
 }
 
 class _OptionsWidget extends StatelessWidget {
-  const _OptionsWidget({required this.sortOptions, this.selected});
+  const _OptionsWidget({required this.filterOptions, this.selected});
 
-  final AdPanelSortOption? selected;
-  final List<AdPanelSortOption> sortOptions;
+  final AdPanelFilterOption? selected;
+  final List<AdPanelFilterOption> filterOptions;
 
-  static Future<AdPanelSortOption?> _showAsBottomSheet(
+  static Future<AdPanelFilterOption?> _showAsBottomSheet(
     BuildContext context,
-    AdPanelSortOption selected,
-    List<AdPanelSortOption> sortOptions,
+    AdPanelFilterOption selected,
+    List<AdPanelFilterOption> filterOptions,
   ) {
-    return showModalBottomSheet<AdPanelSortOption>(
+    return showModalBottomSheet<AdPanelFilterOption>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => DSBottomSheetWidget(
-        child: _OptionsWidget(selected: selected, sortOptions: sortOptions),
+        child: _OptionsWidget(selected: selected, filterOptions: filterOptions),
       ),
     );
   }
 
-  static Future<AdPanelSortOption?> _showAsDialog(
+  static Future<AdPanelFilterOption?> _showAsDialog(
     BuildContext context,
-    AdPanelSortOption selected,
-    List<AdPanelSortOption> sortOptions,
+    AdPanelFilterOption selected,
+    List<AdPanelFilterOption> filterOptions,
   ) {
-    return showDialog<AdPanelSortOption>(
+    return showDialog<AdPanelFilterOption>(
       context: context,
       builder: (context) {
         return DSDialogWidget(
-          child: _OptionsWidget(selected: selected, sortOptions: sortOptions),
+          child: _OptionsWidget(
+            selected: selected,
+            filterOptions: filterOptions,
+          ),
         );
       },
     );
   }
 
-  static Future<AdPanelSortOption?> showAsDialogOrBottomSheet(
+  static Future<AdPanelFilterOption?> showAsDialogOrBottomSheet(
     BuildContext context,
-    AdPanelSortOption selected,
-    List<AdPanelSortOption> sortOptions,
+    AdPanelFilterOption selected,
+    List<AdPanelFilterOption> filterOptions,
   ) {
     if (context.isDesktop) {
-      return _showAsDialog(context, selected, sortOptions);
+      return _showAsDialog(context, selected, filterOptions);
     }
 
-    return _showAsBottomSheet(context, selected, sortOptions);
+    return _showAsBottomSheet(context, selected, filterOptions);
   }
 
   @override
@@ -111,15 +117,15 @@ class _OptionsWidget extends StatelessWidget {
           children: [
             const DSVerticalSpacerWidget(1),
             DSTextWidget(
-              context.localizations.adPanelSortingOptions,
+              context.localizations.adPanelSearchFilterTitle,
               style: context.typography.titleMedium,
               color: context.colorPalette.background.onPrimary,
             ),
             const DSVerticalSpacerWidget(2),
-            ...sortOptions.map((sortOption) {
+            ...filterOptions.map((filterOption) {
               return _ItemWidget(
-                isSelected: selected == sortOption,
-                sortOption: sortOption,
+                isSelected: selected == filterOption,
+                filterOption: filterOption,
               );
             }),
           ],
@@ -130,10 +136,10 @@ class _OptionsWidget extends StatelessWidget {
 }
 
 class _ItemWidget extends StatelessWidget {
-  const _ItemWidget({required this.isSelected, required this.sortOption});
+  const _ItemWidget({required this.isSelected, required this.filterOption});
 
   final bool isSelected;
-  final AdPanelSortOption sortOption;
+  final AdPanelFilterOption filterOption;
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +148,7 @@ class _ItemWidget extends StatelessWidget {
     final color = isSelected ? colorSelected : colorUnselected;
     return ListTile(
       leading: DSCircularIconCardWidget(
-        icon: sortOption.icon,
+        icon: filterOption.icon,
         color: isSelected
             ? context.colorPalette.brand.onPrimary
             : context.colorPalette.invertedBackground.onPrimary,
@@ -151,16 +157,16 @@ class _ItemWidget extends StatelessWidget {
             : context.colorPalette.invertedBackground.primary,
       ),
       title: DSTextWidget(
-        sortOption.displayName(context),
+        filterOption.displayName(context),
         style: context.typography.titleMedium,
         color: color,
       ),
       subtitle: DSTextWidget(
-        sortOption.displayDescription(context),
+        filterOption.displayDescription(context),
         style: context.typography.labelSmall,
         color: color,
       ),
-      onTap: () => Navigator.pop(context, sortOption),
+      onTap: () => Navigator.pop(context, filterOption),
     );
   }
 }

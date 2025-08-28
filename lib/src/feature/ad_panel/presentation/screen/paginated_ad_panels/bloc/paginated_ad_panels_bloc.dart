@@ -10,21 +10,49 @@ class PaginatedAdPanelsBloc
     extends Bloc<PaginatedAdPanelsEvent, PaginatedAdPanelsState> {
   PaginatedAdPanelsBloc(this._getAdPanelsUseCase)
     : super(const AdPanelsInitialState()) {
-    on<LoadAdPanelsEvent>(_mapLoadAdPanelsEventToState);
-    on<LoadMoreAdPanelsEvent>(_mapLoadMoreAdPanelsEventToState);
-    on<RefreshAdPanelsEvent>(_mapRefreshAdPanelsEventToState);
-    on<UpdateSearchQueryEvent>(_mapUpdateSearchQueryEventToState);
-    on<ClearAdPanelsFiltersEvent>(_mapClearAdPanelsFiltersEventToState);
-    on<RetryLoadAdPanelsEvent>(_mapRetryLoadAdPanelsEventToState);
-    on<SetAdPanelsViewTypeEvent>(_mapSetAdPanelsViewTypeEventToState);
-    on<UpdateSortOptionEvent>(_mapUpdateSortOptionEventToState);
+    _registerEventHandlers();
   }
+
+  // ============================================================================
+  // DEPENDENCIES
+  // ============================================================================
 
   final GetAdPanelsUseCase _getAdPanelsUseCase;
 
+  // ============================================================================
+  // PRIVATE STATE
+  // ============================================================================
+
   AdPanelSortOption _currentSortOption = const LastEditedSortOption();
+  AdPanelFilterOption _currentFilterOption = const ObjectNumberFilterOption();
   AdPanelViewType _currentViewType = AdPanelViewType.list;
 
+  // ============================================================================
+  // EVENT REGISTRATION
+  // ============================================================================
+
+  void _registerEventHandlers() {
+    // Data loading events
+    on<LoadAdPanelsEvent>(_mapLoadAdPanelsEventToState);
+    on<LoadMoreAdPanelsEvent>(_mapLoadMoreAdPanelsEventToState);
+    on<RefreshAdPanelsEvent>(_mapRefreshAdPanelsEventToState);
+    on<RetryLoadAdPanelsEvent>(_mapRetryLoadAdPanelsEventToState);
+
+    // Filtering and search events
+    on<UpdateSearchQueryEvent>(_mapUpdateSearchQueryEventToState);
+    on<ClearAdPanelsFiltersEvent>(_mapClearAdPanelsFiltersEventToState);
+    on<UpdateSortOptionEvent>(_mapUpdateSortOptionEventToState);
+    on<UpdateFilterOptionEvent>(_mapUpdateFilterOptionEventToState);
+
+    // UI state events
+    on<SetAdPanelsViewTypeEvent>(_mapSetAdPanelsViewTypeEventToState);
+  }
+
+  // ============================================================================
+  // DATA LOADING EVENT HANDLERS
+  // ============================================================================
+
+  /// Handles initial loading of ad panels
   Future<void> _mapLoadAdPanelsEventToState(
     LoadAdPanelsEvent event,
     Emitter<PaginatedAdPanelsState> emit,
@@ -33,6 +61,7 @@ class PaginatedAdPanelsBloc
     await _loadAndHandleAdPanels(emit, searchQuery: '');
   }
 
+  /// Handles refreshing of ad panels data
   Future<void> _mapRefreshAdPanelsEventToState(
     RefreshAdPanelsEvent event,
     Emitter<PaginatedAdPanelsState> emit,
@@ -48,40 +77,7 @@ class PaginatedAdPanelsBloc
     await _loadAndHandleAdPanels(emit, searchQuery: searchQuery);
   }
 
-  void _mapUpdateSearchQueryEventToState(
-    UpdateSearchQueryEvent event,
-    Emitter<PaginatedAdPanelsState> emit,
-  ) {
-    final currentState = state;
-    if (currentState is AdPanelsLoadedState) {
-      final filteredData = _applyFiltersMap(
-        currentState.adPanelsMap,
-        event.query,
-      );
-      emit(
-        currentState.copyWith(
-          filteredAdPanelsMap: filteredData,
-          searchQuery: event.query,
-        ),
-      );
-    }
-  }
-
-  void _mapClearAdPanelsFiltersEventToState(
-    ClearAdPanelsFiltersEvent event,
-    Emitter<PaginatedAdPanelsState> emit,
-  ) {
-    final currentState = state;
-    if (currentState is AdPanelsLoadedState) {
-      emit(
-        currentState.copyWith(
-          filteredAdPanelsMap: currentState.adPanelsMap,
-          searchQuery: '',
-        ),
-      );
-    }
-  }
-
+  /// Handles retry after error
   Future<void> _mapRetryLoadAdPanelsEventToState(
     RetryLoadAdPanelsEvent event,
     Emitter<PaginatedAdPanelsState> emit,
@@ -89,25 +85,93 @@ class PaginatedAdPanelsBloc
     add(const LoadAdPanelsEvent());
   }
 
-  void _mapSetAdPanelsViewTypeEventToState(
-    SetAdPanelsViewTypeEvent event,
+  /// Handles loading more ad panels for pagination
+  Future<void> _mapLoadMoreAdPanelsEventToState(
+    LoadMoreAdPanelsEvent event,
     Emitter<PaginatedAdPanelsState> emit,
-  ) {
+  ) async {
     final currentState = state;
-    _currentViewType = event.viewType;
+    if (currentState is! AdPanelsLoadedState ||
+        currentState.isLoadingMore ||
+        !currentState.hasMoreData) {
+      return;
+    }
+    emit(currentState.copyWith(isLoadingMore: true));
+    final nextPage = currentState.currentPage + 1;
+    final adPanelsEither = await _getAdPanelsUseCase(
+      GetAdPanelsParams(
+        page: nextPage,
+        query: currentState.searchQuery.isNotEmpty == true
+            ? currentState.searchQuery
+            : null,
+        field: _currentFilterOption.key,
+        limit: currentState.searchQuery.isEmpty == true
+            ? _currentFilterOption.defaultPaginationLimit
+            : _currentFilterOption.paginationLimit,
+      ),
+    );
+    adPanelsEither.fold(
+      (failure) {
+        emit(currentState.copyWith(isLoadingMore: false));
+      },
+      (newAdPanels) {
+        final allAdPanels = [
+          ...currentState.adPanelsMap.values.expand((x) => x),
+          ...newAdPanels,
+        ];
+        final adPanelsMap = _groupPanelsByObjectNumber(allAdPanels);
+        final sortedMap = _sortPanelsMap(adPanelsMap, _currentSortOption);
+        final limit = currentState.searchQuery.isEmpty == true
+            ? _currentFilterOption.defaultPaginationLimit
+            : _currentFilterOption.paginationLimit;
+        final hasMoreData = limit != null && newAdPanels.length >= limit;
+        emit(
+          currentState.copyWith(
+            adPanelsMap: adPanelsMap,
+            filteredAdPanelsMap: sortedMap,
+            isLoadingMore: false,
+            hasMoreData: hasMoreData,
+            currentPage: nextPage,
+          ),
+        );
+      },
+    );
+  }
+
+  // ============================================================================
+  // FILTERING AND SEARCH EVENT HANDLERS
+  // ============================================================================
+
+  /// Handles search query updates
+  Future<void> _mapUpdateSearchQueryEventToState(
+    UpdateSearchQueryEvent event,
+    Emitter<PaginatedAdPanelsState> emit,
+  ) async {
+    final currentState = state;
     if (currentState is AdPanelsLoadedState) {
-      emit(currentState.copyWith(viewType: event.viewType));
-    } else if (currentState is AdPanelsInitialState) {
-      emit(const AdPanelsInitialState());
-    } else if (currentState is AdPanelsLoadingState) {
-      emit(const AdPanelsLoadingState());
-    } else if (currentState is AdPanelsErrorState) {
-      emit(AdPanelsErrorState(message: currentState.message));
-    } else if (currentState is AdPanelsEmptyState) {
-      emit(const AdPanelsEmptyState());
+      final searchQuery = event.query;
+      if (searchQuery.length < 3 && searchQuery.isNotEmpty) {
+        emit(currentState.copyWith(searchQuery: searchQuery));
+        return;
+      }
+      emit(currentState.copyWith(isRefreshing: true, searchQuery: searchQuery));
+      await _loadAndHandleAdPanels(emit, searchQuery: searchQuery);
     }
   }
 
+  /// Handles clearing of all filters
+  Future<void> _mapClearAdPanelsFiltersEventToState(
+    ClearAdPanelsFiltersEvent event,
+    Emitter<PaginatedAdPanelsState> emit,
+  ) async {
+    if (state is AdPanelsLoadedState) {
+      final currentState = state as AdPanelsLoadedState;
+      emit(currentState.copyWith(isRefreshing: true, searchQuery: ''));
+      await _loadAndHandleAdPanels(emit, searchQuery: '');
+    }
+  }
+
+  /// Handles sort option updates
   void _mapUpdateSortOptionEventToState(
     UpdateSortOptionEvent event,
     Emitter<PaginatedAdPanelsState> emit,
@@ -127,80 +191,93 @@ class PaginatedAdPanelsBloc
     );
   }
 
-  Future<void> _mapLoadMoreAdPanelsEventToState(
-    LoadMoreAdPanelsEvent event,
+  /// Handles filter option updates
+  Future<void> _mapUpdateFilterOptionEventToState(
+    UpdateFilterOptionEvent event,
     Emitter<PaginatedAdPanelsState> emit,
   ) async {
     final currentState = state;
-    if (currentState is! AdPanelsLoadedState ||
-        currentState.isLoadingMore ||
-        !currentState.hasMoreData) {
-      return;
-    }
-    emit(currentState.copyWith(isLoadingMore: true));
-    final nextPage = currentState.currentPage + 1;
-    final adPanelsEither = await _getAdPanelsUseCase(
-      GetAdPanelsParams(page: nextPage),
+    if (currentState is! AdPanelsLoadedState) return;
+
+    _currentFilterOption = event.filterOption;
+    emit(
+      currentState.copyWith(
+        isRefreshing: true,
+        filterOption: _currentFilterOption,
+      ),
     );
-    adPanelsEither.fold(
-      (failure) {
-        emit(currentState.copyWith(isLoadingMore: false));
-      },
-      (newAdPanels) {
-        final allAdPanels = [
-          ...currentState.adPanelsMap.values.expand((x) => x),
-          ...newAdPanels,
-        ];
-        final adPanelsMap = _groupPanelsByObjectNumber(allAdPanels);
-        final filteredData = _applyFiltersMap(
-          adPanelsMap,
-          currentState.searchQuery,
-        );
-        final hasMoreData = newAdPanels.length >= adPanelPaginationPageSize;
-        emit(
-          currentState.copyWith(
-            adPanelsMap: adPanelsMap,
-            filteredAdPanelsMap: filteredData,
-            isLoadingMore: false,
-            hasMoreData: hasMoreData,
-            currentPage: nextPage,
-          ),
-        );
-      },
-    );
+    await _loadAndHandleAdPanels(emit, searchQuery: currentState.searchQuery);
   }
+
+  // ============================================================================
+  // UI STATE EVENT HANDLERS
+  // ============================================================================
+
+  /// Handles view type changes
+  void _mapSetAdPanelsViewTypeEventToState(
+    SetAdPanelsViewTypeEvent event,
+    Emitter<PaginatedAdPanelsState> emit,
+  ) {
+    if (state is AdPanelsLoadedState) {
+      final currentState = state as AdPanelsLoadedState;
+      _currentViewType = event.viewType;
+      emit(currentState.copyWith(viewType: event.viewType));
+    }
+  }
+
+  // ============================================================================
+  // PRIVATE HELPER METHODS
+  // ============================================================================
 
   Future<void> _loadAndHandleAdPanels(
     Emitter<PaginatedAdPanelsState> emit, {
     required String searchQuery,
   }) async {
     final adPanelsEither = await _getAdPanelsUseCase(
-      const GetAdPanelsParams(refresh: true),
+      GetAdPanelsParams(
+        refresh: true,
+        query: searchQuery.isEmpty ? null : searchQuery,
+        field: _currentFilterOption.key,
+        limit: searchQuery.isEmpty
+            ? _currentFilterOption.defaultPaginationLimit
+            : _currentFilterOption.paginationLimit,
+      ),
     );
     adPanelsEither.fold(
       (failure) {
         emit(AdPanelsErrorState(message: _getErrorMessage(failure)));
       },
       (adPanels) {
-        if (adPanels.isEmpty) {
-          emit(const AdPanelsEmptyState());
-        } else {
-          final adPanelsMap = _groupPanelsByObjectNumber(adPanels);
-          final sortedMap = _sortPanelsMap(adPanelsMap, _currentSortOption);
-          final filteredMap = _applyFiltersMap(sortedMap, searchQuery);
-          final hasMoreData = adPanels.length >= adPanelPaginationPageSize;
-          emit(
-            AdPanelsLoadedState(
-              adPanelsMap: sortedMap,
-              filteredAdPanelsMap: filteredMap,
-              searchQuery: searchQuery,
-              sortOption: _currentSortOption,
-              viewType: _currentViewType,
-              hasMoreData: hasMoreData,
-            ),
-          );
-        }
+        emit(
+          _buildStateFromAdPanelsList(
+            adPanels: adPanels,
+            searchQuery: searchQuery,
+          ),
+        );
       },
+    );
+  }
+
+  /// Builds appropriate state from ad panels list
+  PaginatedAdPanelsState _buildStateFromAdPanelsList({
+    required List<AdPanelEntity> adPanels,
+    required String searchQuery,
+  }) {
+    final adPanelsMap = _groupPanelsByObjectNumber(adPanels);
+    final sortedMap = _sortPanelsMap(adPanelsMap, _currentSortOption);
+    final limit = searchQuery.isEmpty
+        ? _currentFilterOption.defaultPaginationLimit
+        : _currentFilterOption.paginationLimit;
+    final hasMoreData = limit != null && adPanels.length >= limit;
+
+    return AdPanelsLoadedState(
+      adPanelsMap: sortedMap,
+      filteredAdPanelsMap: sortedMap,
+      searchQuery: searchQuery,
+      sortOption: _currentSortOption,
+      filterOption: _currentFilterOption,
+      viewType: _currentViewType,
+      hasMoreData: hasMoreData,
     );
   }
 
@@ -245,26 +322,6 @@ class PaginatedAdPanelsBloc
         return panelsMap;
     }
     return {for (final entry in entries) entry.key: entry.value};
-  }
-
-  Map<String, List<AdPanelEntity>> _applyFiltersMap(
-    Map<String, List<AdPanelEntity>> adPanelsMap,
-    String searchQuery,
-  ) {
-    if (searchQuery.isEmpty) return adPanelsMap;
-    final query = searchQuery.toLowerCase().trim();
-    final filtered = <String, List<AdPanelEntity>>{};
-    adPanelsMap.forEach((key, panels) {
-      final filteredPanels = panels.where((panel) {
-        return panel.objectNumber.toLowerCase().contains(query) ||
-            panel.street.toLowerCase().contains(query) ||
-            panel.campaign.toLowerCase().contains(query);
-      }).toList();
-      if (filteredPanels.isNotEmpty) {
-        filtered[key] = filteredPanels;
-      }
-    });
-    return filtered;
   }
 
   /// Convert error to user-friendly message

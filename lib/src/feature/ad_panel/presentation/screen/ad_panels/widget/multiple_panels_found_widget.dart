@@ -116,7 +116,7 @@ class _ItemWidget extends StatelessWidget {
           color: context.colorPalette.invertedBackground.onPrimary,
         ),
         onTap: () {
-          context.pushNamed(AdPanelModuleRoute.adPanel.name, extra: adPanels);
+          AdPanelScreen.navigate(context, adPanels: adPanels);
           context.pop();
         },
       ),

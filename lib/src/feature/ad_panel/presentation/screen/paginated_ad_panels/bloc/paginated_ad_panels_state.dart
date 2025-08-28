@@ -32,6 +32,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     this.currentPage = 1,
     this.viewType = AdPanelViewType.list,
     this.sortOption,
+    this.filterOption,
   });
 
   final Map<String, List<AdPanelEntity>> adPanelsMap;
@@ -43,6 +44,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
   final int currentPage;
   final AdPanelViewType viewType;
   final AdPanelSortOption? sortOption;
+  final AdPanelFilterOption? filterOption;
 
   /// Check if any filters are applied
   bool get hasActiveFilters => searchQuery.isNotEmpty;
@@ -64,6 +66,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     int? currentPage,
     AdPanelViewType? viewType,
     AdPanelSortOption? sortOption,
+    AdPanelFilterOption? filterOption,
   }) {
     return AdPanelsLoadedState(
       adPanelsMap: adPanelsMap ?? this.adPanelsMap,
@@ -75,6 +78,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
       currentPage: currentPage ?? this.currentPage,
       viewType: viewType ?? this.viewType,
       sortOption: sortOption ?? this.sortOption,
+      filterOption: filterOption ?? this.filterOption,
     );
   }
 
@@ -89,6 +93,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     currentPage,
     viewType,
     sortOption,
+    filterOption,
   ];
 }
 
@@ -106,12 +111,4 @@ final class AdPanelsErrorState extends PaginatedAdPanelsState {
 
   @override
   List<Object?> get props => [message, canRetry, previousData];
-}
-
-/// Empty state when no ad panels are available
-final class AdPanelsEmptyState extends PaginatedAdPanelsState {
-  const AdPanelsEmptyState();
-
-  @override
-  List<Object?> get props => [];
 }

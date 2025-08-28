@@ -107,12 +107,12 @@ class AdPanelWidget extends StatelessWidget {
             ),
             SizedBox(height: context.space(factor: 0.5)),
             _ItemWidget(
-              icon: Icons.location_on,
+              icon: Icons.directions,
               label: adPanel.street.capitalize,
               hasBeenEdited: hasBeenEdited,
             ),
             _ItemWidget(
-              icon: Icons.location_city,
+              icon: Icons.location_city_rounded,
               label: adPanel.municipalityPart.capitalize,
               hasBeenEdited: hasBeenEdited,
             ),
