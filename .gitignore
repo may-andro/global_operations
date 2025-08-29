@@ -90,4 +90,4 @@ firebase.json
 firebase_json.base64
 .firebase/
 
-/tool/.data
+/tool/firebase/firestore_export_import/.data

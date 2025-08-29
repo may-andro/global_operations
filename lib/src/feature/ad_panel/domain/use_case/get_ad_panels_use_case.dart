@@ -45,6 +45,7 @@ class GetAdPanelsUseCase
       page: input.page,
       refresh: input.refresh,
       field: input.field,
+      //query: input.query?.capitalize,
       query: input.query?.toUpperCase(),
       limit: input.limit,
     );
