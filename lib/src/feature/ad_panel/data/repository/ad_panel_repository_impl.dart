@@ -146,6 +146,7 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
   }
 
   String get _collectionPath {
+    //return 'snowflake_record_demo';
     final date = DateTime.now();
     return 'snowflake_record_${date.yearMonthWeek}';
   }
