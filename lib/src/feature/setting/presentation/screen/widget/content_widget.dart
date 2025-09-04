@@ -43,7 +43,8 @@ class ContentWidget extends StatelessWidget {
                       const UserAccountSettingScreen(),
                       const DSVerticalSpacerWidget(2),
                       SectionTitleWidget(
-                        title: context.localizations.settingLanguageSectionTitle,
+                        title:
+                            context.localizations.settingLanguageSectionTitle,
                       ),
                       const LanguageCardWidget(),
                       if (state.isLocationEnabled) ...[
@@ -54,7 +55,8 @@ class ContentWidget extends StatelessWidget {
                               .settingSearchCriteriaSectionTitle,
                         ),
                         SearchCriteriaCardWidget(
-                          isLocationBasedSearchEnabled: state.locationBasedSearch,
+                          isLocationBasedSearchEnabled:
+                              state.locationBasedSearch,
                         ),
                       ],
                       const Spacer(),

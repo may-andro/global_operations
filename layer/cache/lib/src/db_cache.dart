@@ -1,6 +1,5 @@
 import 'package:cache/src/cache.dart';
 import 'package:error_reporter/error_reporter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';

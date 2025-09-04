@@ -184,7 +184,6 @@ class _GridItemWidget extends StatelessWidget {
   }
 }
 
-
 extension on BuildContext {
   int get crossAxisCount {
     switch (deviceWidth) {
