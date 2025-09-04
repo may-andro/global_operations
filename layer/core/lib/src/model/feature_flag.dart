@@ -12,15 +12,36 @@ class FeatureFlag extends Equatable {
 }
 
 enum Feature {
-  contactUsHomeFab(
-    key: 'feature_location',
-    title: 'Location',
-    icon: Icons.gps_fixed,
+  adPanelDetail(
+    key: 'feature_ad_panel_details',
+    title: 'Ad Panel Details',
+    icon: Icons.ad_units_rounded,
   ),
-  languageSwitcher(
-    key: 'feature_language_switcher',
-    title: 'Language Switcher',
-    icon: Icons.language,
+  adPanelSearch(
+    key: 'feature_ad_panel_search',
+    title: 'Ad Panel Search',
+    icon: Icons.search_rounded,
+  ),
+  adPanelSort(
+    key: 'feature_ad_panel_sorting',
+    title: 'Ad Panel Sort',
+    icon: Icons.sort_rounded,
+  ),
+  cameraSupport(
+    key: 'feature_camera_support',
+    title: 'Camera Support',
+    icon: Icons.camera_alt_rounded,
+  ),
+  deleteAccount(
+    key: 'feature_delete_account',
+    title: 'Delete Account',
+    icon: Icons.delete_forever_rounded,
+  ),
+  googleMap(key: 'feature_google_map', title: 'Google Map', icon: Icons.map),
+  locationSearch(
+    key: 'feature_location_search',
+    title: 'Location Search',
+    icon: Icons.location_on,
   );
 
   const Feature({required this.key, required this.title, required this.icon});

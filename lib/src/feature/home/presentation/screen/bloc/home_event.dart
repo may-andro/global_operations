@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-abstract class HomeEvent extends Equatable {
+sealed class HomeEvent extends Equatable {
   const HomeEvent();
 
   @override
@@ -14,4 +14,11 @@ class TabChangedEvent extends HomeEvent {
 
   @override
   List<Object> get props => [index];
+}
+
+class LogoTappedEvent extends HomeEvent {
+  const LogoTappedEvent();
+
+  @override
+  List<Object> get props => [];
 }

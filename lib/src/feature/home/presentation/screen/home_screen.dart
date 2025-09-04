@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
+import 'package:global_ops/src/feature/developer_setting/developer_setting.dart';
 import 'package:global_ops/src/feature/home/presentation/screen/bloc/bloc.dart';
 import 'package:global_ops/src/feature/home/presentation/screen/widget/widget.dart';
 import 'package:global_ops/src/feature/setting/setting.dart';
@@ -13,17 +14,26 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => appServiceLocator.get<HomeBloc>(),
-      child: Scaffold(
-        backgroundColor: context.colorPalette.background.primary.color,
-        appBar: DSAppBarWidget(height: DSAppBarWidget.getHeight(context)),
-        body: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            final content = _ContentWidget(
-              key: const ValueKey('home_content'),
-              selectedIndex: state.selectedIndex,
-            );
+      child: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          final content = _ContentWidget(
+            key: const ValueKey('home_content'),
+            selectedIndex: state.selectedIndex,
+          );
 
-            return Row(
+          return Scaffold(
+            backgroundColor: context.colorPalette.background.primary.color,
+            appBar: DSAppBarWidget(
+              height: DSAppBarWidget.getHeight(context),
+              onLogoClicked: () {
+                if (state.isDeveloperModeEnabled) {
+                  DeveloperMenuScreen.navigate(context);
+                  return;
+                }
+                context.read<HomeBloc>().add(const LogoTappedEvent());
+              },
+            ),
+            body: Row(
               children: [
                 if (context.isDesktop)
                   WebNavigationBarWidget(
@@ -34,19 +44,19 @@ class HomeScreen extends StatelessWidget {
                   ),
                 Expanded(child: content),
               ],
-            );
-          },
-        ),
-        bottomNavigationBar: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            return MobileNavigationBarWidget(
-              selectedIndex: state.selectedIndex,
-              onItemTapped: (index) {
-                return context.read<HomeBloc>().add(TabChangedEvent(index));
+            ),
+            bottomNavigationBar: BlocBuilder<HomeBloc, HomeState>(
+              builder: (context, state) {
+                return MobileNavigationBarWidget(
+                  selectedIndex: state.selectedIndex,
+                  onItemTapped: (index) {
+                    return context.read<HomeBloc>().add(TabChangedEvent(index));
+                  },
+                );
               },
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

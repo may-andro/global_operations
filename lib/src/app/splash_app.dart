@@ -36,6 +36,8 @@ class SplashApp extends StatelessWidget {
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner:
+          buildConfig.buildEnvironment.debugShowCheckedModeBanner,
       localeResolutionCallback: (locale, supportedLocales) {
         final resolvedLocale = supportedLocales.contains(locale)
             ? locale

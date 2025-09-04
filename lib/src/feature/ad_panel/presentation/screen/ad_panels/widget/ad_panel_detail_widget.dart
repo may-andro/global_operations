@@ -6,13 +6,19 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/ad_
 import 'package:global_ops/src/route/route.dart';
 
 class AdPanelDetailWidget extends StatelessWidget {
-  const AdPanelDetailWidget({super.key, required this.adPanels});
+  const AdPanelDetailWidget({
+    super.key,
+    required this.adPanels,
+    required this.isDetailAvailable,
+  });
 
   final List<AdPanelEntity> adPanels;
+  final bool isDetailAvailable;
 
   static Future<void> _showAsBottomSheet(
     BuildContext context, {
     required List<AdPanelEntity> adPanels,
+    required bool isDetailAvailable,
   }) async {
     if (adPanels.isEmpty) return;
 
@@ -22,7 +28,10 @@ class AdPanelDetailWidget extends StatelessWidget {
       isScrollControlled: true,
       builder: (context) {
         return DSBottomSheetWidget(
-          child: AdPanelDetailWidget(adPanels: adPanels),
+          child: AdPanelDetailWidget(
+            adPanels: adPanels,
+            isDetailAvailable: isDetailAvailable,
+          ),
         );
       },
     );
@@ -31,13 +40,19 @@ class AdPanelDetailWidget extends StatelessWidget {
   static Future<void> _showAsDialog(
     BuildContext context, {
     required List<AdPanelEntity> adPanels,
+    required bool isDetailAvailable,
   }) async {
     if (adPanels.isEmpty) return;
 
     return showDialog<void>(
       context: context,
       builder: (dialogContext) {
-        return DSDialogWidget(child: AdPanelDetailWidget(adPanels: adPanels));
+        return DSDialogWidget(
+          child: AdPanelDetailWidget(
+            adPanels: adPanels,
+            isDetailAvailable: isDetailAvailable,
+          ),
+        );
       },
     );
   }
@@ -45,12 +60,21 @@ class AdPanelDetailWidget extends StatelessWidget {
   static Future<void> showAsDialogOrBottomSheet(
     BuildContext context, {
     required List<AdPanelEntity> adPanels,
+    required bool isDetailAvailable,
   }) {
     if (context.isDesktop) {
-      return _showAsDialog(context, adPanels: adPanels);
+      return _showAsDialog(
+        context,
+        adPanels: adPanels,
+        isDetailAvailable: isDetailAvailable,
+      );
     }
 
-    return _showAsBottomSheet(context, adPanels: adPanels);
+    return _showAsBottomSheet(
+      context,
+      adPanels: adPanels,
+      isDetailAvailable: isDetailAvailable,
+    );
   }
 
   @override
@@ -115,10 +139,12 @@ class AdPanelDetailWidget extends StatelessWidget {
         .map(
           (adPanel) => _ListItemWidget(
             adPanel: adPanel,
-            onTap: () {
-              AdPanelScreen.navigate(context, adPanels: adPanels);
-              context.pop();
-            },
+            onTap: isDetailAvailable
+                ? () {
+                    AdPanelScreen.navigate(context, adPanels: adPanels);
+                    context.pop();
+                  }
+                : null,
           ),
         )
         .toList();
@@ -159,7 +185,7 @@ class _ListItemWidget extends StatelessWidget {
   const _ListItemWidget({required this.adPanel, required this.onTap});
 
   final AdPanelEntity adPanel;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

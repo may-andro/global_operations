@@ -15,6 +15,7 @@ class MapContentWidget extends StatefulWidget {
     required this.location,
     required this.adPanelsMap,
     required this.isLoading,
+    required this.isDetailAvailable,
     this.circleRadius = 0.0,
     super.key,
   });
@@ -23,6 +24,7 @@ class MapContentWidget extends StatefulWidget {
   final Map<String, List<AdPanelEntity>> adPanelsMap;
   final bool isLoading;
   final double circleRadius;
+  final bool isDetailAvailable;
 
   @override
   State<MapContentWidget> createState() => _MapContentWidgetState();
@@ -77,6 +79,7 @@ class _MapContentWidgetState extends State<MapContentWidget> {
             AdPanelDetailWidget.showAsDialogOrBottomSheet(
               context,
               adPanels: adPanels,
+              isDetailAvailable: widget.isDetailAvailable,
             );
           },
           onMultipleMarkersOnSameSpotClusterTap: (_, mapItems) {
@@ -85,6 +88,7 @@ class _MapContentWidgetState extends State<MapContentWidget> {
             MultiplePanelsFoundWidget.showAsDialogOrBottomSheet(
               context,
               adPanelsMap: clusteredMap,
+              isDetailAvailable: widget.isDetailAvailable,
             );
           },
           circleRadius: widget.circleRadius,

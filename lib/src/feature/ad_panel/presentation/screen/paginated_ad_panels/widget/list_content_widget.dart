@@ -5,14 +5,9 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/wi
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/paginated_ad_panels/bloc/bloc.dart';
 
 class ListContentWidget extends StatefulWidget {
-  const ListContentWidget({
-    super.key,
-    required this.state,
-    required this.isLoading,
-  });
+  const ListContentWidget({super.key, required this.state});
 
   final AdPanelsLoadedState state;
-  final bool isLoading;
 
   @override
   State<ListContentWidget> createState() => _ListContentWidgetState();
@@ -57,7 +52,7 @@ class _ListContentWidgetState extends State<ListContentWidget> {
       },
       child: Stack(
         children: [
-          if (widget.isLoading)
+          if (widget.state.isRefreshing)
             DSLoadingWidget(size: context.space(factor: 5))
           else if (widget.state.isFilteredEmpty &&
               widget.state.hasActiveFilters)
@@ -85,6 +80,7 @@ class _ListContentWidgetState extends State<ListContentWidget> {
                       scrollController: _scrollController,
                       hasMoreData: widget.state.hasMoreData,
                       isLoadingMore: widget.state.isLoadingMore,
+                      isDetailAvailable: widget.state.isAdPanelDetailEnabled,
                     )
                   : _GridWidget(
                       panelsMap: panelsMap,
@@ -92,6 +88,7 @@ class _ListContentWidgetState extends State<ListContentWidget> {
                       scrollController: _scrollController,
                       hasMoreData: widget.state.hasMoreData,
                       isLoadingMore: widget.state.isLoadingMore,
+                      isDetailAvailable: widget.state.isAdPanelDetailEnabled,
                     ),
             ),
         ],
@@ -107,6 +104,7 @@ class _GridWidget extends StatelessWidget {
     required this.scrollController,
     required this.hasMoreData,
     required this.isLoadingMore,
+    required this.isDetailAvailable,
   });
 
   final Map<String, List<AdPanelEntity>> panelsMap;
@@ -114,6 +112,7 @@ class _GridWidget extends StatelessWidget {
   final ScrollController scrollController;
   final bool hasMoreData;
   final bool isLoadingMore;
+  final bool isDetailAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +137,10 @@ class _GridWidget extends StatelessWidget {
           if (adPanels == null || adPanels.isEmpty) {
             return const SizedBox.shrink();
           }
-          return AdPanelWidget(adPanels: adPanels);
+          return AdPanelWidget(
+            adPanels: adPanels,
+            isDetailAvailable: isDetailAvailable,
+          );
         },
       ),
     );
@@ -152,6 +154,7 @@ class _ListWidget extends StatelessWidget {
     required this.scrollController,
     required this.hasMoreData,
     required this.isLoadingMore,
+    required this.isDetailAvailable,
   });
 
   final Map<String, List<AdPanelEntity>> panelsMap;
@@ -159,6 +162,7 @@ class _ListWidget extends StatelessWidget {
   final ScrollController scrollController;
   final bool hasMoreData;
   final bool isLoadingMore;
+  final bool isDetailAvailable;
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +182,10 @@ class _ListWidget extends StatelessWidget {
         if (adPanels == null || adPanels.isEmpty) {
           return const SizedBox.shrink();
         }
-        return AdPanelWidget(adPanels: adPanels);
+        return AdPanelWidget(
+          adPanels: adPanels,
+          isDetailAvailable: isDetailAvailable,
+        );
       },
     );
   }

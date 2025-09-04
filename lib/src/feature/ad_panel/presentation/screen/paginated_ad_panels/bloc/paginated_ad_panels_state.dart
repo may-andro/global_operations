@@ -31,6 +31,10 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     this.hasMoreData = true,
     this.currentPage = 1,
     this.viewType = AdPanelViewType.list,
+    this.isAdPanelDetailEnabled = false,
+    this.isGoogleMapViewAvailable = false,
+    this.isSortButtonAvailable = false,
+    this.isSearchFieldAvailable = false,
     this.sortOption,
     this.filterOption,
   });
@@ -43,6 +47,10 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
   final bool hasMoreData;
   final int currentPage;
   final AdPanelViewType viewType;
+  final bool isAdPanelDetailEnabled;
+  final bool isGoogleMapViewAvailable;
+  final bool isSortButtonAvailable;
+  final bool isSearchFieldAvailable;
   final AdPanelSortOption? sortOption;
   final AdPanelFilterOption? filterOption;
 
@@ -67,6 +75,10 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     AdPanelViewType? viewType,
     AdPanelSortOption? sortOption,
     AdPanelFilterOption? filterOption,
+    bool? isAdPanelDetailEnabled,
+    bool? isGoogleMapViewAvailable,
+    bool? isSortButtonAvailable,
+    bool? isSearchFieldAvailable,
   }) {
     return AdPanelsLoadedState(
       adPanelsMap: adPanelsMap ?? this.adPanelsMap,
@@ -79,6 +91,14 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
       viewType: viewType ?? this.viewType,
       sortOption: sortOption ?? this.sortOption,
       filterOption: filterOption ?? this.filterOption,
+      isAdPanelDetailEnabled:
+          isAdPanelDetailEnabled ?? this.isAdPanelDetailEnabled,
+      isGoogleMapViewAvailable:
+          isGoogleMapViewAvailable ?? this.isGoogleMapViewAvailable,
+      isSortButtonAvailable:
+          isSortButtonAvailable ?? this.isSortButtonAvailable,
+      isSearchFieldAvailable:
+          isSearchFieldAvailable ?? this.isSearchFieldAvailable,
     );
   }
 
@@ -94,6 +114,10 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     viewType,
     sortOption,
     filterOption,
+    isAdPanelDetailEnabled,
+    isGoogleMapViewAvailable,
+    isSortButtonAvailable,
+    isSearchFieldAvailable,
   ];
 }
 

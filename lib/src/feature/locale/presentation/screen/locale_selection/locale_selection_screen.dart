@@ -157,11 +157,6 @@ class _ViewStateBuilderWidget extends StatelessWidget {
         context,
         state.failure,
       ),
-
-      // This should never happen, but ensures exhaustiveness
-      LocaleSelectionState() => throw StateError(
-        'Unexpected abstract state: ${state.runtimeType}',
-      ),
     };
   }
 
@@ -271,10 +266,7 @@ class _LocaleListWidget extends StatelessWidget {
         SizedBox(
           width: context.space(factor: 2),
           height: context.space(factor: 2),
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: context.colorPalette.brand.primary.color,
-          ),
+          child: DSLoadingWidget(size: context.space(factor: 2)),
         ),
       ],
     );

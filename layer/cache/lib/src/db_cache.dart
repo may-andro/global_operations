@@ -3,6 +3,7 @@ import 'package:error_reporter/error_reporter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 const _cacheTimestampKey = 'cachedTimestamp';
 
@@ -34,8 +35,15 @@ abstract class DBCache<T> extends Cache {
   int get lastCachedTimestamp => _cacheTimestamp;
 
   Future<Database> initializeDB() async {
-    final databasePath = await getDatabasesPath();
-    final path = '$databasePath/$dbName.db';
+    String path;
+    if (kIsWeb) {
+      databaseFactory = databaseFactoryFfiWeb;
+      path = 'global_web_$dbName.db';
+    } else {
+      final databasePath = await getDatabasesPath();
+      path = '$databasePath/$dbName.db';
+    }
+
     return db = await openDatabase(
       path,
       version: tableVersion,

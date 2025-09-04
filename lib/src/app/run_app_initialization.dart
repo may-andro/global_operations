@@ -36,12 +36,12 @@ Future<void> runAppWithInitialization() async {
     SplashApp(
       buildConfig: buildConfig,
       moduleConfigurators: moduleConfigurators,
-      onInitializationSuccessful: _runMainApp,
+      onInitializationSuccessful: runMainApp,
     ),
   );
 }
 
-void _runMainApp(DesignSystem designSystem) {
+void runMainApp(DesignSystem designSystem) {
   final serviceLocator = ModuleInjectorController().serviceLocator;
 
   final appLocale = serviceLocator.get<AppLocale>();
