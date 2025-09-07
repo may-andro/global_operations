@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:design_system/src/component/atom/ds_loading_widget.dart';
 import 'package:design_system/src/extension/build_context_extension.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +77,7 @@ class _DSNetworkImageWidgetState extends State<DSNetworkImageWidget> {
         switch (state.extendedImageLoadState) {
           case LoadState.loading:
             return widget.loadingWidget ??
-                const Center(child: CircularProgressIndicator());
+                Center(child: DSLoadingWidget(size: context.space(factor: 3)));
           case LoadState.completed:
             if (widget.autoSizeImage) {
               return AspectRatio(

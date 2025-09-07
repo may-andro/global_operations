@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
@@ -9,14 +7,9 @@ import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad
 import 'package:global_ops/src/widget/widget.dart';
 
 class ListContentWidget extends StatefulWidget {
-  const ListContentWidget({
-    super.key,
-    required this.state,
-    required this.isLoading,
-  });
+  const ListContentWidget({super.key, required this.state});
 
   final AdPanelsLoadedState state;
-  final bool isLoading;
 
   @override
   State<ListContentWidget> createState() => _ListContentWidgetState();
@@ -48,7 +41,10 @@ class _ListContentWidgetState extends State<ListContentWidget> {
       },
       child: Stack(
         children: [
-          if (widget.state.isFilteredEmpty && widget.state.hasActiveFilters)
+          if (widget.state.isRefreshing)
+            DSLoadingWidget(size: context.space(factor: 5))
+          else if (widget.state.isFilteredEmpty &&
+              widget.state.hasActiveFilters)
             InfoCardWidget(
               icon: Icons.search_off,
               iconColor: context.colorPalette.neutral.grey1,
@@ -84,25 +80,6 @@ class _ListContentWidgetState extends State<ListContentWidget> {
                   ? _buildListView(context, panelObjectNumbers, panelsMap)
                   : _buildGridView(context, panelObjectNumbers, panelsMap),
             ),
-
-          AnimatedSwitcher(
-            duration: 300.ms,
-            switchInCurve: Curves.easeIn,
-            switchOutCurve: Curves.easeOut,
-            child: widget.state.isRefreshing || widget.isLoading
-                ? ClipRect(
-                    child: BackdropFilter(
-                      key: const ValueKey('loading'),
-                      filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                      child: ColoredBox(
-                        color: context.colorPalette.background.primary.color
-                            .withAlpha(20),
-                        child: const LoadingContentWidget(),
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink(key: ValueKey('not_loading')),
-          ),
         ],
       ),
     );
@@ -157,7 +134,10 @@ class _ListContentWidgetState extends State<ListContentWidget> {
     if (adPanels == null || adPanels.isEmpty) {
       return const SizedBox.shrink();
     }
-    return AdPanelWidget(adPanels: adPanels);
+    return AdPanelWidget(
+      adPanels: adPanels,
+      isDetailAvailable: widget.state.isAdPanelDetailEnabled,
+    );
   }
 }
 

@@ -18,6 +18,8 @@ class HomeModuleConfigurator implements ModuleConfigurator {
 
   @override
   void registerDependencies(ServiceLocator serviceLocator) {
-    serviceLocator.registerFactory<HomeBloc>(() => HomeBloc());
+    serviceLocator.registerFactory<HomeBloc>(
+      () => HomeBloc(serviceLocator.get()),
+    );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/paginated_ad_panels/paginated_ad_panels_screen.dart';
@@ -17,15 +18,20 @@ class AdPanelsScreen extends StatelessWidget {
           switch (state) {
             case AdPanelsLoadingState():
             case AdPanelsInitialState():
-              return const Center(child: CircularProgressIndicator());
-            case AdPanelsLoadedState(:final isLocationBasedSearchEnabled):
+              return Center(
+                child: DSLoadingWidget(size: context.space(factor: 5)),
+              );
+            case AdPanelsLoadedState(
+              :final isLocationBasedSearchEnabled,
+              :final adPanelsDbSourcePath,
+            ):
               return isLocationBasedSearchEnabled
-                  ? const ProximityAdPanelsScreen()
-                  : const PaginatedAdPanelsScreen();
+                  ? ProximityAdPanelsScreen(key: ValueKey(adPanelsDbSourcePath))
+                  : PaginatedAdPanelsScreen(
+                      key: ValueKey(adPanelsDbSourcePath),
+                    );
             case AdPanelsErrorState(:final message):
               return Center(child: Text(message));
-            default:
-              return const SizedBox.shrink();
           }
         },
       ),

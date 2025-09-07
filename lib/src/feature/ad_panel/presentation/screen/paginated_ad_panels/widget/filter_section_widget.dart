@@ -12,9 +12,7 @@ const List<AdPanelSortOption> _sortOptions = [
 ];
 
 class FilterSectionWidget extends StatefulWidget {
-  const FilterSectionWidget({super.key, required this.isEnabled});
-
-  final bool isEnabled;
+  const FilterSectionWidget({super.key});
 
   @override
   State<FilterSectionWidget> createState() => _FilterSectionWidgetState();
@@ -61,20 +59,22 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
         }
       },
       builder: (context, state) {
-        if (!state.shouldShowWidget) {
+        final currentState = state;
+
+        // Only render if in loaded state
+        if (currentState is! AdPanelsLoadedState) {
           return const SizedBox.shrink();
         }
-
-        return _buildContent(context, state);
+        return _buildContent(context, currentState);
       },
     );
   }
 
-  Widget _buildContent(BuildContext context, PaginatedAdPanelsState state) {
-    final filterData = state.extractFilterData;
-
+  Widget _buildContent(BuildContext context, AdPanelsLoadedState state) {
     // Ensure the controller has the correct text
-    _updateSearchController(filterData.searchQuery);
+    _updateSearchController(state.searchQuery);
+
+    final resultCount = state.filteredAdPanelsMap.entries.length;
 
     return DsCardWidget(
       backgroundColor: context.colorPalette.background.primary,
@@ -90,21 +90,23 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchAndSortRow(filterData),
-            const DSVerticalSpacerWidget(1),
+            if (state.isSearchFieldAvailable) ...[
+              _buildSearchAndSortRow(state),
+              const DSVerticalSpacerWidget(1),
+            ],
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ResultCountWidget(count: filterData.resultCount),
+                ResultCountWidget(count: resultCount),
                 Icon(
-                  filterData.resultCount == 0
+                  resultCount == 0
                       ? Icons.not_interested_rounded
-                      : filterData.hasMoreData
+                      : state.hasMoreData
                       ? Icons.unfold_more_rounded
                       : Icons.done_all,
-                  color: widget.isEnabled
-                      ? context.colorPalette.background.onPrimary.color
-                      : context.colorPalette.background.primary.color,
+                  color: state.isRefreshing
+                      ? context.colorPalette.background.primary.color
+                      : context.colorPalette.background.onPrimary.color,
                   size: context.getTextHeight(context.typography.labelSmall, 1),
                 ),
               ],
@@ -116,99 +118,41 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
   }
 
   /// Builds the search bar and sort button row
-  Widget _buildSearchAndSortRow(
-    ({
-      String searchQuery,
-      AdPanelSortOption sortOption,
-      AdPanelFilterOption filterOption,
-      AdPanelViewType viewType,
-      int resultCount,
-      bool hasMoreData,
-    })
-    filterData,
-  ) {
+  Widget _buildSearchAndSortRow(AdPanelsLoadedState state) {
+    final sortOption = state.sortOption ?? _sortOptions.first;
+    final filterOption = state.filterOption ?? const ObjectNumberFilterOption();
     return Row(
       children: [
         Expanded(
           child: SearchWidget(
-            hintText: filterData.filterOption.searchHintText(context),
+            hintText: filterOption.searchHintText(context),
             searchController: _searchController,
             focusNode: _focusNode,
-            searchQuery: filterData.searchQuery,
+            searchQuery: state.searchQuery,
             onSearch: (value) {
               context.bloc.add(UpdateSearchQueryEvent(value));
             },
-            isEnabled: widget.isEnabled,
+            isEnabled: !state.isRefreshing,
           ),
         ),
         FilterButtonWidget(
-          selected: filterData.filterOption,
+          selected: filterOption,
           onSelected: (filterOption) {
             context.bloc.add(UpdateFilterOptionEvent(filterOption));
           },
-          isVisible: true,
-          isEnabled: widget.isEnabled,
+          isVisible: state.isSearchFieldAvailable,
+          isEnabled: !state.isRefreshing,
         ),
         SortButtonWidget(
-          selected: filterData.sortOption,
+          selected: sortOption,
           sortOptions: _sortOptions,
           onSelected: (sortOption) {
             context.bloc.add(UpdateSortOptionEvent(sortOption));
           },
-          isVisible: filterData.viewType.isListType,
-          isEnabled: widget.isEnabled,
+          isVisible: state.viewType.isListType && state.isSortButtonAvailable,
+          isEnabled: !state.isRefreshing,
         ),
       ],
     );
-  }
-}
-
-extension on PaginatedAdPanelsState {
-  /// Checks if widget should be visible based on state
-  bool get shouldShowWidget {
-    return this is AdPanelsLoadedState;
-  }
-
-  /// Extracts filter values from the current state
-  ({
-    String searchQuery,
-    AdPanelSortOption sortOption,
-    AdPanelFilterOption filterOption,
-    AdPanelViewType viewType,
-    int resultCount,
-    bool hasMoreData,
-  })
-  get extractFilterData {
-    final loadedState = _getLoadedState;
-
-    final searchQuery = loadedState?.searchQuery ?? '';
-
-    final sortOption = loadedState?.sortOption ?? _sortOptions.first;
-
-    final filterOption =
-        loadedState?.filterOption ?? const ObjectNumberFilterOption();
-
-    final viewType = loadedState?.viewType ?? AdPanelViewType.list;
-
-    final resultCount = loadedState?.filteredAdPanelsMap.entries.length ?? 0;
-
-    final hasMoreData = loadedState?.hasMoreData ?? true;
-
-    return (
-      searchQuery: searchQuery,
-      sortOption: sortOption,
-      filterOption: filterOption,
-      viewType: viewType,
-      resultCount: resultCount,
-      hasMoreData: hasMoreData,
-    );
-  }
-
-  /// Gets the loaded state from current state
-  AdPanelsLoadedState? get _getLoadedState {
-    return switch (this) {
-      final AdPanelsLoadedState state => state,
-      _ => null,
-    };
   }
 }

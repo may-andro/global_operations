@@ -1,10 +1,13 @@
+import 'package:global_ops/src/feature/ad_panel/data/cache/ad_panel_data_collection_path_cache.dart';
 import 'package:global_ops/src/feature/ad_panel/data/data.dart';
+import 'package:global_ops/src/feature/ad_panel/data/data_source/ad_panel_collection_path_data_source.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/presentation.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/paginated_ad_panels/bloc/bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/bloc.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/widget/ad_panel_db_source/bloc/bloc.dart';
 import 'package:global_ops/src/route/route.dart';
 import 'package:module_injector/module_injector.dart';
 
@@ -28,8 +31,22 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
       () => AdPanelMapper(serviceLocator.get()),
     );
 
+    serviceLocator.registerSingleton<AdPanelDataCollectionPathCache>(
+      () => AdPanelDataCollectionPathCache(),
+    );
+    serviceLocator.registerSingleton<AdPanelCollectionPathDataSource>(
+      () => AdPanelCollectionPathDataSource(
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+      ),
+    );
     serviceLocator.registerFactory<AdPanelRepository>(
-      () => AdPanelRepositoryImpl(serviceLocator.get(), serviceLocator.get()),
+      () => AdPanelRepositoryImpl(
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+      ),
     );
 
     serviceLocator.registerFactory<CompressImageFileUseCase>(
@@ -37,6 +54,15 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     );
     serviceLocator.registerFactory<CompressRawImageUseCase>(
       () => CompressRawImageUseCase(),
+    );
+    serviceLocator.registerFactory<GetAdPanelsDbSourcePathsUseCase>(
+      () => GetAdPanelsDbSourcePathsUseCase(serviceLocator.get()),
+    );
+    serviceLocator.registerFactory<GetAdPanelsDbSourcePathStreamUseCase>(
+      () => GetAdPanelsDbSourcePathStreamUseCase(serviceLocator.get()),
+    );
+    serviceLocator.registerFactory<UpdateAdPanelsDbSourcePathUseCase>(
+      () => UpdateAdPanelsDbSourcePathUseCase(serviceLocator.get()),
     );
     serviceLocator.registerFactory<GetAdPanelsUseCase>(
       () => GetAdPanelsUseCase(serviceLocator.get()),
@@ -61,19 +87,35 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     );
 
     serviceLocator.registerFactory<AdPanelsBloc>(
-      () => AdPanelsBloc(serviceLocator.get()),
+      () => AdPanelsBloc(
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+      ),
     );
     serviceLocator.registerFactory<PaginatedAdPanelsBloc>(
-      () => PaginatedAdPanelsBloc(serviceLocator.get()),
+      () => PaginatedAdPanelsBloc(serviceLocator.get(), serviceLocator.get()),
     );
     serviceLocator.registerFactory<ProximityAdPanelsBloc>(
-      () => ProximityAdPanelsBloc(serviceLocator.get(), serviceLocator.get()),
+      () => ProximityAdPanelsBloc(
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+      ),
     );
     serviceLocator.registerFactory<AdPanelBloc>(
       () => AdPanelBloc(
         serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+      ),
+    );
+    serviceLocator.registerFactory<AdPanelDbSourceBloc>(
+      () => AdPanelDbSourceBloc(
         serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),

@@ -29,7 +29,7 @@ class FormCardWidget extends StatelessWidget {
         listener: (context, state) {
           switch (state) {
             case LoginSuccessState():
-              context.pushNamed(HomeModuleRoute.home.name);
+              context.push(HomeModuleRoute.home.path);
             case LoginFailureState(:final message):
               context.showSnackBar(
                 snackBar: DSSnackBar(

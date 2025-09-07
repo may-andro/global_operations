@@ -48,10 +48,24 @@ class $AssetsImageGen {
   ];
 }
 
+class $AssetsMapStylesGen {
+  const $AssetsMapStylesGen();
+
+  /// File path: assets/map_styles/dark_map_style.json
+  String get darkMapStyle => 'assets/map_styles/dark_map_style.json';
+
+  /// File path: assets/map_styles/light_map_style.json
+  String get lightMapStyle => 'assets/map_styles/light_map_style.json';
+
+  /// List of all assets
+  List<String> get values => [darkMapStyle, lightMapStyle];
+}
+
 class Assets {
   const Assets._();
 
   static const $AssetsImageGen image = $AssetsImageGen();
+  static const $AssetsMapStylesGen mapStyles = $AssetsMapStylesGen();
 }
 
 class SvgGenImage {

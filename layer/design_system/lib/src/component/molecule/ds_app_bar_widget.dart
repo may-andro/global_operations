@@ -11,6 +11,7 @@ class DSAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     this.backgroundColor,
     this.actions,
     this.iconColor,
+    this.onLogoClicked,
   });
 
   final double height;
@@ -18,6 +19,7 @@ class DSAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final DSColor? backgroundColor;
   final List<Widget>? actions;
   final DSColor? iconColor;
+  final VoidCallback? onLogoClicked;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,10 @@ class DSAppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               size: _getIconSize(context),
             )
           : null,
-      title: DSLogoImageWidget.rectangle(height: height, color: iconColor),
+      title: GestureDetector(
+        onTap: onLogoClicked,
+        child: DSLogoImageWidget.rectangle(height: height, color: iconColor),
+      ),
       actions: actions,
     );
   }

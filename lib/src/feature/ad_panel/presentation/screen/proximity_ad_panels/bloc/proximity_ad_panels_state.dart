@@ -23,16 +23,6 @@ final class AdPanelsLoadingState extends ProximityAdPanelsState {
   const AdPanelsLoadingState();
 }
 
-/// Loading state for list-only operations (e.g., radius change)
-final class AdPanelsListLoadingState extends ProximityAdPanelsState {
-  const AdPanelsListLoadingState({required this.previousState});
-
-  final AdPanelsLoadedState previousState;
-
-  @override
-  List<Object?> get props => [previousState];
-}
-
 /// Success state with data
 final class AdPanelsLoadedState extends ProximityAdPanelsState {
   const AdPanelsLoadedState({
@@ -42,41 +32,12 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
     this.isRefreshing = false,
     this.viewType = AdPanelViewType.list,
     this.radiusInKm = defaultSearchRadius,
+    this.isAdPanelDetailEnabled = false,
+    this.isGoogleMapViewAvailable = false,
+    this.isSortButtonAvailable = false,
+    this.isSearchFieldAvailable = false,
     this.sortOption,
   });
-
-  /// Factory constructor for creating initial loaded state
-  factory AdPanelsLoadedState.initial({
-    required Map<String, List<AdPanelEntity>> adPanelsMap,
-    AdPanelSortOption? sortOption,
-    int? radiusInKm,
-  }) {
-    return AdPanelsLoadedState(
-      adPanelsMap: adPanelsMap,
-      filteredAdPanelsMap: adPanelsMap,
-      sortOption: sortOption,
-      radiusInKm: radiusInKm ?? defaultSearchRadius,
-    );
-  }
-
-  /// Factory constructor for creating state with search applied
-  factory AdPanelsLoadedState.withSearch({
-    required Map<String, List<AdPanelEntity>> adPanelsMap,
-    required Map<String, List<AdPanelEntity>> filteredAdPanelsMap,
-    required String searchQuery,
-    AdPanelSortOption? sortOption,
-    AdPanelViewType? viewType,
-    int? radiusInKm,
-  }) {
-    return AdPanelsLoadedState(
-      adPanelsMap: adPanelsMap,
-      filteredAdPanelsMap: filteredAdPanelsMap,
-      searchQuery: searchQuery,
-      sortOption: sortOption,
-      viewType: viewType ?? AdPanelViewType.list,
-      radiusInKm: radiusInKm ?? defaultSearchRadius,
-    );
-  }
 
   final Map<String, List<AdPanelEntity>> adPanelsMap;
   final Map<String, List<AdPanelEntity>> filteredAdPanelsMap;
@@ -85,6 +46,10 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
   final AdPanelViewType viewType;
   final AdPanelSortOption? sortOption;
   final int radiusInKm;
+  final bool isAdPanelDetailEnabled;
+  final bool isGoogleMapViewAvailable;
+  final bool isSortButtonAvailable;
+  final bool isSearchFieldAvailable;
 
   /// Check if any filters are applied
   bool get hasActiveFilters => searchQuery.isNotEmpty;
@@ -112,6 +77,10 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
     AdPanelViewType? viewType,
     AdPanelSortOption? sortOption,
     int? radiusInKm,
+    bool? isAdPanelDetailEnabled,
+    bool? isGoogleMapViewAvailable,
+    bool? isSortButtonAvailable,
+    bool? isSearchFieldAvailable,
   }) {
     return AdPanelsLoadedState(
       adPanelsMap: adPanelsMap ?? this.adPanelsMap,
@@ -121,6 +90,14 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
       viewType: viewType ?? this.viewType,
       sortOption: sortOption ?? this.sortOption,
       radiusInKm: radiusInKm ?? this.radiusInKm,
+      isAdPanelDetailEnabled:
+          isAdPanelDetailEnabled ?? this.isAdPanelDetailEnabled,
+      isGoogleMapViewAvailable:
+          isGoogleMapViewAvailable ?? this.isGoogleMapViewAvailable,
+      isSortButtonAvailable:
+          isSortButtonAvailable ?? this.isSortButtonAvailable,
+      isSearchFieldAvailable:
+          isSearchFieldAvailable ?? this.isSearchFieldAvailable,
     );
   }
 
@@ -133,6 +110,10 @@ final class AdPanelsLoadedState extends ProximityAdPanelsState {
     viewType,
     sortOption,
     radiusInKm,
+    isAdPanelDetailEnabled,
+    isGoogleMapViewAvailable,
+    isSortButtonAvailable,
+    isSearchFieldAvailable,
   ];
 }
 

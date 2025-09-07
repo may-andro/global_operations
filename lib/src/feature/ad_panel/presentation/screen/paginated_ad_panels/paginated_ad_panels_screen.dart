@@ -52,11 +52,7 @@ class _ViewStateBuilderWidget extends StatelessWidget {
           },
         );
       case final AdPanelsLoadedState state:
-        return ContentWidget(
-          state: state,
-          location: location,
-          isLoading: state.isRefreshing,
-        );
+        return ContentWidget(state: state, location: location);
     }
   }
 }

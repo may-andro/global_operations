@@ -16,6 +16,8 @@ enum BuildEnvironment {
 
   bool get debugShowCheckedModeBanner => this == BuildEnvironment.staging;
 
+  bool get isFakeDataEnabled => this == BuildEnvironment.staging;
+
   static BuildEnvironment get buildEnvironment {
     const receivedEnv = String.fromEnvironment(
       'build_env',

@@ -1,5 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:global_ops/src/feature/developer_setting/developer_setting.dart';
+import 'package:global_ops/src/feature/home/presentation/screen/bloc/bloc.dart';
 
 class WebNavigationBarWidget extends StatelessWidget {
   const WebNavigationBarWidget({
@@ -136,7 +138,20 @@ class _NavigationHeader extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          DSIconLogoImageWidget(size: context.space(factor: 7)),
+          BlocBuilder<HomeBloc, HomeState>(
+            builder: (context, state) {
+              return GestureDetector(
+                child: DSIconLogoImageWidget(size: context.space(factor: 7)),
+                onTap: () {
+                  if (state.isDeveloperModeEnabled) {
+                    DeveloperMenuScreen.navigate(context);
+                    return;
+                  }
+                  context.read<HomeBloc>().add(const LogoTappedEvent());
+                },
+              );
+            },
+          ),
           SizedBox(height: context.space(factor: 2)),
         ],
       ),

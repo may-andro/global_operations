@@ -4,14 +4,17 @@ import 'package:core/core.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/l10n/l10n.dart';
-import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
-import 'package:global_ops/src/feature/ad_panel/presentation/route/route.dart';
-import 'package:go_router/go_router.dart';
+import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
 
 class AdPanelWidget extends StatelessWidget {
-  const AdPanelWidget({required this.adPanels, super.key});
+  const AdPanelWidget({
+    super.key,
+    required this.adPanels,
+    required this.isDetailAvailable,
+  });
 
   final List<AdPanelEntity> adPanels;
+  final bool isDetailAvailable;
 
   /// Calculates the height of this widget based on its content and padding
   static double getHeight(BuildContext context) {
@@ -73,9 +76,9 @@ class AdPanelWidget extends StatelessWidget {
       radius: context.dimen.radiusLevel2,
       elevation: context.dimen.elevationLevel1,
       margin: EdgeInsets.only(bottom: context.space()),
-      onTap: () {
-        context.push(AdPanelModuleRoute.adPanel.path, extra: adPanels);
-      },
+      onTap: isDetailAvailable
+          ? () => AdPanelScreen.navigate(context, adPanels: adPanels)
+          : null,
       child: Padding(
         padding: EdgeInsets.all(
           context.space(factor: context.isMobile ? 2 : 1),

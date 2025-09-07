@@ -1,27 +1,41 @@
 import 'package:equatable/equatable.dart';
 
-abstract class SettingState extends Equatable {
+sealed class SettingState extends Equatable {
   const SettingState();
 
   @override
   List<Object?> get props => [];
 }
 
-class SettingInitialState extends SettingState {}
+class SettingInitialState extends SettingState {
+  const SettingInitialState();
+}
+
+class SettingLoadingState extends SettingState {
+  const SettingLoadingState();
+}
 
 class SettingLoadedState extends SettingState {
   const SettingLoadedState({
-    required this.userName,
-    required this.language,
+    required this.isLocationEnabled,
     required this.locationBasedSearch,
   });
 
-  final String userName;
-  final String language;
+  SettingLoadedState copyWith({
+    bool? isLocationEnabled,
+    bool? locationBasedSearch,
+  }) {
+    return SettingLoadedState(
+      isLocationEnabled: isLocationEnabled ?? this.isLocationEnabled,
+      locationBasedSearch: locationBasedSearch ?? this.locationBasedSearch,
+    );
+  }
+
+  final bool isLocationEnabled;
   final bool locationBasedSearch;
 
   @override
-  List<Object?> get props => [userName, language, locationBasedSearch];
+  List<Object?> get props => [isLocationEnabled, locationBasedSearch];
 }
 
 class SettingErrorState extends SettingState {
@@ -32,7 +46,3 @@ class SettingErrorState extends SettingState {
   @override
   List<Object?> get props => [message];
 }
-
-class SettingLoggedOutState extends SettingState {}
-
-class SettingAccountDeletedState extends SettingState {}

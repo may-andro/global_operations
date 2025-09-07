@@ -60,10 +60,8 @@ class RadiusSliderWidget extends StatelessWidget {
     switch (state) {
       case AdPanelsLoadedState():
         return state.radiusInKm;
-      case AdPanelsListLoadingState():
-        return state.previousState.radiusInKm;
       default:
-        return 2;
+        return 5;
     }
   }
 }

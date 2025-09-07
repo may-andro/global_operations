@@ -5,13 +5,19 @@ import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
 import 'package:global_ops/src/route/route.dart';
 
 class MultiplePanelsFoundWidget extends StatelessWidget {
-  const MultiplePanelsFoundWidget({super.key, required this.adPanelsMap});
+  const MultiplePanelsFoundWidget({
+    super.key,
+    required this.adPanelsMap,
+    required this.isDetailAvailable,
+  });
 
   final Map<String, List<AdPanelEntity>> adPanelsMap;
+  final bool isDetailAvailable;
 
   static Future<dynamic> _showAsBottomSheet(
     BuildContext context, {
     required Map<String, List<AdPanelEntity>> adPanelsMap,
+    required bool isDetailAvailable,
   }) async {
     if (adPanelsMap.isEmpty) return;
 
@@ -21,7 +27,10 @@ class MultiplePanelsFoundWidget extends StatelessWidget {
       isScrollControlled: true,
       builder: (context) {
         return DSBottomSheetWidget(
-          child: MultiplePanelsFoundWidget(adPanelsMap: adPanelsMap),
+          child: MultiplePanelsFoundWidget(
+            adPanelsMap: adPanelsMap,
+            isDetailAvailable: isDetailAvailable,
+          ),
         );
       },
     );
@@ -30,6 +39,7 @@ class MultiplePanelsFoundWidget extends StatelessWidget {
   static Future<dynamic> _showAsDialog(
     BuildContext context, {
     required Map<String, List<AdPanelEntity>> adPanelsMap,
+    required bool isDetailAvailable,
   }) async {
     if (adPanelsMap.isEmpty) return;
 
@@ -37,7 +47,10 @@ class MultiplePanelsFoundWidget extends StatelessWidget {
       context: context,
       builder: (dialogContext) {
         return DSDialogWidget(
-          child: MultiplePanelsFoundWidget(adPanelsMap: adPanelsMap),
+          child: MultiplePanelsFoundWidget(
+            adPanelsMap: adPanelsMap,
+            isDetailAvailable: isDetailAvailable,
+          ),
         );
       },
     );
@@ -46,17 +59,39 @@ class MultiplePanelsFoundWidget extends StatelessWidget {
   static Future<dynamic> showAsDialogOrBottomSheet(
     BuildContext context, {
     required Map<String, List<AdPanelEntity>> adPanelsMap,
+    required bool isDetailAvailable,
   }) {
     if (context.isDesktop) {
-      return _showAsDialog(context, adPanelsMap: adPanelsMap);
+      return _showAsDialog(
+        context,
+        adPanelsMap: adPanelsMap,
+        isDetailAvailable: isDetailAvailable,
+      );
     }
 
-    return _showAsBottomSheet(context, adPanelsMap: adPanelsMap);
+    return _showAsBottomSheet(
+      context,
+      adPanelsMap: adPanelsMap,
+      isDetailAvailable: isDetailAvailable,
+    );
   }
 
-  List<Widget> get items => adPanelsMap.entries
-      .map((entry) => _ItemWidget(adPanels: entry.value, title: entry.key))
-      .toList();
+  List<Widget> getItems(BuildContext context) {
+    return adPanelsMap.entries
+        .map(
+          (entry) => _ItemWidget(
+            adPanels: entry.value,
+            title: entry.key,
+            onTap: isDetailAvailable
+                ? () {
+                    AdPanelScreen.navigate(context, adPanels: entry.value);
+                    context.pop();
+                  }
+                : null,
+          ),
+        )
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +111,7 @@ class MultiplePanelsFoundWidget extends StatelessWidget {
               color: context.colorPalette.background.onPrimary,
             ),
             const DSVerticalSpacerWidget(2),
-            ...items,
+            ...getItems(context),
             const DSVerticalSpacerWidget(1),
           ],
         ),
@@ -86,10 +121,11 @@ class MultiplePanelsFoundWidget extends StatelessWidget {
 }
 
 class _ItemWidget extends StatelessWidget {
-  const _ItemWidget({required this.adPanels, required this.title});
+  const _ItemWidget({required this.adPanels, required this.title, this.onTap});
 
   final List<AdPanelEntity> adPanels;
   final String title;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -115,10 +151,7 @@ class _ItemWidget extends StatelessWidget {
           style: context.typography.labelSmall,
           color: context.colorPalette.invertedBackground.onPrimary,
         ),
-        onTap: () {
-          AdPanelScreen.navigate(context, adPanels: adPanels);
-          context.pop();
-        },
+        onTap: onTap,
       ),
     );
   }

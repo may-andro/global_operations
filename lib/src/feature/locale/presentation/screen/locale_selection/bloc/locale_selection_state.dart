@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:global_ops/src/feature/locale/domain/domain.dart';
 
-abstract class LocaleSelectionState extends Equatable {
+sealed class LocaleSelectionState extends Equatable {
   const LocaleSelectionState();
 
   @override

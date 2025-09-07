@@ -1,18 +1,43 @@
 import 'package:firebase/firebase.dart';
+import 'package:global_ops/src/feature/ad_panel/data/data_source/ad_panel_collection_path_data_source.dart';
 import 'package:global_ops/src/feature/ad_panel/data/mapper/mapper.dart';
 import 'package:global_ops/src/feature/ad_panel/data/model/model.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 
 class AdPanelRepositoryImpl implements AdPanelRepository {
-  AdPanelRepositoryImpl(this._fbFirestoreController, this._adPanelMapper);
+  AdPanelRepositoryImpl(
+    this._fbFirestoreController,
+    this._adPanelMapper,
+    this._collectionPathDataSource,
+  );
 
   final FbFirestoreController _fbFirestoreController;
   final AdPanelMapper _adPanelMapper;
+  final AdPanelCollectionPathDataSource _collectionPathDataSource;
 
-  final List<AdPanelEntity> cachedAdPanels = [];
+  final List<AdPanelEntity> _cachedAdPanels = [];
 
   String? _lastDocumentId;
   bool _hasMoreData = true;
+
+  Future<String> get _collectionPath {
+    return _collectionPathDataSource.collectionPath;
+  }
+
+  @override
+  List<String> get collectionPaths {
+    return _collectionPathDataSource.collectionPaths;
+  }
+
+  @override
+  Stream<String> get collectionPathStream {
+    return _collectionPathDataSource.collectionPathStream;
+  }
+
+  @override
+  Future<void> updateCollectionPath(String value) {
+    return _collectionPathDataSource.setCollectionPath(value);
+  }
 
   @override
   Future<List<AdPanelEntity>> fetchAdPanels({
@@ -28,12 +53,12 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
     }
 
     // If requesting cached data and we have it, return it
-    if (!refresh && page == 1 && cachedAdPanels.isNotEmpty) {
-      if (limit != null && limit < cachedAdPanels.length) {
-        return cachedAdPanels.take(limit).toList();
+    if (!refresh && page == 1 && _cachedAdPanels.isNotEmpty) {
+      if (limit != null && limit < _cachedAdPanels.length) {
+        return _cachedAdPanels.take(limit).toList();
       }
 
-      return cachedAdPanels;
+      return _cachedAdPanels;
     }
 
     // If no more data available, return empty list
@@ -43,7 +68,7 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
 
     try {
       final dataMaps = await _fbFirestoreController.getCollectionQuerySnapshot(
-        _collectionPath,
+        await _collectionPath,
         field: field,
         isGreaterThanOrEqualTo: query,
         isLessThan: query != null ? '$query\uf8ff' : null,
@@ -72,18 +97,12 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
       }
 
       // Add to cache
-      cachedAdPanels.addAll(remotePanels);
+      _cachedAdPanels.addAll(remotePanels);
 
       return remotePanels;
     } catch (e) {
       rethrow;
     }
-  }
-
-  void _clearCache() {
-    cachedAdPanels.clear();
-    _lastDocumentId = null;
-    _hasMoreData = true;
   }
 
   @override
@@ -96,7 +115,7 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
 
     final geoCollectionWithDistance = await _fbFirestoreController
         .getGeoCollectionWithDistance(
-          collectionPath: _collectionPath,
+          collectionPath: await _collectionPath,
           center: center,
           radiusInKm: radiusInKm,
           field: 'geo',
@@ -112,24 +131,26 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
   Stream<List<AdPanelEntity>> getAdPanelsWithDistanceStream({
     required GeoFirePoint center,
     required double radiusInKm,
-  }) {
+  }) async* {
     GeoPoint geoPointFrom(Map<String, dynamic> data) =>
         (data['geo'] as Map<String, dynamic>)['geopoint'] as GeoPoint;
 
-    return _fbFirestoreController
-        .subscribeToGeoCollectionWithDistance(
-          collectionPath: _collectionPath,
-          center: center,
-          radiusInKm: radiusInKm,
-          field: 'geo',
-          geoPointFrom: geoPointFrom,
-        )
-        .map((list) {
-          return list
-              .map((map) => _adPanelMapper.to(AdPanelModel.fromJson(map)))
-              .nonNulls
-              .toList();
-        });
+    await for (final path in _collectionPathDataSource.collectionPathStream) {
+      yield* _fbFirestoreController
+          .subscribeToGeoCollectionWithDistance(
+            collectionPath: path,
+            center: center,
+            radiusInKm: radiusInKm,
+            field: 'geo',
+            geoPointFrom: geoPointFrom,
+          )
+          .map(
+            (list) => list
+                .map((map) => _adPanelMapper.to(AdPanelModel.fromJson(map)))
+                .nonNulls
+                .toList(),
+          );
+    }
   }
 
   @override
@@ -142,28 +163,15 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
           },
         )
         .toList();
-    await _fbFirestoreController.batchUpdateDocuments(_collectionPath, updates);
+    await _fbFirestoreController.batchUpdateDocuments(
+      await _collectionPath,
+      updates,
+    );
   }
 
-  String get _collectionPath {
-    //return 'snowflake_record_demo';
-    final date = DateTime.now();
-    return 'snowflake_record_${date.yearMonthWeek}';
-  }
-}
-
-extension on DateTime {
-  String get yearMonthWeek {
-    final d = DateTime.utc(year, this.month, day);
-    final dayNum = d.weekday == DateTime.sunday ? 7 : d.weekday;
-    final thursday = d.add(Duration(days: 4 - dayNum));
-
-    final yearStart = DateTime.utc(thursday.year);
-    final daysDiff = thursday.difference(yearStart).inDays;
-    final weekNo = ((daysDiff + 1) / 7).ceil();
-
-    final month = this.month.toString().padLeft(2, '0');
-
-    return '${thursday.year}-$month-W${weekNo.toString().padLeft(2, '0')}';
+  void _clearCache() {
+    _cachedAdPanels.clear();
+    _lastDocumentId = null;
+    _hasMoreData = true;
   }
 }

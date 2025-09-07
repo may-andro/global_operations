@@ -13,9 +13,7 @@ const List<AdPanelSortOption> _sortOptions = [
 ];
 
 class FilterSectionWidget extends StatefulWidget {
-  const FilterSectionWidget({super.key, required this.isEnabled});
-
-  final bool isEnabled;
+  const FilterSectionWidget({super.key});
 
   @override
   State<FilterSectionWidget> createState() => _FilterSectionWidgetState();
@@ -23,25 +21,20 @@ class FilterSectionWidget extends StatefulWidget {
 
 class _FilterSectionWidgetState extends State<FilterSectionWidget> {
   late TextEditingController _searchController;
+  late final FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
+    _focusNode = FocusNode();
     _searchController = TextEditingController();
   }
 
   @override
   void dispose() {
+    _focusNode.dispose();
     _searchController.dispose();
     super.dispose();
-  }
-
-  /// Extracts search query from the current state
-  String _getSearchQuery(ProximityAdPanelsState state) {
-    if (state is AdPanelsLoadedState) {
-      return state.searchQuery;
-    }
-    return '';
   }
 
   /// Updates search controller text if needed
@@ -59,25 +52,31 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProximityAdPanelsBloc, ProximityAdPanelsState>(
       listener: (context, state) {
-        final searchQuery = _getSearchQuery(state);
-        _updateSearchController(searchQuery);
+        if (state is AdPanelsLoadedState) {
+          _updateSearchController(state.searchQuery);
+          if (_searchController.text.isNotEmpty) {
+            //FocusScope.of(context).requestFocus(_focusNode);
+          }
+        }
       },
       builder: (context, state) {
-        if (!state.shouldShowWidget) {
+        final currentState = state;
+
+        // Only render if in loaded state
+        if (currentState is! AdPanelsLoadedState) {
           return const SizedBox.shrink();
         }
 
-        return _buildContent(context, state);
+        return _buildContent(context, currentState);
       },
     );
   }
 
-  /// Builds the main content widget
-  Widget _buildContent(BuildContext context, ProximityAdPanelsState state) {
-    final filterData = state.extractFilterData;
-
+  Widget _buildContent(BuildContext context, AdPanelsLoadedState state) {
     // Ensure the controller has the correct text
-    _updateSearchController(filterData.searchQuery);
+    _updateSearchController(state.searchQuery);
+
+    final resultCount = state.filteredAdPanelsMap.entries.length;
 
     return DsCardWidget(
       backgroundColor: context.colorPalette.background.primary,
@@ -93,11 +92,27 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSearchAndSortRow(filterData),
-            const DSVerticalSpacerWidget(1),
-            ResultCountWidget(
-              count: filterData.resultCount,
-              radiusInKm: filterData.radiusInKm,
+            if (state.isSearchFieldAvailable) ...[
+              _buildSearchAndSortRow(state),
+              const DSVerticalSpacerWidget(1),
+            ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ResultCountWidget(
+                  count: resultCount,
+                  radiusInKm: state.radiusInKm,
+                ),
+                Icon(
+                  resultCount == 0
+                      ? Icons.not_interested_rounded
+                      : Icons.done_all,
+                  color: state.isRefreshing
+                      ? context.colorPalette.background.primary.color
+                      : context.colorPalette.background.onPrimary.color,
+                  size: context.getTextHeight(context.typography.labelSmall, 1),
+                ),
+              ],
             ),
           ],
         ),
@@ -106,97 +121,44 @@ class _FilterSectionWidgetState extends State<FilterSectionWidget> {
   }
 
   /// Builds the search bar and sort button row
-  Widget _buildSearchAndSortRow(
-    ({
-      String searchQuery,
-      AdPanelSortOption sortOption,
-      AdPanelViewType viewType,
-      int radiusInKm,
-      int resultCount,
-    })
-    filterData,
-  ) {
+  Widget _buildSearchAndSortRow(AdPanelsLoadedState state) {
+    final sortOption = state.sortOption ?? _sortOptions.first;
     return Row(
       children: [
         Expanded(
           child: SearchWidget(
             searchController: _searchController,
-            searchQuery: filterData.searchQuery,
+            focusNode: _focusNode,
+            searchQuery: state.searchQuery,
             onSearch: (value) {
               context.read<ProximityAdPanelsBloc>().add(
                 UpdateSearchQueryEvent(value),
               );
             },
-            isEnabled: widget.isEnabled,
+            isEnabled: !state.isRefreshing,
           ),
         ),
         RadiusButtonWidget(
-          selected: filterData.radiusInKm,
+          selected: state.radiusInKm,
           onSelected: (radiusInKm) {
             context.read<ProximityAdPanelsBloc>().add(
               UpdateSearchRadiusEvent(radiusInKm),
             );
           },
-          isEnabled: widget.isEnabled,
+          isEnabled: !state.isRefreshing,
         ),
         SortButtonWidget(
-          selected: filterData.sortOption,
+          selected: sortOption,
           sortOptions: _sortOptions,
           onSelected: (sortOption) {
             context.read<ProximityAdPanelsBloc>().add(
               UpdateSortOptionEvent(sortOption),
             );
           },
-          isVisible: filterData.viewType.isListType,
-          isEnabled: widget.isEnabled,
+          isVisible: state.viewType.isListType && state.isSortButtonAvailable,
+          isEnabled: !state.isRefreshing,
         ),
       ],
     );
-  }
-}
-
-extension on ProximityAdPanelsState {
-  /// Checks if widget should be visible based on state
-  bool get shouldShowWidget {
-    return this is AdPanelsLoadedState || this is AdPanelsListLoadingState;
-  }
-
-  /// Extracts filter values from the current state
-  ({
-    String searchQuery,
-    AdPanelSortOption sortOption,
-    AdPanelViewType viewType,
-    int radiusInKm,
-    int resultCount,
-  })
-  get extractFilterData {
-    final loadedState = _getLoadedState;
-
-    final searchQuery = loadedState?.searchQuery ?? '';
-
-    final sortOption = loadedState?.sortOption ?? _sortOptions.first;
-
-    final viewType = loadedState?.viewType ?? AdPanelViewType.list;
-
-    final radiusInKm = loadedState?.radiusInKm ?? defaultSearchRadius;
-
-    final resultCount = loadedState?.filteredAdPanelsMap.entries.length ?? 0;
-
-    return (
-      searchQuery: searchQuery,
-      sortOption: sortOption,
-      viewType: viewType,
-      radiusInKm: radiusInKm,
-      resultCount: resultCount,
-    );
-  }
-
-  /// Gets the loaded state from current state
-  AdPanelsLoadedState? get _getLoadedState {
-    return switch (this) {
-      final AdPanelsLoadedState state => state,
-      final AdPanelsListLoadingState state => state.previousState,
-      _ => null,
-    };
   }
 }

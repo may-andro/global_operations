@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:global_ops/src/feature/feature_toggle/feature_toggle.dart';
 import 'package:global_ops/src/feature/location/location.dart';
 import 'package:global_ops/src/feature/setting/presentation/screen/bloc/setting_event.dart';
 import 'package:global_ops/src/feature/setting/presentation/screen/bloc/setting_state.dart';
@@ -9,9 +11,9 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
   SettingBloc(
     this._updateLocationBasedSearchEnabledUseCase,
     this._isLocationBasedSearchEnabledStreamUseCase,
-  ) : super(SettingInitialState()) {
+    this._isFeatureEnabledUseCase,
+  ) : super(const SettingInitialState()) {
     on<LoadSettingsEvent>(_mapLoadSettingsEventToState);
-    on<ChangeLanguageEvent>(_mapChangeLanguageEventToState);
     on<ToggleLocationBasedSearchEvent>(
       _mapToggleLocationBasedSearchEventToState,
     );
@@ -21,39 +23,24 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
   _isLocationBasedSearchEnabledStreamUseCase;
   final UpdateLocationBasedSearchEnabledUseCase
   _updateLocationBasedSearchEnabledUseCase;
+  final IsFeatureEnabledUseCase _isFeatureEnabledUseCase;
 
   Future<void> _mapLoadSettingsEventToState(
     LoadSettingsEvent event,
     Emitter<SettingState> emit,
   ) async {
-    emit(SettingInitialState());
+    emit(const SettingLoadingState());
+    final isLocationFeatureEnabled = await _isLocationFeatureEnabled;
     await emit.forEach<bool?>(
       _isLocationBasedSearchEnabledStreamUseCase(),
       onData: (enabled) {
         return SettingLoadedState(
-          userName: 'John Doe',
-          language: 'English',
           locationBasedSearch: enabled ?? true,
+          isLocationEnabled: isLocationFeatureEnabled,
         );
       },
       onError: (error, _) => SettingErrorState(error.toString()),
     );
-  }
-
-  FutureOr<void> _mapChangeLanguageEventToState(
-    ChangeLanguageEvent event,
-    Emitter<SettingState> emit,
-  ) {
-    if (state is SettingLoadedState) {
-      final current = state as SettingLoadedState;
-      emit(
-        SettingLoadedState(
-          userName: current.userName,
-          language: event.language,
-          locationBasedSearch: current.locationBasedSearch,
-        ),
-      );
-    }
   }
 
   FutureOr<void> _mapToggleLocationBasedSearchEventToState(
@@ -61,15 +48,15 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
     Emitter<SettingState> emit,
   ) async {
     await _updateLocationBasedSearchEnabledUseCase(event.enabled);
-    if (state is SettingLoadedState) {
-      final current = state as SettingLoadedState;
-      emit(
-        SettingLoadedState(
-          userName: current.userName,
-          language: current.language,
-          locationBasedSearch: event.enabled,
-        ),
-      );
+
+    final currentState = state;
+    if (currentState is SettingLoadedState) {
+      emit(currentState.copyWith(locationBasedSearch: event.enabled));
     }
+  }
+
+  Future<bool> get _isLocationFeatureEnabled async {
+    final eitherResult = await _isFeatureEnabledUseCase(Feature.locationSearch);
+    return eitherResult.fold((failure) => false, (isEnabled) => isEnabled);
   }
 }

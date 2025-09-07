@@ -13,7 +13,11 @@ class SettingModuleConfigurator implements ModuleConfigurator {
   @override
   void registerDependencies(ServiceLocator serviceLocator) {
     serviceLocator.registerFactory<SettingBloc>(
-      () => SettingBloc(serviceLocator.get(), serviceLocator.get()),
+      () => SettingBloc(
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/entity/ad_panel_entity.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/repository/repository.dart';
 import 'package:meta/meta.dart';
@@ -45,8 +46,8 @@ class GetAdPanelsUseCase
       page: input.page,
       refresh: input.refresh,
       field: input.field,
-      //query: input.query?.capitalize,
-      query: input.query?.toUpperCase(),
+      query: input.query?.capitalize,
+      //query: input.query?.toUpperCase(),
       limit: input.limit,
     );
 

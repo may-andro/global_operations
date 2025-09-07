@@ -3,12 +3,16 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/dto/dto.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/mixin/ad_panels_feature_flag_mixin.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/paginated_ad_panels/bloc/paginated_ad_panels_event.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/paginated_ad_panels/bloc/paginated_ad_panels_state.dart';
+import 'package:global_ops/src/feature/feature_toggle/feature_toggle.dart';
+import 'package:meta/meta.dart';
 
 class PaginatedAdPanelsBloc
-    extends Bloc<PaginatedAdPanelsEvent, PaginatedAdPanelsState> {
-  PaginatedAdPanelsBloc(this._getAdPanelsUseCase)
+    extends Bloc<PaginatedAdPanelsEvent, PaginatedAdPanelsState>
+    with AdPanelFeatureFLagsMixin {
+  PaginatedAdPanelsBloc(this._getAdPanelsUseCase, this._isFeatureEnabledUseCase)
     : super(const AdPanelsInitialState()) {
     _registerEventHandlers();
   }
@@ -18,6 +22,16 @@ class PaginatedAdPanelsBloc
   // ============================================================================
 
   final GetAdPanelsUseCase _getAdPanelsUseCase;
+  final IsFeatureEnabledUseCase _isFeatureEnabledUseCase;
+
+  // ============================================================================
+  // MIXIN OVERRIDES
+  // ============================================================================
+
+  @protected
+  @override
+  IsFeatureEnabledUseCase get isFeatureEnabledUseCase =>
+      _isFeatureEnabledUseCase;
 
   // ============================================================================
   // PRIVATE STATE
@@ -233,6 +247,7 @@ class PaginatedAdPanelsBloc
     Emitter<PaginatedAdPanelsState> emit, {
     required String searchQuery,
   }) async {
+    await initializeFeatureFlags();
     final adPanelsEither = await _getAdPanelsUseCase(
       GetAdPanelsParams(
         refresh: true,
@@ -278,6 +293,10 @@ class PaginatedAdPanelsBloc
       filterOption: _currentFilterOption,
       viewType: _currentViewType,
       hasMoreData: hasMoreData,
+      isAdPanelDetailEnabled: isAdPanelDetailEnabled,
+      isGoogleMapViewAvailable: isAdPanelGoogleMapEnabled,
+      isSearchFieldAvailable: isAdPanelSearchEnabled,
+      isSortButtonAvailable: isAdPanelSortEnabled,
     );
   }
 

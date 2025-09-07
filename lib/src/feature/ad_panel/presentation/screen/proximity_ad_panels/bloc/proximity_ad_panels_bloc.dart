@@ -3,11 +3,14 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/dto/dto.dart';
+import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panels/mixin/ad_panels_feature_flag_mixin.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_event.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_exceptions.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_state.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/proximity_ad_panels/bloc/proximity_ad_panels_utils.dart';
+import 'package:global_ops/src/feature/feature_toggle/feature_toggle.dart';
 import 'package:global_ops/src/feature/location/location.dart';
+import 'package:meta/meta.dart';
 
 /// Bloc for managing proximity-based ad panels functionality
 ///
@@ -19,10 +22,15 @@ import 'package:global_ops/src/feature/location/location.dart';
 /// - Error handling and retry logic
 class ProximityAdPanelsBloc
     extends Bloc<ProximityAdPanelsEvent, ProximityAdPanelsState>
-    with AdPanelsBusinessLogic, LocationUtilities, ErrorHandling {
+    with
+        AdPanelsBusinessLogic,
+        LocationUtilities,
+        ErrorHandling,
+        AdPanelFeatureFLagsMixin {
   ProximityAdPanelsBloc(
     this._getAdPanelsWithinDistanceStreamUseCase,
     this._updateLocationBasedSearchEnabledUseCase,
+    this._isFeatureEnabledUseCase,
   ) : super(const AdPanelsInitialState()) {
     _registerEventHandlers();
   }
@@ -35,6 +43,16 @@ class ProximityAdPanelsBloc
   _getAdPanelsWithinDistanceStreamUseCase;
   final UpdateLocationBasedSearchEnabledUseCase
   _updateLocationBasedSearchEnabledUseCase;
+  final IsFeatureEnabledUseCase _isFeatureEnabledUseCase;
+
+  // ============================================================================
+  // MIXIN OVERRIDES
+  // ============================================================================
+
+  @protected
+  @override
+  IsFeatureEnabledUseCase get isFeatureEnabledUseCase =>
+      _isFeatureEnabledUseCase;
 
   // ============================================================================
   // PRIVATE STATE
@@ -80,8 +98,8 @@ class ProximityAdPanelsBloc
     Emitter<ProximityAdPanelsState> emit,
   ) async {
     try {
-      _lastLocation = event.location;
       emit(const AdPanelsLoadingState());
+      _lastLocation = event.location;
       await _loadAdPanelsStream(
         location: event.location,
         emit: emit,
@@ -180,17 +198,20 @@ class ProximityAdPanelsBloc
   ) async {
     if (_lastLocation == null) return;
 
+    final currentState = state;
+
+    if (currentState is! AdPanelsLoadedState ||
+        event.radiusInKm == currentState.radiusInKm) {
+      // No change in radius, do nothing
+      return;
+    }
+
     try {
       final searchQuery = _extractSearchQueryFromCurrentState();
 
-      if (state is AdPanelsLoadedState) {
-        final currentState = state as AdPanelsLoadedState;
-        emit(
-          AdPanelsListLoadingState(
-            previousState: currentState.copyWith(radiusInKm: event.radiusInKm),
-          ),
-        );
-      }
+      emit(
+        currentState.copyWith(isRefreshing: true, radiusInKm: event.radiusInKm),
+      );
 
       await _loadAdPanelsStream(
         location: _lastLocation!,
@@ -302,6 +323,7 @@ class ProximityAdPanelsBloc
     required String searchQuery,
     int? radiusInKm,
   }) async {
+    await initializeFeatureFlags();
     await emit.forEach<List<AdPanelEntity>>(
       _getAdPanelsWithinDistanceStreamUseCase(
         GetAdPanelsWithinDistanceStreamParams(
@@ -335,6 +357,10 @@ class ProximityAdPanelsBloc
       sortOption: _currentSortOption,
       viewType: _currentViewType,
       radiusInKm: radiusInKm ?? _currentRadius,
+      isAdPanelDetailEnabled: isAdPanelDetailEnabled,
+      isSortButtonAvailable: isAdPanelSortEnabled,
+      isSearchFieldAvailable: isAdPanelSearchEnabled,
+      isGoogleMapViewAvailable: isAdPanelGoogleMapEnabled,
     );
   }
 
