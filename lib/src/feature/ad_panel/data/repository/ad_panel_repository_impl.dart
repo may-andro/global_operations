@@ -1,5 +1,5 @@
 import 'package:firebase/firebase.dart';
-import 'package:global_ops/src/feature/ad_panel/data/data_source/ad_panel_data_source.dart';
+import 'package:global_ops/src/feature/ad_panel/data/data_source/ad_panel_collection_path_data_source.dart';
 import 'package:global_ops/src/feature/ad_panel/data/mapper/mapper.dart';
 import 'package:global_ops/src/feature/ad_panel/data/model/model.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';

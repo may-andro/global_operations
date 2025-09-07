@@ -2,12 +2,18 @@ import 'dart:async';
 
 import 'package:core/core.dart';
 import 'package:global_ops/src/feature/ad_panel/data/cache/ad_panel_data_collection_path_cache.dart';
+import 'package:global_ops/src/feature/feature_toggle/feature_toggle.dart';
 
 class AdPanelCollectionPathDataSource {
-  AdPanelCollectionPathDataSource(this._cache, this._buildConfig) {
+  AdPanelCollectionPathDataSource(
+    this._cache,
+    this._buildConfig,
+    this._featureFlagRepository,
+  ) {
     _initStream();
   }
 
+  final FeatureFlagRepository _featureFlagRepository;
   final AdPanelDataCollectionPathCache _cache;
   final BuildConfig _buildConfig;
 
@@ -27,6 +33,13 @@ class AdPanelCollectionPathDataSource {
   }
 
   Future<String> get collectionPath async {
+    final isFeatureEnabled = await _featureFlagRepository.isFeatureEnabled(
+      Feature.forceDemoData,
+    );
+    if (isFeatureEnabled) {
+      return collectionPaths[0];
+    }
+
     final cachedCollectionPath = await _cache.get();
     if (cachedCollectionPath != null) {
       return cachedCollectionPath;
@@ -59,16 +72,20 @@ class AdPanelCollectionPathDataSource {
 
 extension on DateTime {
   String get yearMonthWeek {
-    final d = DateTime.utc(year, this.month, day);
-    final dayNum = d.weekday == DateTime.sunday ? 7 : d.weekday;
-    final thursday = d.add(Duration(days: 4 - dayNum));
+    final utcDate = toUtc();
+    final dayOfWeek = utcDate.weekday == DateTime.sunday ? 7 : utcDate.weekday;
+    final thursday = utcDate.subtract(Duration(days: dayOfWeek - 4));
+    final isoYear = thursday.year;
+    final firstThursday = DateTime.utc(isoYear, 1, 4);
+    final firstThursdayWeekday = firstThursday.weekday == DateTime.sunday
+        ? 7
+        : firstThursday.weekday;
+    final firstIsoThursday = firstThursday.subtract(
+      Duration(days: firstThursdayWeekday - 4),
+    );
+    final weekNumber =
+        ((thursday.difference(firstIsoThursday).inDays) / 7).floor() + 1;
 
-    final yearStart = DateTime.utc(thursday.year);
-    final daysDiff = thursday.difference(yearStart).inDays;
-    final weekNo = ((daysDiff + 1) / 7).ceil();
-
-    final month = this.month.toString().padLeft(2, '0');
-
-    return '${thursday.year}-$month-W${weekNo.toString().padLeft(2, '0')}';
+    return '$isoYear-W${weekNumber.toString().padLeft(2, '0')}';
   }
 }

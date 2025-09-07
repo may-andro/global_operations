@@ -16,7 +16,7 @@ class AdPanelDbSourceWidget extends StatelessWidget {
         builder: (context, state) {
           if (state is AdPanelDbSourceLoadingState) {
             return Center(
-              child: DSLoadingWidget(size: context.space(factor: 2)),
+              child: DSLoadingWidget(size: context.space(factor: 5)),
             );
           } else if (state is AdPanelDbSourceErrorState) {
             return DSTextWidget(
@@ -40,34 +40,58 @@ class AdPanelDbSourceWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    DSTextWidget(
+                      'Select data source ${state.isEnabled ? '' : '(Not Allowed)'}',
+                      color: context.colorPalette.invertedBackground.onPrimary,
+                      style: context.typography.bodyLarge,
+                    ),
+                    DSTextWidget(
+                      'Use Staging for testing. Choose Production for live, reliable data.',
+                      color: context.colorPalette.invertedBackground.onPrimary,
+                      style: context.typography.bodySmall,
+                    ),
                     DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: state.selectedSource,
-                        //padding: EdgeInsets.zero,
-                        isDense: true,
                         items: state.sources
                             .map(
                               (source) => DropdownMenuItem<String>(
                                 value: source,
+                                enabled: state.isEnabled,
                                 child: Row(
                                   children: [
                                     Icon(
-                                      Icons.data_object_rounded,
-                                      color: context
-                                          .colorPalette
-                                          .invertedBackground
-                                          .onPrimary
-                                          .color,
+                                      source.contains('demo')
+                                          ? Icons.flaky_rounded
+                                          : Icons.cloud_done_rounded,
+                                      color: state.isEnabled
+                                          ? context
+                                                .colorPalette
+                                                .invertedBackground
+                                                .onPrimary
+                                                .color
+                                          : context
+                                                .colorPalette
+                                                .semantic
+                                                .error
+                                                .color,
                                     ),
                                     const DSHorizontalSpacerWidget(1),
                                     Expanded(
                                       child: DSTextWidget(
-                                        source,
+                                        source.contains('demo')
+                                            ? 'Staging'
+                                            : 'Latest Production',
                                         style: context.typography.bodyLarge,
-                                        color: context
-                                            .colorPalette
-                                            .invertedBackground
-                                            .onPrimary,
+                                        color: state.isEnabled
+                                            ? context
+                                                  .colorPalette
+                                                  .invertedBackground
+                                                  .onPrimary
+                                            : context
+                                                  .colorPalette
+                                                  .semantic
+                                                  .error,
                                       ),
                                     ),
                                   ],
@@ -75,20 +99,24 @@ class AdPanelDbSourceWidget extends StatelessWidget {
                               ),
                             )
                             .toList(),
-                        onChanged: (value) {
-                          if (value == null) {
-                            return;
-                          }
-                          context.bloc.add(SelectDbSourceEvent(value));
-                        },
+                        onChanged: state.isEnabled
+                            ? (value) {
+                                if (value == null) {
+                                  return;
+                                }
+                                context.bloc.add(SelectDbSourceEvent(value));
+                              }
+                            : null,
                         isExpanded: true,
                         icon: Icon(
                           Icons.arrow_drop_down,
-                          color: context
-                              .colorPalette
-                              .invertedBackground
-                              .onPrimary
-                              .color,
+                          color: state.isEnabled
+                              ? context
+                                    .colorPalette
+                                    .invertedBackground
+                                    .onPrimary
+                                    .color
+                              : context.colorPalette.semantic.error.color,
                         ),
                         style: context.typography.bodyLarge.textStyle,
                         dropdownColor: context
@@ -97,11 +125,6 @@ class AdPanelDbSourceWidget extends StatelessWidget {
                             .primary
                             .color,
                       ),
-                    ),
-                    DSTextWidget(
-                      'Select your data source. Use Staging for testing or previewing changes. Choose Production for live, reliable data.',
-                      color: context.colorPalette.invertedBackground.onPrimary,
-                      style: context.typography.bodySmall,
                     ),
                   ],
                 ),

@@ -42,6 +42,11 @@ enum Feature {
     key: 'feature_location_search',
     title: 'Location Search',
     icon: Icons.location_on,
+  ),
+  forceDemoData(
+    key: 'feature_force_demo_data',
+    title: 'Force Demo Data',
+    icon: Icons.developer_mode_outlined,
   );
 
   const Feature({required this.key, required this.title, required this.icon});

@@ -1,6 +1,6 @@
 import 'package:global_ops/src/feature/ad_panel/data/cache/ad_panel_data_collection_path_cache.dart';
 import 'package:global_ops/src/feature/ad_panel/data/data.dart';
-import 'package:global_ops/src/feature/ad_panel/data/data_source/ad_panel_data_source.dart';
+import 'package:global_ops/src/feature/ad_panel/data/data_source/ad_panel_collection_path_data_source.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/presentation.dart';
 import 'package:global_ops/src/feature/ad_panel/presentation/screen/ad_panel/bloc/bloc.dart';
@@ -36,6 +36,7 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     );
     serviceLocator.registerSingleton<AdPanelCollectionPathDataSource>(
       () => AdPanelCollectionPathDataSource(
+        serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),
       ),
@@ -115,6 +116,7 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     );
     serviceLocator.registerFactory<AdPanelDbSourceBloc>(
       () => AdPanelDbSourceBloc(
+        serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),
