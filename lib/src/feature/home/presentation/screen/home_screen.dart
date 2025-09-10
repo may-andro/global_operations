@@ -77,6 +77,5 @@ class _ContentWidget extends StatelessWidget {
         child: IndexedStack(index: selectedIndex, children: _pages),
       ),
     );
-    return IndexedStack(index: selectedIndex, children: _pages);
   }
 }

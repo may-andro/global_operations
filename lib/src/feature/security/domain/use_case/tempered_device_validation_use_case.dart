@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:core/core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:global_ops/src/feature/feature_toggle/feature_toggle.dart';
 import 'package:global_ops/src/feature/security/domain/repository/tempered_device_repository.dart';
 import 'package:meta/meta.dart' as meta;
