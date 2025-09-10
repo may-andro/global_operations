@@ -37,16 +37,21 @@ enum Feature {
     title: 'Delete Account',
     icon: Icons.delete_forever_rounded,
   ),
+  forceDemoData(
+    key: 'feature_force_demo_data',
+    title: 'Force Demo Data',
+    icon: Icons.developer_mode_outlined,
+  ),
   googleMap(key: 'feature_google_map', title: 'Google Map', icon: Icons.map),
   locationSearch(
     key: 'feature_location_search',
     title: 'Location Search',
     icon: Icons.location_on,
   ),
-  forceDemoData(
-    key: 'feature_force_demo_data',
-    title: 'Force Demo Data',
-    icon: Icons.developer_mode_outlined,
+  temperedDeviceSafety(
+    key: 'feature_tempered_device_safety',
+    title: 'Tempered Device Safety',
+    icon: Icons.safety_check_rounded,
   );
 
   const Feature({required this.key, required this.title, required this.icon});

@@ -10,6 +10,7 @@ import 'package:global_ops/src/feature/file_picker/file_picker.dart';
 import 'package:global_ops/src/feature/home/home.dart';
 import 'package:global_ops/src/feature/locale/locale.dart';
 import 'package:global_ops/src/feature/location/location.dart';
+import 'package:global_ops/src/feature/security/security.dart';
 import 'package:global_ops/src/feature/setting/setting.dart';
 import 'package:global_ops/src/feature/system_permission/system_permission.dart';
 import 'package:global_ops/src/module_injector/app_module_configurator.dart';
@@ -42,6 +43,7 @@ List<ModuleConfigurator> getModuleConfigurators(BuildConfig buildConfig) => [
   SystemPermissionModuleConfigurator(),
   LocationModuleConfigurator(),
   FeatureToggleModuleConfigurator(),
+  SecurityModuleConfigurator(),
   AuthenticationModuleConfigurator(),
   SettingModuleConfigurator(),
   DevelopSettingModuleConfigurator(),
