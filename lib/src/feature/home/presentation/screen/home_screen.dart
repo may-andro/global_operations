@@ -4,6 +4,7 @@ import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
 import 'package:global_ops/src/feature/developer_setting/developer_setting.dart';
 import 'package:global_ops/src/feature/home/presentation/screen/bloc/bloc.dart';
 import 'package:global_ops/src/feature/home/presentation/screen/widget/widget.dart';
+import 'package:global_ops/src/feature/security/security.dart';
 import 'package:global_ops/src/feature/setting/setting.dart';
 import 'package:global_ops/src/module_injector/app_module_configurator.dart';
 
@@ -71,6 +72,11 @@ class _ContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return TemperedDeviceNudgeWidget(
+      child: DateTimeValidationNudgeWidget(
+        child: IndexedStack(index: selectedIndex, children: _pages),
+      ),
+    );
     return IndexedStack(index: selectedIndex, children: _pages);
   }
 }
