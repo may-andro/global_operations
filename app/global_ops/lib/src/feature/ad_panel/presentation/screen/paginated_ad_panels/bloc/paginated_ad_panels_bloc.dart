@@ -306,10 +306,9 @@ class PaginatedAdPanelsBloc
         : _currentFilterOption.paginationLimit;
 
     // Expand the limit to cover every page the user had already loaded.
-    final effectiveLimit =
-        defaultLimit != null && preserveUpToPage > 1
-            ? defaultLimit * preserveUpToPage
-            : defaultLimit;
+    final effectiveLimit = defaultLimit != null && preserveUpToPage > 1
+        ? defaultLimit * preserveUpToPage
+        : defaultLimit;
 
     final adPanelsEither = await _getAdPanelsUseCase(
       GetAdPanelsParams(
@@ -350,11 +349,13 @@ class PaginatedAdPanelsBloc
 
     // Use effectiveLimit when provided (refresh case), otherwise derive from
     // the filter option as usual.
-    final limitForCheck = effectiveLimit ??
+    final limitForCheck =
+        effectiveLimit ??
         (searchQuery.isEmpty
             ? _currentFilterOption.defaultPaginationLimit
             : _currentFilterOption.paginationLimit);
-    final hasMoreData = limitForCheck != null && adPanels.length >= limitForCheck;
+    final hasMoreData =
+        limitForCheck != null && adPanels.length >= limitForCheck;
 
     return AdPanelsLoadedState(
       adPanelsMap: sortedMap,

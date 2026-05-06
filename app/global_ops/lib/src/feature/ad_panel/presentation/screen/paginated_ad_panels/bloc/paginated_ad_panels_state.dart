@@ -102,8 +102,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
           isSortButtonAvailable ?? this.isSortButtonAvailable,
       isSearchFieldAvailable:
           isSearchFieldAvailable ?? this.isSearchFieldAvailable,
-      objectNumberToScrollTo:
-          objectNumbersToScrollTo ?? this.objectNumberToScrollTo,
+      objectNumberToScrollTo: objectNumbersToScrollTo ?? objectNumberToScrollTo,
     );
   }
 
