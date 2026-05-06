@@ -73,6 +73,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install lcov
 
+      - name: Normalize lcov source paths for workspace layout
+        working-directory: app/global_ops
+        run: |
+          # Make source-file entries resolvable when genhtml runs from repo root.
+          sed -i "s|^SF:lib/|SF:${GITHUB_WORKSPACE}/app/global_ops/lib/|g" coverage/lcov.info
+
       - name: Generate code coverage report from lcov.info
         uses: zgosalvez/github-actions-report-lcov@v4.1.22
         with:
