@@ -41,7 +41,7 @@ on:
 env:
   FLUTTER_VERSION: 3.32.2
   JAVA_VERSION: "17"
-  PROPERTIES_PATH: "./android/key.properties"
+  PROPERTIES_PATH: "./app/global_ops/android/key.properties"
 
 jobs:
   create_release_artifact:
@@ -79,32 +79,32 @@ jobs:
 
       - name: Add Google Services in android directory
         run: |
-          echo "${{ secrets.GOOGLE_SERVICES_BASE64 }}" | base64 --decode > ${{ github.workspace }}/android/app/google-services.json
+          echo "${{ secrets.GOOGLE_SERVICES_BASE64 }}" | base64 --decode > ${{ github.workspace }}/app/global_ops/android/app/google-services.json
 
       - name: Create signing directory
-        run: mkdir -p android/app/.signing
+        run: mkdir -p app/global_ops/android/app/.signing
 
       - name: Decoding base64 key into a file
-        run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > android/app/.signing/keystore.jks
+        run: echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > app/global_ops/android/app/.signing/keystore.jks
 
       - name: Create the key.properties
         run: |
-          echo "storeFile=.signing/keystore.jks" > android/key.properties
+          echo "storeFile=.signing/keystore.jks" > app/global_ops/android/key.properties
           echo "storePassword=${{ secrets.SIGNING_STORE_PASSWORD }}" >> ${{env.PROPERTIES_PATH}}
           echo "keyPassword=${{ secrets.SIGNING_KEY_PASSWORD }}" >> ${{env.PROPERTIES_PATH}}
           echo "keyAlias=${{ secrets.SIGNING_KEY_ALIAS }}" >> ${{env.PROPERTIES_PATH}}
 
       - name: Create the local.properties
         run: |
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > android/local.properties
-          echo "googleMapsApiKey=${{ secrets.ANDROID_GOOGLE_MAP_KEY }}" >> android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > app/global_ops/android/local.properties
+          echo "googleMapsApiKey=${{ secrets.ANDROID_GOOGLE_MAP_KEY }}" >> app/global_ops/android/local.properties
 
       - name: Extract version and build name from tag
         run: |
           if [ "$GITHUB_REF_TYPE" != "tag" ]; then
             echo "Ref name $GITHUB_REF_NAME is not a tag but a $GITHUB_REF_TYPE, not setting version and build name"
           else
-            version=$(echo $GITHUB_REF_NAME | sed "s/-review//" | sed "s/-prod//") && sed -i "s/^version: .*$/version: $version/g" pubspec.yaml
+            version=$(echo $GITHUB_REF_NAME | sed "s/-review//" | sed "s/-prod//") && sed -i "s/^version: .*$/version: $version/g" app/global_ops/pubspec.yaml
             build_name=$(echo $GITHUB_REF_NAME | sed -E 's/.*\+([0-9]+).*/\1/')
             echo "Extracted version: $version"
             echo "Extracted build name: $build_name"
@@ -116,7 +116,7 @@ jobs:
       - name: Update pubspec.yaml with extracted version
         run: |
           if [ -n "${{ steps.extract_version_and_build_name.outputs.version }}" ]; then
-          sed -i "s/^version: .*$/version: ${{ steps.extract_version_and_build_name.outputs.version }}/g" pubspec.yaml
+          sed -i "s/^version: .*$/version: ${{ steps.extract_version_and_build_name.outputs.version }}/g" app/global_ops/pubspec.yaml
           fi
 
       - name: Setup Melos
@@ -130,10 +130,12 @@ jobs:
         run: melos gen_icon
 
       - name: Build apk file
+        working-directory: app/global_ops
         run: flutter build apk --dart-define=build_env=prod --build-name=${{ steps.extract_version_and_build_name.outputs.build_name }}
         timeout-minutes: 20
 
       - name: Build aab file
+        working-directory: app/global_ops
         run: flutter build appbundle --dart-define=build_env=prod
 
       - name: Upload APK artifact to Github
@@ -141,7 +143,7 @@ jobs:
         if: inputs.upload_to_github == 'true'
         with:
           name: app-release.apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: app/global_ops/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 7
 
       - name: Upload AAB artifact to Github
@@ -149,7 +151,7 @@ jobs:
         if: inputs.upload_to_github == 'true'
         with:
           name: app-release.aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: app/global_ops/build/app/outputs/bundle/release/app-release.aab
           retention-days: 7
 
       - name: Upload APK to Firebase
@@ -159,7 +161,7 @@ jobs:
           appId: ${{ secrets.FIREBASE_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           groups: ${{ inputs.upload_to_play_store == 'true' && 'release_review' || 'review' }}
-          file: build/app/outputs/flutter-apk/app-release.apk
+          file: app/global_ops/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload AAB to Play Store
         if: inputs.upload_to_play_store == 'true'
@@ -167,7 +169,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.PLAYSTORE_SERVICE_ACCOUNT }}
           packageName: com.global.global_ops
-          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          releaseFiles: app/global_ops/build/app/outputs/bundle/release/app-release.aab
           track: alpha
 
 

@@ -45,15 +45,18 @@ jobs:
         run: flutter pub get
 
       - name: Format the Dart code
+        working-directory: app/global_ops
         run: dart format lib test --set-exit-if-changed
 
       - name: Run code generator
         run: melos gen_app --no-select
 
       - name: Statically analyze the code
+        working-directory: app/global_ops
         run: flutter analyze
 
       - name: Run unit tests
+        working-directory: app/global_ops
         run: flutter test --exclude-tags golden --coverage --machine > test-results.json --no-pub
 
       - name: Generate test report
@@ -61,7 +64,7 @@ jobs:
         if: always()
         with:
           name: Test Results
-          path: test-results.json
+          path: app/global_ops/test-results.json
           reporter: flutter-json
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -73,7 +76,7 @@ jobs:
       - name: Generate code coverage report from lcov.info
         uses: zgosalvez/github-actions-report-lcov@v4.1.22
         with:
-          coverage-files: coverage/lcov.info
+          coverage-files: app/global_ops/coverage/lcov.info
           minimum-coverage: 0
           artifact-name: code-coverage-report
           github-token: ${{ secrets.GITHUB_TOKEN }}
