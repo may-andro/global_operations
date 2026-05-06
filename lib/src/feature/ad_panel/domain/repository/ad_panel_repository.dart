@@ -27,4 +27,8 @@ abstract class AdPanelRepository {
   });
 
   Future<void> updateAdPanels(List<AdPanelEntity> adPanels);
+
+  Stream<List<AdPanelEntity>> get adPanelsUpdatedStream;
+
+  void cleanRefreshedAdPanels();
 }

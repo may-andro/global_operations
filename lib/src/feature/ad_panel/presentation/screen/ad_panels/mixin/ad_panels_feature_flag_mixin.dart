@@ -43,7 +43,7 @@ mixin AdPanelFeatureFLagsMixin {
     final eitherResult = await isFeatureEnabledUseCase(Feature.adPanelSort);
     _isAdPanelSortEnabled = eitherResult.fold(
       (failure) => false,
-      (isEnabled) => isEnabled,
+      (_) => false, // This feature is currently disabled for paginated panels
     );
   }
 

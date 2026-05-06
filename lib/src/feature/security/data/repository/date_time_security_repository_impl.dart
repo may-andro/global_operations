@@ -1,18 +1,18 @@
 import 'dart:async';
 
+import 'package:firebase/firebase.dart';
 import 'package:global_ops/src/feature/security/domain/domain.dart';
 import 'package:log_reporter/log_reporter.dart';
 import 'package:ntp/ntp.dart';
-import 'package:remote/remote.dart';
 
 class DateTimeSecurityRepositoryImpl implements DateTimeSecurityRepository {
-  DateTimeSecurityRepositoryImpl(this._apiService, this._logReporter);
+  DateTimeSecurityRepositoryImpl(this._fbFunctionController, this._logReporter);
 
-  final RestApiService _apiService;
+  final FbFunctionController _fbFunctionController;
   final LogReporter _logReporter;
 
   final int _thresholdSeconds = 60;
-  final httpFallbackUrl = 'http://worldtimeapi.org/api/ip';
+  final httpFallbackUrl = 'https://worldtimeapi.org/api/ip';
 
   @override
   Future<bool> validateDateTime() async {
@@ -46,9 +46,9 @@ class DateTimeSecurityRepositoryImpl implements DateTimeSecurityRepository {
   }
 
   Future<DateTime> _getApiTime() async {
-    final response = await _apiService.get<Map<String, dynamic>>(
-      httpFallbackUrl,
-    );
+    final response =
+        await _fbFunctionController.callFunction('getCurrentServerTime')
+            as Map<String, dynamic>?;
     final utcTimeString = response?['utc_datetime'] as String?;
     if (utcTimeString == null) {
       throw DateTimeValidationException(

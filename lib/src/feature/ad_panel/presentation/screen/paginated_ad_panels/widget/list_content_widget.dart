@@ -41,57 +41,113 @@ class _ListContentWidgetState extends State<ListContentWidget> {
     return currentScroll >= (maxScroll * 0.9); // Load more when 90% scrolled
   }
 
+  void _scrollToUpdatedItems(String objectNumber) {
+    if (!_scrollController.hasClients) return;
+
+    final panelObjectNumbers = widget.state.filteredAdPanelsMap.keys.toList();
+    final targetIndex = panelObjectNumbers.indexOf(objectNumber);
+    if (targetIndex == -1) return;
+
+    // The list/grid has EdgeInsets.all(space(factor: 2)) padding around it.
+    // That top-padding is paid ONCE, not per item.
+    // AdPanelWidget.getHeight() already includes the card's bottom margin,
+    // so itemHeight per slot = getHeight() with no extra spacing added.
+    final topPadding = context.space(factor: 2);
+    double targetOffset;
+
+    if (context.isMobile) {
+      final itemHeight = AdPanelWidget.getHeight(context);
+      targetOffset = topPadding + targetIndex * itemHeight;
+    } else {
+      final crossAxisCount = context.crossAxisCount;
+      final rowIndex = targetIndex ~/ crossAxisCount;
+      // GridView has no mainAxisSpacing, so each row is exactly itemHeight tall.
+      final itemHeight = AdPanelWidget.getHeight(context);
+      targetOffset = topPadding + rowIndex * itemHeight;
+    }
+
+    _scrollController.animateTo(
+      targetOffset.clamp(0.0, _scrollController.position.maxScrollExtent),
+      duration: 500.ms,
+      curve: Curves.easeInOut,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final panelsMap = widget.state.filteredAdPanelsMap;
     final panelObjectNumbers = panelsMap.keys.toList();
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<PaginatedAdPanelsBloc>().add(const RefreshAdPanelsEvent());
+    return BlocListener<PaginatedAdPanelsBloc, PaginatedAdPanelsState>(
+      // Only scroll when the scroll-target changes to a new non-null value.
+      // This prevents re-triggering the scroll on every LoadMore state update,
+      // which preserves the existing objectNumberToScrollTo in copyWith.
+      listenWhen: (previous, current) {
+        if (current is! AdPanelsLoadedState) return false;
+        final scrollTarget = current.objectNumberToScrollTo;
+        if (scrollTarget == null || scrollTarget.isEmpty) return false;
+        if (previous is! AdPanelsLoadedState) return true;
+        return previous.objectNumberToScrollTo != scrollTarget;
       },
-      child: Stack(
-        children: [
-          if (widget.state.isRefreshing)
-            DSLoadingWidget(size: context.space(factor: 5))
-          else if (widget.state.isFilteredEmpty &&
-              widget.state.hasActiveFilters)
-            NoResultFoundWidget(
-              onRefresh: () {
-                context.read<PaginatedAdPanelsBloc>().add(
-                  const ClearAdPanelsFiltersEvent(),
-                );
-              },
-            )
-          else if (panelObjectNumbers.isEmpty)
-            EmptyContentWidget(
-              onRefresh: () {
-                context.read<PaginatedAdPanelsBloc>().add(
-                  const LoadAdPanelsEvent(),
-                );
-              },
-            )
-          else
-            SafeArea(
-              child: context.isMobile
-                  ? _ListWidget(
-                      panelsMap: panelsMap,
-                      panelObjectNumbers: panelObjectNumbers,
-                      scrollController: _scrollController,
-                      hasMoreData: widget.state.hasMoreData,
-                      isLoadingMore: widget.state.isLoadingMore,
-                      isDetailAvailable: widget.state.isAdPanelDetailEnabled,
-                    )
-                  : _GridWidget(
-                      panelsMap: panelsMap,
-                      panelObjectNumbers: panelObjectNumbers,
-                      scrollController: _scrollController,
-                      hasMoreData: widget.state.hasMoreData,
-                      isLoadingMore: widget.state.isLoadingMore,
-                      isDetailAvailable: widget.state.isAdPanelDetailEnabled,
-                    ),
-            ),
-        ],
+      listener: (context, state) {
+        if (state is AdPanelsLoadedState && !state.isRefreshing) {
+          // Wait a frame for the UI to rebuild after refresh
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (state.objectNumberToScrollTo case final String objectNumber) {
+              _scrollToUpdatedItems(objectNumber);
+            }
+          });
+        }
+      },
+      child: RefreshIndicator(
+        onRefresh: () async {
+          context.read<PaginatedAdPanelsBloc>().add(
+            const RefreshAdPanelsEvent(),
+          );
+        },
+        child: Stack(
+          children: [
+            if (widget.state.isRefreshing)
+              DSLoadingWidget(size: context.space(factor: 5))
+            else if (widget.state.isFilteredEmpty &&
+                widget.state.hasActiveFilters)
+              NoResultFoundWidget(
+                onRefresh: () {
+                  context.read<PaginatedAdPanelsBloc>().add(
+                    const ClearAdPanelsFiltersEvent(),
+                  );
+                },
+              )
+            else if (panelObjectNumbers.isEmpty)
+              EmptyContentWidget(
+                onRefresh: () {
+                  context.read<PaginatedAdPanelsBloc>().add(
+                    const LoadAdPanelsEvent(),
+                  );
+                },
+              )
+            else
+              SafeArea(
+                child: context.isMobile
+                    ? _ListWidget(
+                        panelsMap: panelsMap,
+                        panelObjectNumbers: panelObjectNumbers,
+                        scrollController: _scrollController,
+                        hasMoreData: widget.state.hasMoreData,
+                        isLoadingMore: widget.state.isLoadingMore,
+                        isDetailAvailable: widget.state.isAdPanelDetailEnabled,
+                      )
+                    : _GridWidget(
+                        panelsMap: panelsMap,
+                        panelObjectNumbers: panelObjectNumbers,
+                        scrollController: _scrollController,
+                        hasMoreData: widget.state.hasMoreData,
+                        isLoadingMore: widget.state.isLoadingMore,
+                        isDetailAvailable: widget.state.isAdPanelDetailEnabled,
+                      ),
+              ),
+          ],
+        ),
       ),
     );
   }

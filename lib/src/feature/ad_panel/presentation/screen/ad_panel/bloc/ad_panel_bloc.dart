@@ -19,6 +19,7 @@ class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState>
     this.deleteAdPanelImageUseCase,
     this._imagePickerUseCase,
     this._filePickerUseCase,
+    this._resetModifiedAdPanelsUseCase,
     this.logReporter,
   ) : super(const AdPanelInitialState()) {
     on<LoadAdPanelsEvent>(_mapLoadAdPanelsEventToState);
@@ -39,6 +40,7 @@ class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState>
   final DeleteAdPanelImageUseCase deleteAdPanelImageUseCase;
   final ImagePickerUseCase _imagePickerUseCase;
   final FilePickerUseCase _filePickerUseCase;
+  final ResetModifiedAdPanelsUseCase _resetModifiedAdPanelsUseCase;
   @override
   final LogReporter logReporter;
 
@@ -85,6 +87,8 @@ class AdPanelBloc extends Bloc<AdPanelEvent, AdPanelState>
     Emitter<AdPanelState> emit,
   ) {
     emit(const AdPanelLoadingState());
+
+    _resetModifiedAdPanelsUseCase();
 
     // Sort panels by objectFaceId
     final sortedPanels = List<AdPanelEntity>.from(event.adPanels)

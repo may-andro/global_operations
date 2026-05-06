@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase/firebase.dart';
 import 'package:global_ops/src/feature/ad_panel/data/data_source/ad_panel_collection_path_data_source.dart';
 import 'package:global_ops/src/feature/ad_panel/data/mapper/mapper.dart';
 import 'package:global_ops/src/feature/ad_panel/data/model/model.dart';
 import 'package:global_ops/src/feature/ad_panel/domain/domain.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AdPanelRepositoryImpl implements AdPanelRepository {
   AdPanelRepositoryImpl(
@@ -19,6 +22,12 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
 
   String? _lastDocumentId;
   bool _hasMoreData = true;
+
+  final _modifiedAdPanelsStream = BehaviorSubject<List<AdPanelEntity>>();
+
+  @override
+  Stream<List<AdPanelEntity>> get adPanelsUpdatedStream =>
+      _modifiedAdPanelsStream;
 
   Future<String> get _collectionPath {
     return _collectionPathDataSource.collectionPath;
@@ -74,7 +83,7 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
         isLessThan: query != null ? '$query\uf8ff' : null,
         limit: limit,
         startAfterDocumentId: _lastDocumentId,
-        orderBy: _lastDocumentId != null ? field : null,
+        orderBy: field,
       );
 
       if (dataMaps.isEmpty) {
@@ -167,11 +176,17 @@ class AdPanelRepositoryImpl implements AdPanelRepository {
       await _collectionPath,
       updates,
     );
+    _modifiedAdPanelsStream.add(adPanels);
   }
 
   void _clearCache() {
     _cachedAdPanels.clear();
     _lastDocumentId = null;
     _hasMoreData = true;
+  }
+
+  @override
+  void cleanRefreshedAdPanels() {
+    _modifiedAdPanelsStream.add([]);
   }
 }

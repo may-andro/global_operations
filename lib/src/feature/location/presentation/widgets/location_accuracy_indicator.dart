@@ -18,14 +18,13 @@ class LocationAccuracyIndicator extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: color),
+        Icon(icon, size: context.space(factor: 2), color: color),
         if (showText) ...[
-          SizedBox(width: context.space()),
-          Text(
+          const DSHorizontalSpacerWidget(1),
+          DSTextWidget(
             description,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: color),
+            style: context.typography.labelSmall,
+            color: context.colorPalette.neutral.grey7,
           ),
         ],
       ],

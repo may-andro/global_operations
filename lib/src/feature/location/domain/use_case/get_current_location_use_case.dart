@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:global_ops/src/feature/location/domain/entity/entity.dart';
 import 'package:global_ops/src/feature/system_permission/system_permission.dart';
@@ -59,7 +60,12 @@ class GetCurrentLocationUseCase
       );
     }
 
-    final position = await Geolocator.getCurrentPosition();
+    Position? position = await Geolocator.getLastKnownPosition();
+    if (position == null ||
+        DateTime.now().difference(position.timestamp) > 5.minutes) {
+      position = await Geolocator.getCurrentPosition();
+    }
+
     return Right(
       LocationEntity(
         latitude: position.latitude,

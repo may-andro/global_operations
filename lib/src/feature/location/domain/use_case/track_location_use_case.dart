@@ -89,7 +89,7 @@ class TrackLocationUseCase {
         locationSettings = AndroidSettings(
           accuracy: LocationAccuracy.high,
           distanceFilter: distanceFilterInMeters,
-          timeLimit: 2.minutes,
+          timeLimit: timeout,
           forceLocationManager: true,
         );
       } else if (defaultTargetPlatform == TargetPlatform.iOS) {
@@ -97,7 +97,7 @@ class TrackLocationUseCase {
         locationSettings = AppleSettings(
           accuracy: LocationAccuracy.high,
           distanceFilter: distanceFilterInMeters,
-          timeLimit: 2.minutes,
+          timeLimit: timeout,
           activityType: ActivityType.automotiveNavigation,
           pauseLocationUpdatesAutomatically: true,
         );

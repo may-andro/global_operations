@@ -25,7 +25,12 @@ final class LoadMoreAdPanelsEvent extends PaginatedAdPanelsEvent {
 
 /// Event to refresh ad panels
 final class RefreshAdPanelsEvent extends PaginatedAdPanelsEvent {
-  const RefreshAdPanelsEvent();
+  const RefreshAdPanelsEvent({this.objectNumberToScrollTo});
+
+  final String? objectNumberToScrollTo;
+
+  @override
+  List<Object?> get props => [objectNumberToScrollTo];
 }
 
 /// Event to retry loading after error

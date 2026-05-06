@@ -26,6 +26,12 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
 
   @override
   void registerDependencies(ServiceLocator serviceLocator) {
+    _registerDataLayerDependencies(serviceLocator);
+    _registerDomainLayerDependencies(serviceLocator);
+    _registerPresentationLayerDependencies(serviceLocator);
+  }
+
+  void _registerDataLayerDependencies(ServiceLocator serviceLocator) {
     serviceLocator.registerFactory<GeoMapper>(() => GeoMapper());
     serviceLocator.registerFactory<AdPanelMapper>(
       () => AdPanelMapper(serviceLocator.get()),
@@ -41,14 +47,16 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
         serviceLocator.get(),
       ),
     );
-    serviceLocator.registerFactory<AdPanelRepository>(
+    serviceLocator.registerSingleton<AdPanelRepository>(
       () => AdPanelRepositoryImpl(
         serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),
       ),
     );
+  }
 
+  void _registerDomainLayerDependencies(ServiceLocator serviceLocator) {
     serviceLocator.registerFactory<CompressImageFileUseCase>(
       () => CompressImageFileUseCase(),
     );
@@ -85,7 +93,15 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     serviceLocator.registerFactory<DeleteAdPanelImageUseCase>(
       () => DeleteAdPanelImageUseCase(serviceLocator.get()),
     );
+    serviceLocator.registerFactory<ResetModifiedAdPanelsUseCase>(
+      () => ResetModifiedAdPanelsUseCase(serviceLocator.get()),
+    );
+    serviceLocator.registerFactory<GetModifiedAdPanelsStreamUseCase>(
+      () => GetModifiedAdPanelsStreamUseCase(serviceLocator.get()),
+    );
+  }
 
+  void _registerPresentationLayerDependencies(ServiceLocator serviceLocator) {
     serviceLocator.registerFactory<AdPanelsBloc>(
       () => AdPanelsBloc(
         serviceLocator.get(),
@@ -94,7 +110,11 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
       ),
     );
     serviceLocator.registerFactory<PaginatedAdPanelsBloc>(
-      () => PaginatedAdPanelsBloc(serviceLocator.get(), serviceLocator.get()),
+      () => PaginatedAdPanelsBloc(
+        serviceLocator.get(),
+        serviceLocator.get(),
+        serviceLocator.get(),
+      ),
     );
     serviceLocator.registerFactory<ProximityAdPanelsBloc>(
       () => ProximityAdPanelsBloc(
@@ -105,6 +125,7 @@ class AdPanelModuleConfigurator implements ModuleConfigurator {
     );
     serviceLocator.registerFactory<AdPanelBloc>(
       () => AdPanelBloc(
+        serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),
         serviceLocator.get(),

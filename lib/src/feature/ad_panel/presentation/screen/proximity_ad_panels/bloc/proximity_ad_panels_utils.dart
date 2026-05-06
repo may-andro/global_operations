@@ -51,29 +51,49 @@ mixin AdPanelsBusinessLogic {
 
     switch (sortOption) {
       case final DistanceSortOption _:
-        entries.sort(
-          (a, b) =>
-              a.value.first.distanceInKm.compareTo(b.value.first.distanceInKm),
-        );
-      case final StreetSortOption _:
-        entries.sort(
-          (a, b) => a.value.first.street.compareTo(b.value.first.street),
-        );
-      case final ObjectNumberSortOption _:
-        entries.sort(
-          (a, b) =>
-              a.value.first.objectNumber.compareTo(b.value.first.objectNumber),
-        );
-      case final LastEditedSortOption _:
-        entries.sort((a, b) {
-          final aEdited = a.value.any((panel) => panel.hasBeenEdited);
-          final bEdited = b.value.any((panel) => panel.hasBeenEdited);
-          if (aEdited == bEdited) {
-            return a.value.first.objectNumber.compareTo(
-              b.value.first.objectNumber,
+        entries.sort((previous, next) {
+          final previousDistance = previous.value.first.distanceInKm;
+          final nextDistance = next.value.first.distanceInKm;
+          if (previousDistance == nextDistance) {
+            return previous.value.first.objectNumber.compareTo(
+              next.value.first.objectNumber,
             );
           }
-          return aEdited ? -1 : 1;
+          if (previousDistance == double.infinity) return 1;
+          if (nextDistance == double.infinity) return -1;
+          return previous.value.first.distanceInKm.compareTo(
+            next.value.first.distanceInKm,
+          );
+        });
+      case final StreetSortOption _:
+        entries.sort((previous, next) {
+          final previousStreet = previous.value.first.street.toLowerCase();
+          final nextStreet = next.value.first.street.toLowerCase();
+          if (previousStreet == nextStreet) {
+            return previous.value.first.objectNumber.compareTo(
+              next.value.first.objectNumber,
+            );
+          }
+          return previousStreet.compareTo(nextStreet);
+        });
+      case final ObjectNumberSortOption _:
+        entries.sort(
+          (previous, next) => previous.value.first.objectNumber.compareTo(
+            next.value.first.objectNumber,
+          ),
+        );
+      case final LastEditedSortOption _:
+        entries.sort((previous, next) {
+          final previousLastEdited = previous.value.any(
+            (panel) => panel.hasBeenEdited,
+          );
+          final nextLastEdited = next.value.any((panel) => panel.hasBeenEdited);
+          if (previousLastEdited == nextLastEdited) {
+            return previous.value.first.objectNumber.compareTo(
+              next.value.first.objectNumber,
+            );
+          }
+          return previousLastEdited ? -1 : 1;
         });
     }
 

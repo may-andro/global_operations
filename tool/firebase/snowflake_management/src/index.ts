@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {onRequest} from "firebase-functions/v2/https";
+import {onRequest, onCall} from "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {logger} from "firebase-functions";
 
@@ -129,3 +129,12 @@ export const deleteOldSnowflakeCollections = onRequest(
     }
   }
 );
+
+export const getCurrentServerTime = onCall({
+  region: "europe-west3",
+  timeoutSeconds: 540,
+}, async () => {
+  return {
+    utc_datetime: new Date().toISOString(),
+  };
+});

@@ -1,5 +1,7 @@
 import 'package:design_system/design_system.dart';
+import 'package:error_reporter/error_reporter.dart';
 import 'package:flutter/material.dart';
+import 'package:global_ops/src/error_reporter/blacklist_exception.dart';
 import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
 import 'package:global_ops/src/feature/developer_setting/presentation/route/route.dart';
 import 'package:global_ops/src/feature/feature_toggle/feature_toggle.dart';
@@ -45,6 +47,39 @@ class DeveloperMenuScreen extends StatelessWidget {
                   ),
                   const SliverToBoxAdapter(child: DSVerticalSpacerWidget(2)),
                   const SliverToBoxAdapter(child: AdPanelDbSourceWidget()),
+                  const SliverToBoxAdapter(child: DSVerticalSpacerWidget(2)),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: context.space(factor: 2),
+                      ),
+                      child: DSTextWidget(
+                        'Crashlytics',
+                        color: context.colorPalette.background.onPrimary,
+                        style: context.typography.labelLarge,
+                      ),
+                    ),
+                  ),
+                  const SliverToBoxAdapter(child: DSVerticalSpacerWidget(2)),
+                  SliverToBoxAdapter(
+                    child: _ItemWidget(
+                      title: 'Simulate Dart crash',
+                      subtitle:
+                          'Force a fatal crash to verify Crashlytics integration.',
+                      onTap: () => throw _FatalException('Force crash'),
+                    ),
+                  ),
+                  const SliverToBoxAdapter(child: DSVerticalSpacerWidget(2)),
+                  SliverToBoxAdapter(
+                    child: _ItemWidget(
+                      title: 'Simulate blacklisted exception',
+                      subtitle:
+                          'Blacklisted exceptions are ignored by Crashlytics.',
+                      onTap: () {
+                        throw _BlacklistException('Blacklisted exception');
+                      },
+                    ),
+                  ),
                 ],
               ),
             );
@@ -91,6 +126,24 @@ class _ItemWidget extends StatelessWidget {
       ),
     );
   }
+}
+
+class _FatalException implements FatalException {
+  _FatalException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
+class _BlacklistException implements BlacklistException {
+  _BlacklistException(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
 }
 
 extension on BuildContext {

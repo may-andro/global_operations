@@ -127,7 +127,10 @@ class FirebaseModuleConfigurator implements ModuleConfigurator {
       () => FirebaseFunctions.instanceFor(region: 'europe-west3'),
     );
     serviceLocator.registerFactory(
-      () => FbFunctionController(serviceLocator.get<FirebaseFunctions>()),
+      () => FbFunctionController(
+        serviceLocator.get<FirebaseFunctions>(),
+        serviceLocator.get<FbAuthController>(),
+      ),
     );
   }
 }

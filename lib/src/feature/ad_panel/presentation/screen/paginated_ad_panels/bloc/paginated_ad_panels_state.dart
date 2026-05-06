@@ -37,6 +37,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     this.isSearchFieldAvailable = false,
     this.sortOption,
     this.filterOption,
+    this.objectNumberToScrollTo,
   });
 
   final Map<String, List<AdPanelEntity>> adPanelsMap;
@@ -53,6 +54,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
   final bool isSearchFieldAvailable;
   final AdPanelSortOption? sortOption;
   final AdPanelFilterOption? filterOption;
+  final String? objectNumberToScrollTo;
 
   /// Check if any filters are applied
   bool get hasActiveFilters => searchQuery.isNotEmpty;
@@ -79,6 +81,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     bool? isGoogleMapViewAvailable,
     bool? isSortButtonAvailable,
     bool? isSearchFieldAvailable,
+    String? objectNumbersToScrollTo,
   }) {
     return AdPanelsLoadedState(
       adPanelsMap: adPanelsMap ?? this.adPanelsMap,
@@ -99,6 +102,8 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
           isSortButtonAvailable ?? this.isSortButtonAvailable,
       isSearchFieldAvailable:
           isSearchFieldAvailable ?? this.isSearchFieldAvailable,
+      objectNumberToScrollTo:
+          objectNumbersToScrollTo ?? this.objectNumberToScrollTo,
     );
   }
 
@@ -118,6 +123,7 @@ final class AdPanelsLoadedState extends PaginatedAdPanelsState {
     isGoogleMapViewAvailable,
     isSortButtonAvailable,
     isSearchFieldAvailable,
+    objectNumberToScrollTo,
   ];
 }
 

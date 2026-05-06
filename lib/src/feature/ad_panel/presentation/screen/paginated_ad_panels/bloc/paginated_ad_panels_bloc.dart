@@ -12,9 +12,13 @@ import 'package:meta/meta.dart';
 class PaginatedAdPanelsBloc
     extends Bloc<PaginatedAdPanelsEvent, PaginatedAdPanelsState>
     with AdPanelFeatureFLagsMixin {
-  PaginatedAdPanelsBloc(this._getAdPanelsUseCase, this._isFeatureEnabledUseCase)
-    : super(const AdPanelsInitialState()) {
+  PaginatedAdPanelsBloc(
+    this._getAdPanelsUseCase,
+    this._isFeatureEnabledUseCase,
+    this._getModifiedAdPanelsStreamUseCase,
+  ) : super(const AdPanelsInitialState()) {
     _registerEventHandlers();
+    _subscribeToRefreshStream();
   }
 
   // ============================================================================
@@ -23,6 +27,7 @@ class PaginatedAdPanelsBloc
 
   final GetAdPanelsUseCase _getAdPanelsUseCase;
   final IsFeatureEnabledUseCase _isFeatureEnabledUseCase;
+  final GetModifiedAdPanelsStreamUseCase _getModifiedAdPanelsStreamUseCase;
 
   // ============================================================================
   // MIXIN OVERRIDES
@@ -36,6 +41,8 @@ class PaginatedAdPanelsBloc
   // ============================================================================
   // PRIVATE STATE
   // ============================================================================
+
+  StreamSubscription<dynamic>? _refreshStreamSubscription;
 
   AdPanelSortOption _currentSortOption = const LastEditedSortOption();
   AdPanelFilterOption _currentFilterOption = const ObjectNumberFilterOption();
@@ -82,13 +89,22 @@ class PaginatedAdPanelsBloc
   ) async {
     final currentState = state;
     String searchQuery = '';
+    // Preserve how far the user has paginated so the refresh re-fetches all
+    // previously visible pages in one shot, keeping the list intact.
+    int preserveUpToPage = 1;
     if (currentState is AdPanelsLoadedState) {
       emit(currentState.copyWith(isRefreshing: true));
       searchQuery = currentState.searchQuery;
+      preserveUpToPage = currentState.currentPage;
     } else {
       emit(const AdPanelsLoadingState());
     }
-    await _loadAndHandleAdPanels(emit, searchQuery: searchQuery);
+    await _loadAndHandleAdPanels(
+      emit,
+      searchQuery: searchQuery,
+      objectNumberToScrollTo: event.objectNumberToScrollTo,
+      preserveUpToPage: preserveUpToPage,
+    );
   }
 
   /// Handles retry after error
@@ -240,22 +256,67 @@ class PaginatedAdPanelsBloc
   }
 
   // ============================================================================
+  // STREAM SUBSCRIPTION
+  // ============================================================================
+
+  void _subscribeToRefreshStream() {
+    _refreshStreamSubscription = _getModifiedAdPanelsStreamUseCase().listen((
+      adPanels,
+    ) {
+      if (adPanels.isEmpty) return;
+
+      if (state is AdPanelsLoadingState) {
+        return;
+      }
+
+      if (state is AdPanelsLoadedState &&
+          (state as AdPanelsLoadedState).isRefreshing) {
+        return;
+      }
+
+      final objectNumbersToScrollTo = adPanels.first.objectNumber;
+      add(
+        RefreshAdPanelsEvent(objectNumberToScrollTo: objectNumbersToScrollTo),
+      );
+    });
+  }
+
+  @override
+  Future<void> close() {
+    _refreshStreamSubscription?.cancel();
+    return super.close();
+  }
+
+  // ============================================================================
   // PRIVATE HELPER METHODS
   // ============================================================================
 
   Future<void> _loadAndHandleAdPanels(
     Emitter<PaginatedAdPanelsState> emit, {
     required String searchQuery,
+    String? objectNumberToScrollTo,
+    // When > 1 (e.g. on stream-triggered refresh), multiplies the limit so
+    // all previously paginated pages are re-fetched in a single request.
+    int preserveUpToPage = 1,
   }) async {
     await initializeFeatureFlags();
+
+    final defaultLimit = searchQuery.isEmpty
+        ? _currentFilterOption.defaultPaginationLimit
+        : _currentFilterOption.paginationLimit;
+
+    // Expand the limit to cover every page the user had already loaded.
+    final effectiveLimit =
+        defaultLimit != null && preserveUpToPage > 1
+            ? defaultLimit * preserveUpToPage
+            : defaultLimit;
+
     final adPanelsEither = await _getAdPanelsUseCase(
       GetAdPanelsParams(
         refresh: true,
         query: searchQuery.isEmpty ? null : searchQuery,
         field: _currentFilterOption.key,
-        limit: searchQuery.isEmpty
-            ? _currentFilterOption.defaultPaginationLimit
-            : _currentFilterOption.paginationLimit,
+        limit: effectiveLimit,
       ),
     );
     adPanelsEither.fold(
@@ -267,6 +328,9 @@ class PaginatedAdPanelsBloc
           _buildStateFromAdPanelsList(
             adPanels: adPanels,
             searchQuery: searchQuery,
+            objectNumbersToScrollTo: objectNumberToScrollTo,
+            currentPage: preserveUpToPage,
+            effectiveLimit: effectiveLimit,
           ),
         );
       },
@@ -277,13 +341,20 @@ class PaginatedAdPanelsBloc
   PaginatedAdPanelsState _buildStateFromAdPanelsList({
     required List<AdPanelEntity> adPanels,
     required String searchQuery,
+    String? objectNumbersToScrollTo,
+    int currentPage = 1,
+    int? effectiveLimit,
   }) {
     final adPanelsMap = _groupPanelsByObjectNumber(adPanels);
     final sortedMap = _sortPanelsMap(adPanelsMap, _currentSortOption);
-    final limit = searchQuery.isEmpty
-        ? _currentFilterOption.defaultPaginationLimit
-        : _currentFilterOption.paginationLimit;
-    final hasMoreData = limit != null && adPanels.length >= limit;
+
+    // Use effectiveLimit when provided (refresh case), otherwise derive from
+    // the filter option as usual.
+    final limitForCheck = effectiveLimit ??
+        (searchQuery.isEmpty
+            ? _currentFilterOption.defaultPaginationLimit
+            : _currentFilterOption.paginationLimit);
+    final hasMoreData = limitForCheck != null && adPanels.length >= limitForCheck;
 
     return AdPanelsLoadedState(
       adPanelsMap: sortedMap,
@@ -293,10 +364,12 @@ class PaginatedAdPanelsBloc
       filterOption: _currentFilterOption,
       viewType: _currentViewType,
       hasMoreData: hasMoreData,
+      currentPage: currentPage,
       isAdPanelDetailEnabled: isAdPanelDetailEnabled,
       isGoogleMapViewAvailable: isAdPanelGoogleMapEnabled,
       isSearchFieldAvailable: isAdPanelSearchEnabled,
       isSortButtonAvailable: isAdPanelSortEnabled,
+      objectNumberToScrollTo: objectNumbersToScrollTo,
     );
   }
 
