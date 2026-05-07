@@ -1,0 +1,1 @@
+enum PermissionEntity { notification }
