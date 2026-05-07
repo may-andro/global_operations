@@ -15,6 +15,7 @@ class FbAdModel {
     this.adDeliveryStartTime,
     this.adDeliveryStopTime,
     this.adSnapshotUrl,
+    this.bylines,
     this.currency,
     this.fundingEntity,
     this.pageId,
@@ -25,6 +26,16 @@ class FbAdModel {
     this.spendUpperBound,
     this.languages,
     this.publisherPlatforms,
+    this.targetAges,
+    this.targetGender,
+    this.targetLocations,
+    this.euTotalReach,
+    this.brTotalReach,
+    this.estimatedAudienceSizeLowerBound,
+    this.estimatedAudienceSizeUpperBound,
+    this.demographicDistribution,
+    this.deliveryByRegion,
+    this.beneficiaryPayers,
     this.scrapedAt,
   });
 
@@ -61,6 +72,11 @@ class FbAdModel {
   @JsonKey(name: 'ad_snapshot_url')
   final String? adSnapshotUrl;
 
+  /// Funding entity / payer of the ad (political ads). Maps to `bylines`.
+  @JsonKey(name: 'bylines')
+  final String? bylines;
+
+  /// ISO currency code. Only populated for POLITICAL_AND_ISSUE_ADS.
   final String? currency;
 
   @JsonKey(name: 'funding_entity')
@@ -72,12 +88,14 @@ class FbAdModel {
   @JsonKey(name: 'page_name')
   final String? pageName;
 
+  // impressions: { lower_bound, upper_bound } — POLITICAL_AND_ISSUE_ADS only.
   @JsonKey(name: 'impressions_lower_bound', readValue: _readImpressionsLower)
   final int? impressionsLowerBound;
 
   @JsonKey(name: 'impressions_upper_bound', readValue: _readImpressionsUpper)
   final int? impressionsUpperBound;
 
+  // spend: { lower_bound, upper_bound } — POLITICAL_AND_ISSUE_ADS only.
   @JsonKey(name: 'spend_lower_bound', readValue: _readSpendLower)
   final int? spendLowerBound;
 
@@ -88,6 +106,55 @@ class FbAdModel {
 
   @JsonKey(name: 'publisher_platforms')
   final List<String>? publisherPlatforms;
+
+  /// Age ranges used for targeting in UK & EU, e.g. ['18-24', '25-34'].
+  @JsonKey(name: 'target_ages')
+  final List<String>? targetAges;
+
+  /// Gender used for targeting in UK & EU: 'Women', 'Men', or 'All'.
+  @JsonKey(name: 'target_gender')
+  final String? targetGender;
+
+  /// Location names used for targeting in UK & EU.
+  /// Extracted from the `target_locations` array of `{name, type}` objects.
+  @JsonKey(name: 'target_locations', readValue: _readTargetLocationNames)
+  final List<String>? targetLocations;
+
+  /// Estimated combined reach inside the EU.
+  @JsonKey(name: 'eu_total_reach')
+  final int? euTotalReach;
+
+  /// Estimated reach in Brazil (POLITICAL_AND_ISSUE_ADS delivered to Brazil).
+  @JsonKey(name: 'br_total_reach')
+  final int? brTotalReach;
+
+  // estimated_audience_size: { lower_bound, upper_bound } — POLITICAL only.
+  @JsonKey(
+    name: 'estimated_audience_size_lower_bound',
+    readValue: _readEstimatedAudienceLower,
+  )
+  final int? estimatedAudienceSizeLowerBound;
+
+  @JsonKey(
+    name: 'estimated_audience_size_upper_bound',
+    readValue: _readEstimatedAudienceUpper,
+  )
+  final int? estimatedAudienceSizeUpperBound;
+
+  /// Age/gender distribution of reached accounts — POLITICAL_AND_ISSUE_ADS.
+  /// Each entry: `{age: '18-24', gender: 'Male', percentage: 5.0}`.
+  @JsonKey(name: 'demographic_distribution')
+  final List<Map<String, dynamic>>? demographicDistribution;
+
+  /// Regional delivery distribution — POLITICAL_AND_ISSUE_ADS.
+  /// Each entry: `{region: 'Noord-Holland', percentage: 12.0}`.
+  @JsonKey(name: 'delivery_by_region')
+  final List<Map<String, dynamic>>? deliveryByRegion;
+
+  /// Reported beneficiaries and payers — EU ads only.
+  /// Extracted as display strings "Beneficiary / Payer".
+  @JsonKey(name: 'beneficiary_payers', readValue: _readBeneficiaryPayers)
+  final List<String>? beneficiaryPayers;
 
   @JsonKey(name: 'scraped_at')
   final String? scrapedAt;
@@ -105,6 +172,7 @@ class FbAdModel {
     String? adDeliveryStartTime,
     String? adDeliveryStopTime,
     String? adSnapshotUrl,
+    String? bylines,
     String? currency,
     String? fundingEntity,
     String? pageId,
@@ -115,6 +183,16 @@ class FbAdModel {
     int? spendUpperBound,
     List<String>? languages,
     List<String>? publisherPlatforms,
+    List<String>? targetAges,
+    String? targetGender,
+    List<String>? targetLocations,
+    int? euTotalReach,
+    int? brTotalReach,
+    int? estimatedAudienceSizeLowerBound,
+    int? estimatedAudienceSizeUpperBound,
+    List<Map<String, dynamic>>? demographicDistribution,
+    List<Map<String, dynamic>>? deliveryByRegion,
+    List<String>? beneficiaryPayers,
     String? scrapedAt,
   }) {
     return FbAdModel(
@@ -130,6 +208,7 @@ class FbAdModel {
       adDeliveryStartTime: adDeliveryStartTime ?? this.adDeliveryStartTime,
       adDeliveryStopTime: adDeliveryStopTime ?? this.adDeliveryStopTime,
       adSnapshotUrl: adSnapshotUrl ?? this.adSnapshotUrl,
+      bylines: bylines ?? this.bylines,
       currency: currency ?? this.currency,
       fundingEntity: fundingEntity ?? this.fundingEntity,
       pageId: pageId ?? this.pageId,
@@ -142,14 +221,31 @@ class FbAdModel {
       spendUpperBound: spendUpperBound ?? this.spendUpperBound,
       languages: languages ?? this.languages,
       publisherPlatforms: publisherPlatforms ?? this.publisherPlatforms,
+      targetAges: targetAges ?? this.targetAges,
+      targetGender: targetGender ?? this.targetGender,
+      targetLocations: targetLocations ?? this.targetLocations,
+      euTotalReach: euTotalReach ?? this.euTotalReach,
+      brTotalReach: brTotalReach ?? this.brTotalReach,
+      estimatedAudienceSizeLowerBound:
+          estimatedAudienceSizeLowerBound ??
+          this.estimatedAudienceSizeLowerBound,
+      estimatedAudienceSizeUpperBound:
+          estimatedAudienceSizeUpperBound ??
+          this.estimatedAudienceSizeUpperBound,
+      demographicDistribution:
+          demographicDistribution ?? this.demographicDistribution,
+      deliveryByRegion: deliveryByRegion ?? this.deliveryByRegion,
+      beneficiaryPayers: beneficiaryPayers ?? this.beneficiaryPayers,
       scrapedAt: scrapedAt ?? this.scrapedAt,
     );
   }
 }
 
-// Helpers to extract nested impressions/spend objects from the API response.
-// API returns: "impressions": {"lower_bound": "1000", "upper_bound": "5000"}
-Object? _readImpressionsLower(Map json, String key) {
+// ---------------------------------------------------------------------------
+// JSON read helpers
+// ---------------------------------------------------------------------------
+
+Object? _readImpressionsLower(Map<dynamic, dynamic> json, String key) {
   final impressions = json['impressions'];
   if (impressions is Map) {
     final v = impressions['lower_bound'];
@@ -159,7 +255,7 @@ Object? _readImpressionsLower(Map json, String key) {
   return null;
 }
 
-Object? _readImpressionsUpper(Map json, String key) {
+Object? _readImpressionsUpper(Map<dynamic, dynamic> json, String key) {
   final impressions = json['impressions'];
   if (impressions is Map) {
     final v = impressions['upper_bound'];
@@ -169,7 +265,7 @@ Object? _readImpressionsUpper(Map json, String key) {
   return null;
 }
 
-Object? _readSpendLower(Map json, String key) {
+Object? _readSpendLower(Map<dynamic, dynamic> json, String key) {
   final spend = json['spend'];
   if (spend is Map) {
     final v = spend['lower_bound'];
@@ -179,7 +275,7 @@ Object? _readSpendLower(Map json, String key) {
   return null;
 }
 
-Object? _readSpendUpper(Map json, String key) {
+Object? _readSpendUpper(Map<dynamic, dynamic> json, String key) {
   final spend = json['spend'];
   if (spend is Map) {
     final v = spend['upper_bound'];
@@ -189,3 +285,48 @@ Object? _readSpendUpper(Map json, String key) {
   return null;
 }
 
+Object? _readEstimatedAudienceLower(Map<dynamic, dynamic> json, String key) {
+  final eas = json['estimated_audience_size'];
+  if (eas is Map) {
+    final v = eas['lower_bound'];
+    if (v is String) return int.tryParse(v);
+    if (v is int) return v;
+  }
+  return null;
+}
+
+Object? _readEstimatedAudienceUpper(Map<dynamic, dynamic> json, String key) {
+  final eas = json['estimated_audience_size'];
+  if (eas is Map) {
+    final v = eas['upper_bound'];
+    if (v is String) return int.tryParse(v);
+    if (v is int) return v;
+  }
+  return null;
+}
+
+/// Extracts `name` strings from  [{name: 'Netherlands', type: 'COUNTRY'}, …]
+Object? _readTargetLocationNames(Map<dynamic, dynamic> json, String key) {
+  final list = json['target_locations'];
+  if (list is! List) return null;
+  return list
+      .whereType<Map<dynamic, dynamic>>()
+      .map((e) => e['name']?.toString())
+      .whereType<String>()
+      .toList();
+}
+
+/// Flattens [{beneficiary: 'X', payer: 'Y'}, …] to ['X / Y', …]
+Object? _readBeneficiaryPayers(Map<dynamic, dynamic> json, String key) {
+  final list = json['beneficiary_payers'];
+  if (list is! List) return null;
+  return list
+      .whereType<Map<dynamic, dynamic>>()
+      .map((e) {
+        final b = e['beneficiary']?.toString() ?? '';
+        final p = e['payer']?.toString() ?? '';
+        return p.isNotEmpty && p != b ? '$b / $p' : b;
+      })
+      .where((s) => s.isNotEmpty)
+      .toList();
+}

@@ -7,4 +7,3 @@ class LoadPageInfoEvent extends AdDetailEvent {
 
   final String pageId;
 }
-

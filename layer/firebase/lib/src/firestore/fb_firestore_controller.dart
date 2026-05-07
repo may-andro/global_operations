@@ -180,6 +180,88 @@ class FbFirestoreController {
     }
   }
 
+  /// Streams a single document. Emits `null` when the document does not exist.
+  Stream<Map<String, dynamic>?> streamDocument(
+    String collectionPath,
+    String documentPath,
+  ) {
+    try {
+      return _firebaseFirestore
+          .collection(collectionPath)
+          .doc(documentPath)
+          .snapshots()
+          .map((snap) => snap.exists ? snap.data() : null);
+    } catch (error, st) {
+      return Stream.error(FirestoreException(error, st));
+    }
+  }
+
+  /// Streams a collection, optionally ordered and limited.
+  Stream<List<Map<String, dynamic>>> streamCollection(
+    String collectionPath, {
+    String? orderBy,
+    bool? descending,
+    int? limit,
+  }) {
+    try {
+      Query<Map<String, dynamic>> query = _firebaseFirestore.collection(
+        collectionPath,
+      );
+      if (orderBy != null) {
+        query = query.orderBy(orderBy, descending: descending ?? false);
+      }
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+      return query.snapshots().map(
+        (snap) => snap.docs.map((d) => d.data()).toList(),
+      );
+    } catch (error, st) {
+      return Stream.error(FirestoreException(error, st));
+    }
+  }
+
+  /// Fetches a subcollection with optional ordering and pagination.
+  Future<List<Map<String, dynamic>>> getSubcollectionQuerySnapshot(
+    String collectionPath,
+    String documentPath,
+    String subcollectionPath, {
+    String? orderBy,
+    bool? descending,
+    int? limit,
+    String? startAfterDocumentId,
+  }) async {
+    try {
+      Query<Map<String, dynamic>> query = _firebaseFirestore
+          .collection(collectionPath)
+          .doc(documentPath)
+          .collection(subcollectionPath);
+
+      if (orderBy != null) {
+        query = query.orderBy(orderBy, descending: descending ?? false);
+      }
+      if (limit != null) {
+        query = query.limit(limit);
+      }
+      if (startAfterDocumentId != null) {
+        final docSnap = await _firebaseFirestore
+            .collection(collectionPath)
+            .doc(documentPath)
+            .collection(subcollectionPath)
+            .doc(startAfterDocumentId)
+            .get();
+        if (docSnap.exists) {
+          query = query.startAfterDocument(docSnap);
+        }
+      }
+
+      final result = await query.get();
+      return result.docs.where((d) => d.exists).map((d) => d.data()).toList();
+    } catch (error, st) {
+      throw FirestoreException(error, st);
+    }
+  }
+
   /// GeoFire query: Returns a stream of documents within [radiusInKm] of [center].
   ///
   /// [field] should be the Firestore field name containing the GeoPoint (e.g., 'location').

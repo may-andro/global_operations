@@ -43,14 +43,15 @@ class SearchTermModel {
   final String? errorMessage;
 
   Map<String, dynamic> toJson() => {
-        'term': term,
-        'adType': adType,
-        'status': status,
-        'totalCount': totalCount,
-        if (lastFetchedAt != null) 'lastFetchedAt': lastFetchedAt!.toIso8601String(),
-        if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
-        if (errorMessage != null) 'errorMessage': errorMessage,
-      };
+    'term': term,
+    'adType': adType,
+    'status': status,
+    'totalCount': totalCount,
+    if (lastFetchedAt != null)
+      'lastFetchedAt': lastFetchedAt!.toIso8601String(),
+    if (createdAt != null) 'createdAt': createdAt!.toIso8601String(),
+    if (errorMessage != null) 'errorMessage': errorMessage,
+  };
 
   SearchTermStatus get statusEnum {
     switch (status) {
@@ -65,4 +66,3 @@ class SearchTermModel {
     }
   }
 }
-

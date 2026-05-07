@@ -1,104 +1,67 @@
+import 'package:fb_add_scrapper/src/feature/ads_scraper/data/data_source/fb_ads_cloud_function_data_source.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/data/data_source/fb_ads_firestore_data_source.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/data/mapper/mapper.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/data/model/model.dart';
-import 'package:fb_add_scrapper/src/feature/ads_scraper/data/repository/fb_ads_repository.dart';
-import 'package:fb_add_scrapper/src/feature/ads_scraper/data/service/service.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/entity/entity.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/entity/search_term_entity.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/repository/fb_ads_repository.dart';
 import 'package:firebase/firebase.dart';
-
-/// Firestore collection where scraped ads are persisted.
-const _kAdsCollection = 'scraped_ads';
 
 class FbAdsRepositoryImpl implements FbAdsRepository {
   FbAdsRepositoryImpl({
-    required this.apiService,
+    required this.cloudFunctionDataSource,
     required this.firestoreController,
+    required this.firestoreDataSource,
+    required this.fbAdMapper,
+    required this.fbPageInfoMapper,
+    required this.searchTermMapper,
   });
 
-  final FbAdsApiService apiService;
+  final FbAdsCloudFunctionDataSource cloudFunctionDataSource;
   final FbFirestoreController firestoreController;
-
-  // --------------------------------------------------------------------------
-  // API
-  // --------------------------------------------------------------------------
+  final FbAdsFirestoreDataSource firestoreDataSource;
+  final FbAdMapper fbAdMapper;
+  final FbPageInfoMapper fbPageInfoMapper;
+  final SearchTermMapper searchTermMapper;
 
   @override
-  Future<FbAdsResponseModel> searchAds({
-    required String accessToken,
-    required List<String> countries,
-    String searchTerms = '',
+  Future<String> triggerScrape({
+    required String searchTerms,
     String adType = 'ALL',
-    String? pageId,
-    String? afterCursor,
-    int limit = 50,
-  }) =>
-      apiService.searchAds(
-        accessToken: accessToken,
-        countries: countries,
-        searchTerms: searchTerms,
-        adType: adType,
-        pageId: pageId,
-        afterCursor: afterCursor,
-        limit: limit,
-      );
-
-  // --------------------------------------------------------------------------
-  // Firestore – deduplication via document ID = ad_archive_id
-  // --------------------------------------------------------------------------
+  }) => cloudFunctionDataSource.triggerScrape(
+    searchTerms: searchTerms,
+    adType: adType,
+  );
 
   @override
-  Future<void> saveAds(List<FbAdModel> ads) async {
-    if (ads.isEmpty) return;
-
-    for (final ad in ads) {
-      final data = ad
-          .copyWith(scrapedAt: DateTime.now().toUtc().toIso8601String())
-          .toJson();
-
-      // addDocumentToCollection uses .set() which is idempotent – existing
-      // documents with the same ID are overwritten, preventing duplicates.
-      await firestoreController.addDocumentToCollection(
-        collectionPath: _kAdsCollection,
-        documentPath: ad.id,
-        data: data,
-      );
-    }
-  }
+  Stream<SearchTermEntity?> watchSearchTerm(String termId) =>
+      firestoreDataSource
+          .streamSearchTerm(termId)
+          .map((m) => m == null ? null : searchTermMapper.map(m));
 
   @override
-  Future<List<FbAdModel>> getSavedAds({
+  Stream<List<SearchTermEntity>> watchSearchTerms() => firestoreDataSource
+      .streamSearchTermsWithIds()
+      .map((list) => list.map<SearchTermEntity>(searchTermMapper.map).toList());
+
+  @override
+  Future<List<FbAdEntity>> getAdsForTerm(
+    String termId, {
     int? limit,
     String? startAfterDocId,
   }) async {
-    final rawList = await firestoreController.getCollectionQuerySnapshot(
-      _kAdsCollection,
-      orderBy: 'scraped_at',
-      descending: true,
+    final models = await firestoreDataSource.getAdsForTerm(
+      termId,
       limit: limit,
-      startAfterDocumentId: startAfterDocId,
+      startAfterDocId: startAfterDocId,
     );
-
-    return rawList
-        .map((json) => FbAdModel.fromJson(json))
-        .toList();
+    return models.map((m) => fbAdMapper.to(m)).toList();
   }
 
   @override
-  Future<FbAdModel?> getSavedAdById(String adArchiveId) async {
-    try {
-      final raw = await firestoreController.getDocumentFromCollection(
-        _kAdsCollection,
-        adArchiveId,
-      );
-      if (raw == null) return null;
-      return FbAdModel.fromJson(raw);
-    } catch (_) {
-      return null;
-    }
+  Future<FbPageInfoEntity?> getPageInfo({required String pageId}) async {
+    final raw = await cloudFunctionDataSource.getPageInfo(pageId: pageId);
+    if (raw == null) return null;
+    return fbPageInfoMapper.map(raw);
   }
-
-  @override
-  Future<void> deleteAd(String adArchiveId) =>
-      firestoreController.deleteDocumentFromCollection(
-        collectionPath: _kAdsCollection,
-        documentPath: adArchiveId,
-      );
 }
-

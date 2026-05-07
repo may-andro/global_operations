@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:firebase/firebase.dart';
 import 'package:fb_add_scrapper/src/feature/security/domain/domain.dart';
+import 'package:firebase/firebase.dart';
 import 'package:log_reporter/log_reporter.dart';
 import 'package:ntp/ntp.dart';
 

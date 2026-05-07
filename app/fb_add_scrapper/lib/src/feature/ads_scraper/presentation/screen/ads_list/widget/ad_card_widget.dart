@@ -60,9 +60,7 @@ class AdCardWidget extends StatelessWidget {
                 ad.publisherPlatforms!.isNotEmpty)
               _InfoRowWidget(
                 icon: Icons.share_rounded,
-                label: ad.publisherPlatforms!
-                    .map(_capitalise)
-                    .join(' · '),
+                label: ad.publisherPlatforms!.map(_capitalise).join(' · '),
                 color: context.colorPalette.neutral.grey4,
               ),
 
@@ -136,8 +134,12 @@ class AdCardWidget extends StatelessWidget {
     return parts.join(' · ');
   }
 
-  String _rangeLabel(int? lower, int? upper,
-      {String prefix = '', String suffix = ''}) {
+  String _rangeLabel(
+    int? lower,
+    int? upper, {
+    String prefix = '',
+    String suffix = '',
+  }) {
     if (lower == null && upper == null) return '';
     return '$prefix${lower ?? '?'} – ${upper ?? '?'}$suffix';
   }
@@ -224,4 +226,3 @@ class _InfoRowWidget extends StatelessWidget {
     );
   }
 }
-

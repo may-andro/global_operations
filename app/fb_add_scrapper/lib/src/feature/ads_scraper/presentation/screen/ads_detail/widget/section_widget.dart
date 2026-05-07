@@ -54,4 +54,3 @@ class AdDetailSectionWidget extends StatelessWidget {
     );
   }
 }
-

@@ -27,12 +27,12 @@ class WebNavigationBarWidget extends StatelessWidget {
         destinations: [
           NavigationRailDestination(
             icon: _NavigationIcon(
-              icon: Icons.home_outlined,
-              selectedIcon: Icons.home,
+              icon: Icons.campaign_outlined,
+              selectedIcon: Icons.campaign,
               isSelected: selectedIndex == 0,
             ),
             label: _NavigationLabel(
-              text: 'Home',
+              text: 'Ads Scraper',
               isSelected: selectedIndex == 0,
             ),
           ),

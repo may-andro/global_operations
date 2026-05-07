@@ -35,4 +35,4 @@ lib/src/app_check/token.base64
 # Firebase configuration files
 lib/src/firebase_options.dart
 firebase.json
-lib/src/firebase_options.base64
+../../app/global_ops/lib/firebase/firebase_options.base64

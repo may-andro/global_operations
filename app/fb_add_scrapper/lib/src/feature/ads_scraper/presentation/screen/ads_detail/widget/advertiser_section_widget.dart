@@ -35,14 +35,11 @@ class AdvertiserSectionWidget extends StatelessWidget {
             info?.fanCount != null ? _formatCount(info!.fanCount!) : null,
           ),
           AdDetailItemData('Founded', info?.founded),
-          AdDetailItemData(
-            'Verification',
-            switch (info?.verificationStatus) {
-              'blue_verified' => '✓ Blue verified',
-              'gray_verified' => '✓ Gray verified',
-              _ => null,
-            },
-          ),
+          AdDetailItemData('Verification', switch (info?.verificationStatus) {
+            'blue_verified' => '✓ Blue verified',
+            'gray_verified' => '✓ Gray verified',
+            _ => null,
+          }),
           AdDetailItemData('Declared funder', ad.bylines ?? ad.fundingEntity),
           AdDetailItemData('Currency', ad.currency),
           AdDetailItemData('Platforms', ad.publisherPlatforms?.join(', ')),
@@ -109,4 +106,3 @@ class AdvertiserSectionWidget extends StatelessWidget {
     return count.toString();
   }
 }
-

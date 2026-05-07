@@ -33,7 +33,7 @@ class MobileNavigationBarWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _NavigationItem(
-                icon: Icons.home_rounded,
+                icon: Icons.campaign_rounded,
                 isSelected: selectedIndex == 0,
                 onTap: () => onItemTapped(0),
                 context: context,

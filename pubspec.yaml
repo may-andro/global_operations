@@ -8,6 +8,7 @@ environment:
 # Dart pub workspace – single pubspec.lock for the whole repo.
 workspace:
   - app/global_ops
+  - app/fb_add_scrapper
   - layer/cache
   - layer/core
   - layer/design_system
@@ -303,8 +304,10 @@ melos:
       description: Deploy static terms and conditions web page.
 
     host_functions:
-      run: |
-        cd tool/firebase/snowflake_management
-        firebase deploy --only functions
-      description: Deploy Firebase functions.
+      run: firebase deploy --only functions:snowflake_management
+      description: Deploy Snowflake Management Cloud Functions.
+
+    host_fb_ads_functions:
+      run: firebase deploy --only functions:fb_ads_scraper
+      description: Build and deploy FB Ads Scraper Cloud Functions (searchAds, getPageInfo) with FB_ADS_ACCESS_TOKEN secret.
 

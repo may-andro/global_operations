@@ -5,4 +5,3 @@ class AdDetailItemData {
   final String label;
   final String? value;
 }
-

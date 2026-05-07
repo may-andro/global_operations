@@ -6,6 +6,15 @@ import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+Future<void> _launchUrl(String url) async {
+  final uri = Uri.tryParse(url);
+  if (uri == null) return;
+  final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+  if (!launched) {
+    await launchUrl(uri);
+  }
+}
+
 class AdDetailViewWidget extends StatelessWidget {
   const AdDetailViewWidget({super.key, required this.ad});
 
@@ -36,7 +45,7 @@ class AdDetailViewWidget extends StatelessWidget {
                 color: context.colorPalette.brand.primary,
               ),
               tooltip: 'Open snapshot',
-              onPressed: () => _launchUrl(ad.adSnapshotUrl!),
+              onPressed: () async => _launchUrl(ad.adSnapshotUrl!),
             ),
           const DSHorizontalSpacerWidget(1),
         ],
@@ -56,7 +65,10 @@ class AdDetailViewWidget extends StatelessWidget {
             items: [
               AdDetailItemData('Body', ad.adCreativeBody),
               AdDetailItemData('Link title', ad.adCreativeLinkTitle),
-              AdDetailItemData('Link description', ad.adCreativeLinkDescription),
+              AdDetailItemData(
+                'Link description',
+                ad.adCreativeLinkDescription,
+              ),
               AdDetailItemData('Link caption', ad.adCreativeLinkCaption),
               AdDetailItemData('Destination URL', ad.adCreativeLinkUrl),
             ],
@@ -87,7 +99,10 @@ class AdDetailViewWidget extends StatelessWidget {
               AdDetailItemData('Languages', ad.languages?.join(', ')),
               AdDetailItemData('Target gender', ad.targetGender),
               AdDetailItemData('Target ages', ad.targetAges?.join(', ')),
-              AdDetailItemData('Target locations', ad.targetLocations?.join(', ')),
+              AdDetailItemData(
+                'Target locations',
+                ad.targetLocations?.join(', '),
+              ),
             ],
           ),
           AdDetailSectionWidget(
@@ -153,7 +168,7 @@ class AdDetailViewWidget extends StatelessWidget {
             DSButtonWidget(
               label: 'View Ad Snapshot',
               icon: Icons.open_in_browser,
-              onPressed: () => _launchUrl(ad.adSnapshotUrl!),
+              onPressed: () async => _launchUrl(ad.adSnapshotUrl!),
             ),
             DSVerticalSpacerWidget(context.space(factor: 2) / context.space()),
           ],
@@ -178,21 +193,15 @@ class AdDetailViewWidget extends StatelessWidget {
     required String percentKey,
   }) {
     if (list.isEmpty) return null;
-    return list.map((e) {
-      final label = genderKey != null
-          ? '${e[ageKey] ?? ''} ${e[genderKey] ?? ''}'.trim()
-          : '${e[ageKey] ?? ''}'.trim();
-      final pct = e[percentKey];
-      final pctStr = pct is num ? '${pct.toStringAsFixed(1)}%' : '';
-      return pctStr.isNotEmpty ? '$label: $pctStr' : label;
-    }).join('\n');
-  }
-
-  Future<void> _launchUrl(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri != null && await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+    return list
+        .map((e) {
+          final label = genderKey != null
+              ? '${e[ageKey] ?? ''} ${e[genderKey] ?? ''}'.trim()
+              : '${e[ageKey] ?? ''}'.trim();
+          final pct = e[percentKey];
+          final pctStr = pct is num ? '${pct.toStringAsFixed(1)}%' : '';
+          return pctStr.isNotEmpty ? '$label: $pctStr' : label;
+        })
+        .join('\n');
   }
 }
-

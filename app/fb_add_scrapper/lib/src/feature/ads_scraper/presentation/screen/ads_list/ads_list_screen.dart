@@ -1,14 +1,23 @@
 import 'package:design_system/design_system.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/route/ads_scraper_module_route.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_list/bloc/bloc.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_list/widget/widget.dart';
 import 'package:fb_add_scrapper/src/module_injector/app_module_configurator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class AdsListScreen extends StatelessWidget {
   const AdsListScreen({super.key, required this.termId});
 
   final String termId;
+
+  static void navigate(BuildContext context, {required String termId}) {
+    context.pushNamed(
+      AdsScraperModuleRoute.termAdsList.name,
+      pathParameters: {'termId': termId},
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,38 +70,15 @@ class _AdsListViewState extends State<_AdsListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colorPalette.background.primary.color,
-      appBar: AppBar(
-        backgroundColor: context.colorPalette.background.primary.color,
-        surfaceTintColor:
-            context.colorPalette.neutral.transparent.color,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: BlocBuilder<AdsListBloc, AdsListState>(
-          buildWhen: (p, c) => p.termId != c.termId || p.filteredAds.length != c.filteredAds.length,
-          builder: (context, state) {
-            final title =
-                widget.termId.replaceAll('_', ' ');
-            final count = state.status == AdsListStatus.success ||
-                    state.status == AdsListStatus.loadingMore
-                ? ' (${state.filteredAds.length}${state.filter.isActive ? ' filtered' : ''})'
-                : '';
-            return DSTextWidget(
-              '$title$count',
-              style: context.typography.titleMedium,
-              color: context.colorPalette.neutral.grey1,
-              maxLines: 1,
-              textOverflow: TextOverflow.ellipsis,
-            );
-          },
-        ),
+      appBar: DSAppBarWidget(
+        height: DSAppBarWidget.getHeight(context),
+        onBackClicked: () => context.pop(),
+        actions: const [AdsFilterActionWidget()],
       ),
       body: Column(
         children: [
-          // ── Filter bar ──
+          // ── Active filter badges (only visible when filters are active) ──
           const AdsFilterBarWidget(),
-          DSHorizontalDividerWidget(
-            color: context.colorPalette.neutral.grey8,
-          ),
           // ── Content ──
           Expanded(
             child: BlocBuilder<AdsListBloc, AdsListState>(
@@ -106,11 +92,10 @@ class _AdsListViewState extends State<_AdsListView> {
                 if (state.status == AdsListStatus.failure &&
                     state.ads.isEmpty) {
                   return _ErrorView(
-                    message:
-                        state.errorMessage ?? 'Something went wrong.',
+                    message: state.errorMessage ?? 'Something went wrong.',
                     onRetry: () => context.read<AdsListBloc>().add(
-                          LoadAdsListEvent(termId: widget.termId),
-                        ),
+                      LoadAdsListEvent(termId: widget.termId),
+                    ),
                   );
                 }
 
@@ -119,21 +104,20 @@ class _AdsListViewState extends State<_AdsListView> {
                 if (ads.isEmpty) {
                   return _EmptyView(
                     hasFilter: state.filter.isActive,
-                    onClearFilter: () => context
-                        .read<AdsListBloc>()
-                        .add(const FilterAdsListEvent(clearAll: true)),
+                    onClearFilter: () => context.read<AdsListBloc>().add(
+                      const FilterAdsListEvent(clearAll: true),
+                    ),
                   );
                 }
 
                 return RefreshIndicator(
                   onRefresh: () async => context.read<AdsListBloc>().add(
-                        LoadAdsListEvent(termId: widget.termId),
-                      ),
+                    LoadAdsListEvent(termId: widget.termId),
+                  ),
                   child: ListView.builder(
                     controller: _scrollController,
                     padding: EdgeInsets.all(context.space(factor: 2)),
-                    itemCount:
-                        ads.length + (state.isLoading ? 1 : 0),
+                    itemCount: ads.length + (state.isLoading ? 1 : 0),
                     itemBuilder: (_, i) {
                       if (i == ads.length) {
                         return Padding(
@@ -253,4 +237,3 @@ class _ErrorView extends StatelessWidget {
     );
   }
 }
-

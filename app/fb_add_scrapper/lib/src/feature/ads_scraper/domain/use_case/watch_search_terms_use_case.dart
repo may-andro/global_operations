@@ -12,4 +12,3 @@ class WatchSearchTermsUseCase {
 
   Stream<List<SearchTermEntity>> call() => _repository.watchSearchTerms();
 }
-

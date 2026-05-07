@@ -86,4 +86,3 @@ Object? _readStreet(Map<dynamic, dynamic> json, String key) =>
 
 Object? _readZip(Map<dynamic, dynamic> json, String key) =>
     (json['location'] as Map<dynamic, dynamic>?)?['zip']?.toString();
-

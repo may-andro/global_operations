@@ -25,3 +25,11 @@ final class RetryAdsSearchEvent extends AdsSearchEvent {
   const RetryAdsSearchEvent();
 }
 
+final class UpdateSearchQueryEvent extends AdsSearchEvent {
+  const UpdateSearchQueryEvent({required this.query});
+
+  final String query;
+
+  @override
+  List<Object?> get props => [query];
+}

@@ -4,11 +4,7 @@ import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/entity/entity.dar
 enum AdsListStatus { idle, loading, loadingMore, success, failure }
 
 class AdsListFilter extends Equatable {
-  const AdsListFilter({
-    this.platform,
-    this.gender,
-    this.deliveryStatus,
-  });
+  const AdsListFilter({this.platform, this.gender, this.deliveryStatus});
 
   /// e.g. 'facebook', 'instagram'
   final String? platform;
@@ -28,8 +24,7 @@ class AdsListFilter extends Equatable {
     Object? deliveryStatus = _sentinel,
   }) {
     return AdsListFilter(
-      platform:
-          platform == _sentinel ? this.platform : platform as String?,
+      platform: platform == _sentinel ? this.platform : platform as String?,
       gender: gender == _sentinel ? this.gender : gender as String?,
       deliveryStatus: deliveryStatus == _sentinel
           ? this.deliveryStatus
@@ -62,8 +57,7 @@ class AdsListState extends Equatable {
   final AdsListFilter filter;
 
   bool get isLoading =>
-      status == AdsListStatus.loading ||
-      status == AdsListStatus.loadingMore;
+      status == AdsListStatus.loading || status == AdsListStatus.loadingMore;
 
   String? get lastDocId => ads.isNotEmpty ? ads.last.id : null;
 
@@ -81,14 +75,13 @@ class AdsListState extends Equatable {
         }
       }
       if (filter.gender != null) {
-        if (ad.targetGender?.toLowerCase() !=
-            filter.gender!.toLowerCase()) {
+        if (ad.targetGender?.toLowerCase() != filter.gender!.toLowerCase()) {
           return false;
         }
       }
       if (filter.deliveryStatus != null) {
-        final isStopped = ad.adDeliveryStopTime != null &&
-            ad.adDeliveryStopTime!.isNotEmpty;
+        final isStopped =
+            ad.adDeliveryStopTime != null && ad.adDeliveryStopTime!.isNotEmpty;
         if (filter.deliveryStatus == 'active' && isStopped) return false;
         if (filter.deliveryStatus == 'stopped' && !isStopped) return false;
       }
@@ -115,7 +108,12 @@ class AdsListState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [status, termId, ads, hasMore, errorMessage, filter];
+  List<Object?> get props => [
+    status,
+    termId,
+    ads,
+    hasMore,
+    errorMessage,
+    filter,
+  ];
 }
-

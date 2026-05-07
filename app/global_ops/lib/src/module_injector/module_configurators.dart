@@ -2,6 +2,7 @@ import 'package:cache/cache.dart';
 import 'package:core/core.dart';
 import 'package:error_reporter/error_reporter.dart';
 import 'package:firebase/firebase.dart';
+import 'package:global_ops/firebase/firebase_options.dart';
 import 'package:global_ops/src/feature/ad_panel/ad_panel.dart';
 import 'package:global_ops/src/feature/authentication/authentication.dart';
 import 'package:global_ops/src/feature/developer_setting/developer_setting.dart';
@@ -24,7 +25,10 @@ import 'package:use_case/use_case.dart';
 
 List<ModuleConfigurator> getModuleConfigurators(BuildConfig buildConfig) => [
   AppModuleConfigurator(buildConfig),
-  FirebaseModuleConfigurator(buildConfig.buildEnvironment.isFirebaseEnabled),
+  FirebaseModuleConfigurator(
+    buildConfig.buildEnvironment.isFirebaseEnabled,
+    firebaseOptions: DefaultFirebaseOptions.currentPlatform,
+  ),
   TrackingModuleConfigurator(buildConfig.buildEnvironment.isFirebaseEnabled),
   LogReporterModuleConfigurator(),
   UtilityModuleConfigurator(),

@@ -11,7 +11,7 @@ const _kAdsSubcollection = 'ads';
 /// Firestore-backed data source for search terms and their scraped ads.
 class FbAdsFirestoreDataSource {
   FbAdsFirestoreDataSource({required FbFirestoreController firestoreController})
-      : _firestore = firestoreController;
+    : _firestore = firestoreController;
 
   final FbFirestoreController _firestore;
 
@@ -19,7 +19,10 @@ class FbAdsFirestoreDataSource {
   Stream<SearchTermModel?> streamSearchTerm(String termId) {
     return _firestore
         .streamDocument(_kSearchTermsCollection, termId)
-        .map((data) => data == null ? null : SearchTermModel.fromJson(termId, data));
+        .map(
+          (data) =>
+              data == null ? null : SearchTermModel.fromJson(termId, data),
+        );
   }
 
   /// Streams the full list of search terms, ordered newest-first.
@@ -31,17 +34,14 @@ class FbAdsFirestoreDataSource {
           descending: true,
         )
         .asyncMap((list) async {
-      // streamCollection returns raw data without the doc ID, so we re-query
-      // using getCollectionQuerySnapshot that also lacks IDs.
-      // Instead we stream snapshots with IDs by doing a manual approach.
-      return list.map((data) {
-        final id = data['term'] as String? ?? '';
-        return SearchTermModel.fromJson(
-          _slugify(id),
-          data,
-        );
-      }).toList();
-    });
+          // streamCollection returns raw data without the doc ID, so we re-query
+          // using getCollectionQuerySnapshot that also lacks IDs.
+          // Instead we stream snapshots with IDs by doing a manual approach.
+          return list.map((data) {
+            final id = data['term'] as String? ?? '';
+            return SearchTermModel.fromJson(_slugify(id), data);
+          }).toList();
+        });
   }
 
   /// Streams the full list of search terms with their document IDs.
@@ -57,10 +57,12 @@ class FbAdsFirestoreDataSource {
           orderBy: 'createdAt',
           descending: true,
         )
-        .map((list) => list.map((data) {
-              final term = data['term'] as String? ?? '';
-              return SearchTermModel.fromJson(_slugify(term), data);
-            }).toList());
+        .map(
+          (list) => list.map((data) {
+            final term = data['term'] as String? ?? '';
+            return SearchTermModel.fromJson(_slugify(term), data);
+          }).toList(),
+        );
   }
 
   /// Fetches a paginated list of ads for a given search term.
@@ -90,4 +92,3 @@ String _slugify(String term) {
       .replaceAll(RegExp(r'\s+'), '_')
       .replaceAll(RegExp(r'[^a-z0-9_]'), '');
 }
-

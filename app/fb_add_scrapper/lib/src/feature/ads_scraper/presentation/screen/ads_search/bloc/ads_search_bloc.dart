@@ -10,12 +10,13 @@ class AdsSearchBloc extends Bloc<AdsSearchEvent, AdsSearchState> {
   AdsSearchBloc({
     required TriggerScrapeUseCase triggerScrapeUseCase,
     required WatchSearchTermsUseCase watchSearchTermsUseCase,
-  })  : _triggerScrape = triggerScrapeUseCase,
-        _watchTerms = watchSearchTermsUseCase,
-        super(const AdsSearchInitialState()) {
+  }) : _triggerScrape = triggerScrapeUseCase,
+       _watchTerms = watchSearchTermsUseCase,
+       super(const AdsSearchInitialState()) {
     on<LoadAdsSearchEvent>(_onLoad);
     on<AddSearchTermEvent>(_onAdd);
     on<RetryAdsSearchEvent>(_onRetry);
+    on<UpdateSearchQueryEvent>(_onUpdateQuery);
   }
 
   final TriggerScrapeUseCase _triggerScrape;
@@ -37,9 +38,8 @@ class AdsSearchBloc extends Bloc<AdsSearchEvent, AdsSearchState> {
         }
         return AdsSearchLoadedState(terms: terms);
       },
-      onError: (_, __) => const AdsSearchErrorState(
-        message: 'Failed to load search terms.',
-      ),
+      onError: (err, __) =>
+          const AdsSearchErrorState(message: 'Failed to load search terms.'),
     );
   }
 
@@ -49,20 +49,13 @@ class AdsSearchBloc extends Bloc<AdsSearchEvent, AdsSearchState> {
   ) async {
     final current = state;
     if (current is! AdsSearchLoadedState) return;
-
     emit(current.copyWith(isAdding: true, clearError: true));
-
     final result = await _triggerScrape(
-      TriggerScrapeInput(
-        searchTerms: event.searchTerms,
-        adType: event.adType,
-      ),
+      TriggerScrapeInput(searchTerms: event.searchTerms, adType: event.adType),
     );
-
     result.fold(
-      (failure) => emit(
-        current.copyWith(isAdding: false, addError: failure.message),
-      ),
+      (failure) =>
+          emit(current.copyWith(isAdding: false, addError: failure.message)),
       (_) => emit(current.copyWith(isAdding: false, clearError: true)),
     );
   }
@@ -70,5 +63,13 @@ class AdsSearchBloc extends Bloc<AdsSearchEvent, AdsSearchState> {
   FutureOr<void> _onRetry(RetryAdsSearchEvent _, Emitter<AdsSearchState> emit) {
     add(const LoadAdsSearchEvent());
   }
-}
 
+  void _onUpdateQuery(
+    UpdateSearchQueryEvent event,
+    Emitter<AdsSearchState> emit,
+  ) {
+    final current = state;
+    if (current is! AdsSearchLoadedState) return;
+    emit(current.copyWith(filterQuery: event.query, clearError: true));
+  }
+}

@@ -9,8 +9,8 @@ const _kPageSize = 30;
 
 class AdsListBloc extends Bloc<AdsListEvent, AdsListState> {
   AdsListBloc({required GetAdsForTermUseCase getAdsForTermUseCase})
-      : _getAds = getAdsForTermUseCase,
-        super(const AdsListState()) {
+    : _getAds = getAdsForTermUseCase,
+      super(const AdsListState()) {
     on<LoadAdsListEvent>(_onLoad);
     on<LoadMoreAdsListEvent>(_onLoadMore);
     on<FilterAdsListEvent>(_onFilter);
@@ -24,25 +24,26 @@ class AdsListBloc extends Bloc<AdsListEvent, AdsListState> {
     LoadAdsListEvent event,
     Emitter<AdsListState> emit,
   ) async {
-    emit(AdsListState(
-      status: AdsListStatus.loading,
-      termId: event.termId,
-    ));
+    emit(AdsListState(status: AdsListStatus.loading, termId: event.termId));
 
     final result = await _getAds(
       GetAdsForTermInput(termId: event.termId, limit: _kPageSize),
     );
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: AdsListStatus.failure,
-        errorMessage: failure.message,
-      )),
-      (ads) => emit(state.copyWith(
-        status: AdsListStatus.success,
-        ads: ads,
-        hasMore: ads.length >= _kPageSize,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          status: AdsListStatus.failure,
+          errorMessage: failure.message,
+        ),
+      ),
+      (ads) => emit(
+        state.copyWith(
+          status: AdsListStatus.success,
+          ads: ads,
+          hasMore: ads.length >= _kPageSize,
+        ),
+      ),
     );
   }
 
@@ -63,15 +64,19 @@ class AdsListBloc extends Bloc<AdsListEvent, AdsListState> {
     );
 
     result.fold(
-      (failure) => emit(state.copyWith(
-        status: AdsListStatus.failure,
-        errorMessage: failure.message,
-      )),
-      (newAds) => emit(state.copyWith(
-        status: AdsListStatus.success,
-        ads: [...state.ads, ...newAds],
-        hasMore: newAds.length >= _kPageSize,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          status: AdsListStatus.failure,
+          errorMessage: failure.message,
+        ),
+      ),
+      (newAds) => emit(
+        state.copyWith(
+          status: AdsListStatus.success,
+          ads: [...state.ads, ...newAds],
+          hasMore: newAds.length >= _kPageSize,
+        ),
+      ),
     );
   }
 
@@ -80,14 +85,15 @@ class AdsListBloc extends Bloc<AdsListEvent, AdsListState> {
       emit(state.copyWith(filter: const AdsListFilter()));
       return;
     }
-    final updated = state.filter.copyWith(
-      platform: event.platform == null ? state.filter.platform : event.platform,
-      gender: event.gender == null ? state.filter.gender : event.gender,
-      deliveryStatus: event.deliveryStatus == null
-          ? state.filter.deliveryStatus
-          : event.deliveryStatus,
+    // The widget always passes the full intended filter state — apply directly.
+    emit(
+      state.copyWith(
+        filter: AdsListFilter(
+          platform: event.platform,
+          gender: event.gender,
+          deliveryStatus: event.deliveryStatus,
+        ),
+      ),
     );
-    emit(state.copyWith(filter: updated));
   }
 }
-

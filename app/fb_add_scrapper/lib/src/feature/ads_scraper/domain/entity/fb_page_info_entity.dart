@@ -80,4 +80,3 @@ class FbPageInfoEntity extends Equatable {
     locationZip,
   ];
 }
-

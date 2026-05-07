@@ -8,6 +8,8 @@ on:
   pull_request:
     branches:
       - '**'
+    paths:
+      - 'app/global_ops/**'
     tags-ignore:
       - '*-review'
       - '*-prod'

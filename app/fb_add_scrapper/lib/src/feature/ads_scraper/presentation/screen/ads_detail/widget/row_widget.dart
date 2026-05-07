@@ -36,4 +36,3 @@ class AdDetailRowWidget extends StatelessWidget {
     );
   }
 }
-

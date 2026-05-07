@@ -43,4 +43,3 @@ class FilterAdsListEvent extends AdsListEvent {
   @override
   List<Object?> get props => [platform, gender, deliveryStatus, clearAll];
 }
-

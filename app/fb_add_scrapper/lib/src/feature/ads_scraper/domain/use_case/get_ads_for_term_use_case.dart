@@ -35,8 +35,12 @@ class GetAdsForTermInput extends Equatable {
 // --------------------------------------------------------------------------
 
 class GetAdsForTermUseCase
-    extends BaseUseCase<List<FbAdEntity>, GetAdsForTermInput,
-        GetAdsForTermFailure> {
+    extends
+        BaseUseCase<
+          List<FbAdEntity>,
+          GetAdsForTermInput,
+          GetAdsForTermFailure
+        > {
   GetAdsForTermUseCase(this._repository);
 
   final FbAdsRepository _repository;
@@ -61,4 +65,3 @@ class GetAdsForTermUseCase
   GetAdsForTermFailure mapErrorToFailure(Object e, StackTrace st) =>
       GetAdsForTermFailure(message: e.toString(), cause: e);
 }
-

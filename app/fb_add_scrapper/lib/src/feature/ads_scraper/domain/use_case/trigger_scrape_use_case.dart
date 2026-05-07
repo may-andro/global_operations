@@ -15,10 +15,7 @@ class TriggerScrapeFailure extends BasicFailure {
 // --------------------------------------------------------------------------
 
 class TriggerScrapeInput extends Equatable {
-  const TriggerScrapeInput({
-    required this.searchTerms,
-    this.adType = 'ALL',
-  });
+  const TriggerScrapeInput({required this.searchTerms, this.adType = 'ALL'});
 
   final String searchTerms;
   final String adType;
@@ -58,4 +55,3 @@ class TriggerScrapeUseCase
   TriggerScrapeFailure mapErrorToFailure(Object e, StackTrace st) =>
       TriggerScrapeFailure(message: e.toString(), cause: e);
 }
-

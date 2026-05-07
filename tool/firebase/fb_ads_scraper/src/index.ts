@@ -1,241 +1,335 @@
 import * as admin from "firebase-admin";
 import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {defineSecret} from "firebase-functions/params";
 import {logger} from "firebase-functions";
 import axios from "axios";
-import {wrapper} from "axios-cookiejar-support";
-import {CookieJar} from "tough-cookie";
 
 admin.initializeApp();
+
+const fbAdsToken = defineSecret("FB_ADS_ACCESS_TOKEN");
+
+// ---------------------------------------------------------------------------
+// Graph API client
+// ---------------------------------------------------------------------------
+
+const GRAPH_BASE = "https://graph.facebook.com/v22.0";
+
+function graphClient(accessToken: string) {
+  return axios.create({
+    baseURL: GRAPH_BASE,
+    timeout: 30_000,
+    params: {access_token: accessToken},
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 interface SearchAdsRequest {
-  query: string;
-  country?: string;
+  searchTerms?: string;
   adType?: string;
-  offset?: number;
-  count?: number;
-}
-
-interface FbAd {
-  id: string;
-  pageName?: string;
-  pageId?: string;
-  adCreativeBody?: string;
-  adCreativeLinkTitle?: string;
-  adCreativeLinkUrl?: string;
-  adCreativeLinkCaption?: string;
-  adSnapshotUrl?: string;
-  adDeliveryStartTime?: string;
-  adDeliveryStopTime?: string;
-  publisherPlatforms?: string[];
-  currency?: string;
-  fundingEntity?: string;
 }
 
 interface SearchAdsResponse {
-  ads: FbAd[];
-  hasNextPage: boolean;
-  totalCount: number;
-  offset: number;
+  termId: string;
+}
+
+interface GetPageInfoRequest {
+  pageId: string;
 }
 
 // ---------------------------------------------------------------------------
-// Helper: build a cookie-aware axios client that looks like a browser
+// Field lists (mirrors FbAdsApiDataSource in the Flutter app)
 // ---------------------------------------------------------------------------
 
-function buildClient() {
-  const jar = new CookieJar();
-  const client = wrapper(axios.create({
-    jar,
-    baseURL: "https://www.facebook.com",
-    timeout: 20000,
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) " +
-        "AppleWebKit/537.36 (KHTML, like Gecko) " +
-        "Chrome/124.0.0.0 Safari/537.36",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.9",
-      "Accept-Encoding": "gzip, deflate, br",
-      "Connection": "keep-alive",
-      "Upgrade-Insecure-Requests": "1",
-    },
-    maxRedirects: 5,
-    withCredentials: true,
-  }));
-  return {client, jar};
+const BASE_AD_FIELDS = [
+  "id",
+  "ad_creation_time",
+  "ad_creative_bodies",
+  "ad_creative_link_captions",
+  "ad_creative_link_descriptions",
+  "ad_creative_link_titles",
+  "ad_delivery_start_time",
+  "ad_delivery_stop_time",
+  "ad_snapshot_url",
+  "bylines",
+  "page_id",
+  "page_name",
+  "languages",
+  "publisher_platforms",
+  "target_ages",
+  "target_gender",
+  "target_locations",
+  "eu_total_reach",
+  "br_total_reach",
+  "total_reach_by_location",
+  "age_country_gender_reach_breakdown",
+  "beneficiary_payers",
+  "estimated_audience_size",
+];
+
+const POLITICAL_FIELDS = [
+  "currency",
+  "impressions",
+  "spend",
+  "demographic_distribution",
+  "delivery_by_region",
+];
+
+const PAGE_INFO_FIELDS = [
+  "id",
+  "name",
+  "link",
+  "category",
+  "website",
+  "about",
+  "description",
+  "emails",
+  "phone",
+  "location",
+  "fan_count",
+  "verification_status",
+  "founded",
+];
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Converts a search term into a Firestore-safe document ID.
+ * e.g. "Nike Shoes" → "nike_shoes"
+ */
+function slugify(term: string): string {
+  return term
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_]/g, "");
+}
+
+/**
+ * Replaces the token-bearing ad_snapshot_url with the public Ads Library URL.
+ */
+function sanitizeAd(ad: Record<string, unknown>): Record<string, unknown> {
+  const sanitized = {...ad};
+  const adId = sanitized["id"];
+  if (typeof adId === "string" && adId) {
+    sanitized["ad_snapshot_url"] = `https://www.facebook.com/ads/library/?id=${adId}`;
+  } else {
+    delete sanitized["ad_snapshot_url"];
+  }
+  return sanitized;
 }
 
 // ---------------------------------------------------------------------------
-// Helper: extract CSRF tokens from the Ads Library HTML page
+// Cloud Function: searchAds  (fire-and-forget scraper)
+// Called from Flutter via FbFunctionController.callFunction("searchAds")
 // ---------------------------------------------------------------------------
 
-async function fetchCsrfTokens(
-  client: ReturnType<typeof buildClient>["client"]
-): Promise<{dtsg: string; jazoest: string}> {
-  const resp = await client.get<string>("/ads/library/", {
-    headers: {
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    },
-  });
-  const html: string = resp.data ?? "";
-
-  // __dtsg token (CSRF)
-  const dtsgMatch = html.match(/"DTSGInitData"[^}]*?"token":"([^"]+)"/);
-  const dtsg = dtsgMatch?.[1] ?? "";
-
-  // jazoest (another CSRF value)
-  const jazoestMatch = html.match(/jazoest=(\d+)/);
-  const jazoest = jazoestMatch?.[1] ?? "";
-
-  // lsd (lightweight session data)
-  const lsdMatch = html.match(/"LSD"[^}]*?"token":"([^"]+)"/);
-  const lsd = lsdMatch?.[1] ?? "";
-
-  logger.info(`Tokens → dtsg=${dtsg ? "✓" : "✗"} jazoest=${jazoest ? "✓" : "✗"} lsd=${lsd ? "✓" : "✗"}`);
-  return {dtsg, jazoest};
-}
-
-// ---------------------------------------------------------------------------
-// Helper: map raw FB response result to our FbAd shape
-// ---------------------------------------------------------------------------
-
-function mapResult(r: Record<string, unknown>): FbAd {
-  const snapshot = (r["snapshot"] as Record<string, unknown>) ?? {};
-  const cards = (snapshot["cards"] as unknown[]) ?? [];
-  const firstCard = (cards[0] as Record<string, unknown>) ?? {};
-
-  const body =
-    (snapshot["body"] as Record<string, unknown>)?.["text"] as string |undefined ??
-    firstCard["body"] as string | undefined;
-
-  const title =
-    snapshot["title"] as string | undefined ??
-    firstCard["title"] as string | undefined;
-
-  const linkUrl =
-    snapshot["link_url"] as string | undefined ??
-    firstCard["link_url"] as string | undefined;
-
-  const linkCaption =
-    snapshot["link_description"] as string | undefined ??
-    firstCard["link_description"] as string | undefined;
-
-  const rawPlatforms = r["publisherPlatform"] as unknown[] | undefined;
-  const platforms = rawPlatforms?.map((p) => String(p));
-
-  return {
-    id: String(r["adArchiveID"] ?? r["ad_archive_id"] ?? r["id"] ?? ""),
-    pageName: r["pageName"] as string | undefined ?? r["page_name"] as string | undefined,
-    pageId: r["pageID"] != null ? String(r["pageID"]) : r["page_id"] as string | undefined,
-    adCreativeBody: body,
-    adCreativeLinkTitle: title,
-    adCreativeLinkUrl: linkUrl,
-    adCreativeLinkCaption: linkCaption,
-    adSnapshotUrl: r["snapshot_url"] as string | undefined,
-    adDeliveryStartTime: r["startDate"] != null ? String(r["startDate"]) : r["ad_delivery_start_time"] as string | undefined,
-    adDeliveryStopTime: r["endDate"] != null ? String(r["endDate"]) : r["ad_delivery_stop_time"] as string | undefined,
-    publisherPlatforms: platforms,
-    currency: r["currency"] as string | undefined,
-    fundingEntity: snapshot["page_name"] as string | undefined,
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Cloud Function: searchFbAds
-// Called from Flutter via FbFunctionController.callFunction("searchFbAds")
-// ---------------------------------------------------------------------------
-
-export const searchFbAds = onCall<SearchAdsRequest>(
+export const searchAds = onCall<SearchAdsRequest>(
   {
     region: "europe-west3",
-    timeoutSeconds: 60,
+    timeoutSeconds: 300,
     memory: "512MiB",
+    secrets: ["FB_ADS_ACCESS_TOKEN"],
   },
   async (request): Promise<SearchAdsResponse> => {
-    const {query = "", country = "US", adType = "all", offset = 0, count = 30} =
-      request.data ?? {};
+    const {searchTerms = "", adType = "ALL"} = request.data ?? {};
 
-    logger.info(`🔍 searchFbAds → query="${query}" country=${country} offset=${offset}`);
+    if (!searchTerms.trim()) {
+      throw new HttpsError("invalid-argument", "searchTerms is required.");
+    }
 
-    const {client} = buildClient();
+    const token = fbAdsToken.value();
+    if (!token) {
+      throw new HttpsError("failed-precondition", "FB_ADS_ACCESS_TOKEN secret is not set.");
+    }
+
+    const termId = slugify(searchTerms);
+    if (!termId) {
+      throw new HttpsError("invalid-argument", "searchTerms produced an empty termId after slugifying.");
+    }
+
+    const db = admin.firestore();
+    const termRef = db.collection("search_terms").doc(termId);
+
+    // Write "loading" status immediately so the Flutter stream reacts at once.
+    await termRef.set(
+      {
+        term: searchTerms.trim(),
+        adType,
+        status: "loading",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        lastFetchedAt: null,
+        totalCount: 0,
+        errorMessage: null,
+      },
+      {merge: true}
+    );
+
+    logger.info(`searchAds → termId="${termId}" adType=${adType}`);
+
+    const fields = adType === "POLITICAL_AND_ISSUE_ADS"
+      ? [...BASE_AD_FIELDS, ...POLITICAL_FIELDS]
+      : BASE_AD_FIELDS;
+
+    const PER_PAGE = 200;
+    const MAX_PAGES = 5;
+
+    let cursor: string | null = null;
+
+    // Keyed by page_id (falls back to ad archive id) — last-write-wins per
+    // advertiser, favouring the most recent ad_creation_time.
+    const advertiserMap = new Map<string, Record<string, unknown>>();
 
     try {
-      // 1. Warm up: hit the public library page to get cookies + CSRF tokens
-      const {dtsg, jazoest} = await fetchCsrfTokens(client);
+      const client = graphClient(token);
 
-      // 2. Call the async search endpoint
-      const params = new URLSearchParams({
-        active_status: "all",
-        ad_type: adType,
-        "country[0]": country,
-        q: query,
-        search_type: "keyword_unordered",
-        session_id: `${Date.now()}_search`,
-        "start_date[min]": "",
-        "start_date[max]": "",
-        view_all_page_id: "",
-        count: String(count),
-        __a: "1",
-        ...(dtsg ? {__dtsg: dtsg} : {}),
-        ...(jazoest ? {jazoest} : {}),
-        ...(offset > 0 ? {offset: String(offset)} : {}),
-      });
+      for (let page = 0; page < MAX_PAGES; page++) {
+        const params: Record<string, unknown> = {
+          ad_type: adType,
+          ad_active_status: "ACTIVE",   // active ads only — skips stopped/inactive
+          fields: fields.join(","),
+          limit: PER_PAGE,
+          "ad_reached_countries[0]": "NL",
+          search_terms: `"${searchTerms.trim()}"`,
+          ...(cursor ? {after: cursor} : {}),
+        };
 
-      const searchResp = await client.get<string>(
-        `/ads/library/async/search_ads/?${params.toString()}`,
-        {
-          headers: {
-            "Referer": "https://www.facebook.com/ads/library/",
-            "Accept": "*/*",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-Fetch-Mode": "cors",
-            "X-Requested-With": "XMLHttpRequest",
-          },
+        const resp = await client.get<Record<string, unknown>>("/ads_archive", {params});
+        const data = resp.data ?? {};
+        const ads = (data["data"] as Record<string, unknown>[]) ?? [];
+        const paging = (data["paging"] as Record<string, unknown>) ?? {};
+        const cursors = (paging["cursors"] as Record<string, unknown>) ?? {};
+        cursor = (cursors["after"] as string | undefined) ?? null;
+        const hasNextPage = Boolean(paging["next"]);
+
+        logger.info(`  page ${page + 1}: ${ads.length} ads, hasNextPage=${hasNextPage}`);
+
+        const scrapedAt = new Date().toISOString();
+        for (const ad of ads) {
+          const sanitized = sanitizeAd(ad);
+          // Use page_id as the dedup key; fall back to ad archive id.
+          const pageId = (sanitized["page_id"] as string | undefined) ?? "";
+          const adId = (sanitized["id"] as string | undefined) ?? "";
+          const key = pageId || adId;
+          if (!key) continue;
+
+          sanitized["scraped_at"] = scrapedAt;
+
+          const existing = advertiserMap.get(key);
+          if (!existing) {
+            advertiserMap.set(key, sanitized);
+          } else {
+            // Keep the more recent ad for this advertiser.
+            const existingTime = (existing["ad_creation_time"] as string) ?? "";
+            const newTime = (sanitized["ad_creation_time"] as string) ?? "";
+            if (newTime > existingTime) {
+              advertiserMap.set(key, sanitized);
+            }
+          }
         }
-      );
 
-      let raw: string = searchResp.data ?? "";
-
-      // FB prepends "for (;;);" to prevent JSON hijacking
-      if (raw.startsWith("for (;;);")) {
-        raw = raw.slice("for (;;);".length);
+        if (!hasNextPage || !cursor) break;
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const decoded: Record<string, any> = JSON.parse(raw);
+      // Write one document per unique advertiser (keyed by page_id).
+      // Using page_id as the Firestore doc key is itself a dedup mechanism —
+      // a plain set() would also deduplicate, but the Map approach lets us
+      // control *which* ad wins (most recent), regardless of API return order.
+      const uniqueAds = Array.from(advertiserMap.entries());
+      logger.info(`  unique advertisers: ${uniqueAds.length}`);
 
-      const payload: Record<string, unknown> =
-        decoded["payload"] ?? decoded["data"] ?? {};
+      // Delete ads from any previous scrape of this term so stale advertisers
+      // that are no longer active don't remain in the collection.
+      const existingSnap = await termRef.collection("ads").listDocuments();
+      const newKeys = new Set(uniqueAds.map(([key]) => key));
+      const staleRefs = existingSnap.filter((ref) => !newKeys.has(ref.id));
+      if (staleRefs.length > 0) {
+        logger.info(`  removing ${staleRefs.length} stale advertiser(s)`);
+        const BATCH_SIZE = 500;
+        for (let i = 0; i < staleRefs.length; i += BATCH_SIZE) {
+          const deleteBatch = db.batch();
+          for (const ref of staleRefs.slice(i, i + BATCH_SIZE)) {
+            deleteBatch.delete(ref);
+          }
+          await deleteBatch.commit();
+        }
+      }
 
-      const results: unknown[] =
-        (payload["results"] as unknown[]) ??
-        (decoded["results"] as unknown[]) ??
-        [];
+      const BATCH_SIZE = 500;
+      for (let i = 0; i < uniqueAds.length; i += BATCH_SIZE) {
+        const batch = db.batch();
+        for (const [key, ad] of uniqueAds.slice(i, i + BATCH_SIZE)) {
+          const adRef = termRef.collection("ads").doc(key);
+          batch.set(adRef, ad, {merge: true});
+        }
+        await batch.commit();
+      }
 
-      const totalCount: number =
-        (payload["total_count"] as number) ?? results.length;
+      const totalWritten = uniqueAds.length;
 
-      const ads = results.map((r) => mapResult(r as Record<string, unknown>));
+      // Mark done.
+      await termRef.update({
+        status: "done",
+        totalCount: totalWritten,
+        lastFetchedAt: admin.firestore.FieldValue.serverTimestamp(),
+        errorMessage: null,
+      });
 
-      logger.info(`✅ Found ${ads.length} ads (total: ${totalCount})`);
-
-      return {
-        ads,
-        hasNextPage: offset + ads.length < totalCount,
-        totalCount,
-        offset,
-      };
+      logger.info(`✅ searchAds done → termId="${termId}" uniqueAdvertisers=${totalWritten}`);
+      return {termId};
     } catch (err) {
-      logger.error("❌ searchFbAds failed:", err);
+      logger.error(`❌ searchAds failed for termId="${termId}":`, err);
+      await termRef.update({
+        status: "error",
+        errorMessage: err instanceof Error ? err.message : "Unknown error",
+      }).catch(() => {/* best-effort */});
       throw new HttpsError(
         "internal",
-        err instanceof Error ? err.message : "Scraping failed"
+        err instanceof Error ? err.message : "Scrape failed"
       );
     }
   }
 );
 
+// ---------------------------------------------------------------------------
+// Cloud Function: getPageInfo
+// Called from Flutter via FbFunctionController.callFunction("getPageInfo")
+// ---------------------------------------------------------------------------
+
+export const getPageInfo = onCall<GetPageInfoRequest>(
+  {
+    region: "europe-west3",
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    secrets: ["FB_ADS_ACCESS_TOKEN"],
+  },
+  async (request): Promise<Record<string, unknown> | null> => {
+    const {pageId} = request.data ?? {};
+
+    if (!pageId) {
+      throw new HttpsError("invalid-argument", "pageId is required.");
+    }
+
+    const token = fbAdsToken.value();
+    if (!token) {
+      throw new HttpsError("failed-precondition", "FB_ADS_ACCESS_TOKEN secret is not set.");
+    }
+
+    logger.info(`getPageInfo → pageId=${pageId}`);
+
+    try {
+      const client = graphClient(token);
+      const resp = await client.get<Record<string, unknown>>(`/${pageId}`, {
+        params: {fields: PAGE_INFO_FIELDS.join(",")},
+      });
+      return resp.data ?? null;
+    } catch (err) {
+      logger.warn(`getPageInfo → no data for pageId=${pageId}:`, err instanceof Error ? err.message : err);
+      return null;
+    }
+  }
+);

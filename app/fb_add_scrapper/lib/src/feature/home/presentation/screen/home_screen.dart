@@ -1,4 +1,5 @@
 import 'package:design_system/design_system.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/ads_scraper.dart';
 import 'package:fb_add_scrapper/src/feature/developer_setting/developer_setting.dart';
 import 'package:fb_add_scrapper/src/feature/home/presentation/screen/bloc/bloc.dart';
 import 'package:fb_add_scrapper/src/feature/home/presentation/screen/widget/widget.dart';
@@ -67,7 +68,7 @@ class _ContentWidget extends StatelessWidget {
 
   final int selectedIndex;
 
-  final _pages = <Widget>[Container(), const SettingScreen()];
+  final _pages = <Widget>[const AdsSearchScreen(), const SettingScreen()];
 
   @override
   Widget build(BuildContext context) {

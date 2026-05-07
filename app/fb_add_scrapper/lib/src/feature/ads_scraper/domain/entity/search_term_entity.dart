@@ -33,15 +33,15 @@ class SearchTermEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        term,
-        adType,
-        status,
-        totalCount,
-        lastFetchedAt,
-        createdAt,
-        errorMessage,
-      ];
+    id,
+    term,
+    adType,
+    status,
+    totalCount,
+    lastFetchedAt,
+    createdAt,
+    errorMessage,
+  ];
 
   SearchTermEntity copyWith({
     String? id,
@@ -65,4 +65,3 @@ class SearchTermEntity extends Equatable {
     );
   }
 }
-
