@@ -24,7 +24,6 @@ class FilterAdsListEvent extends AdsListEvent {
   const FilterAdsListEvent({
     this.platform,
     this.gender,
-    this.deliveryStatus,
     this.clearAll = false,
   });
 
@@ -34,12 +33,9 @@ class FilterAdsListEvent extends AdsListEvent {
   /// 'Men', 'Women', or null for all
   final String? gender;
 
-  /// 'active', 'stopped', or null for all
-  final String? deliveryStatus;
-
   /// When true, reset all filters.
   final bool clearAll;
 
   @override
-  List<Object?> get props => [platform, gender, deliveryStatus, clearAll];
+  List<Object?> get props => [platform, gender, clearAll];
 }

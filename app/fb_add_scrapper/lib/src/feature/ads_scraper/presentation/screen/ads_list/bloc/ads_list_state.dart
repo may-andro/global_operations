@@ -4,7 +4,7 @@ import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/entity/entity.dar
 enum AdsListStatus { idle, loading, loadingMore, success, failure }
 
 class AdsListFilter extends Equatable {
-  const AdsListFilter({this.platform, this.gender, this.deliveryStatus});
+  const AdsListFilter({this.platform, this.gender});
 
   /// e.g. 'facebook', 'instagram'
   final String? platform;
@@ -12,28 +12,20 @@ class AdsListFilter extends Equatable {
   /// 'Men', 'Women', or null for all
   final String? gender;
 
-  /// 'active', 'stopped', or null for all
-  final String? deliveryStatus;
-
-  bool get isActive =>
-      platform != null || gender != null || deliveryStatus != null;
+  bool get isActive => platform != null || gender != null;
 
   AdsListFilter copyWith({
     Object? platform = _sentinel,
     Object? gender = _sentinel,
-    Object? deliveryStatus = _sentinel,
   }) {
     return AdsListFilter(
       platform: platform == _sentinel ? this.platform : platform as String?,
       gender: gender == _sentinel ? this.gender : gender as String?,
-      deliveryStatus: deliveryStatus == _sentinel
-          ? this.deliveryStatus
-          : deliveryStatus as String?,
     );
   }
 
   @override
-  List<Object?> get props => [platform, gender, deliveryStatus];
+  List<Object?> get props => [platform, gender];
 }
 
 // Sentinel to distinguish "not provided" from null
@@ -78,12 +70,6 @@ class AdsListState extends Equatable {
         if (ad.targetGender?.toLowerCase() != filter.gender!.toLowerCase()) {
           return false;
         }
-      }
-      if (filter.deliveryStatus != null) {
-        final isStopped =
-            ad.adDeliveryStopTime != null && ad.adDeliveryStopTime!.isNotEmpty;
-        if (filter.deliveryStatus == 'active' && isStopped) return false;
-        if (filter.deliveryStatus == 'stopped' && !isStopped) return false;
       }
       return true;
     }).toList();

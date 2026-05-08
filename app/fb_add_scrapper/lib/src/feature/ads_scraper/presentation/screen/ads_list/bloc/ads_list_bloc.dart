@@ -55,13 +55,12 @@ class AdsListBloc extends Bloc<AdsListEvent, AdsListState> {
 
     emit(state.copyWith(status: AdsListStatus.loadingMore));
 
-    final result = await _getAds(
-      GetAdsForTermInput(
-        termId: state.termId,
-        limit: _kPageSize,
-        startAfterDocId: state.lastDocId,
-      ),
+    final getAdsForTermInput = GetAdsForTermInput(
+      termId: state.termId,
+      limit: _kPageSize,
+      startAfterDocId: state.lastDocId,
     );
+    final result = await _getAds(getAdsForTermInput);
 
     result.fold(
       (failure) => emit(
@@ -88,11 +87,7 @@ class AdsListBloc extends Bloc<AdsListEvent, AdsListState> {
     // The widget always passes the full intended filter state — apply directly.
     emit(
       state.copyWith(
-        filter: AdsListFilter(
-          platform: event.platform,
-          gender: event.gender,
-          deliveryStatus: event.deliveryStatus,
-        ),
+        filter: AdsListFilter(platform: event.platform, gender: event.gender),
       ),
     );
   }

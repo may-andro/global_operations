@@ -1,6 +1,6 @@
 {
-    "name": "global_ops",
-    "short_name": "global_ops",
+    "name": "FB Add Scrapper",
+    "short_name": "FB Add Scrapper",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#F6F6F6",

@@ -113,10 +113,7 @@ class AdsFilterBarWidget extends StatelessWidget {
       add(
         _capitalise(filter.platform!.replaceAll('_', ' ')),
         () => context.read<AdsListBloc>().add(
-          FilterAdsListEvent(
-            gender: filter.gender,
-            deliveryStatus: filter.deliveryStatus,
-          ),
+          FilterAdsListEvent(gender: filter.gender),
         ),
       );
     }
@@ -124,18 +121,7 @@ class AdsFilterBarWidget extends StatelessWidget {
       add(
         filter.gender!,
         () => context.read<AdsListBloc>().add(
-          FilterAdsListEvent(
-            platform: filter.platform,
-            deliveryStatus: filter.deliveryStatus,
-          ),
-        ),
-      );
-    }
-    if (filter.deliveryStatus != null) {
-      add(
-        _capitalise(filter.deliveryStatus!),
-        () => context.read<AdsListBloc>().add(
-          FilterAdsListEvent(platform: filter.platform, gender: filter.gender),
+          FilterAdsListEvent(platform: filter.platform),
         ),
       );
     }
@@ -215,7 +201,6 @@ int _activeCount(AdsListFilter filter) {
   int count = 0;
   if (filter.platform != null) count++;
   if (filter.gender != null) count++;
-  if (filter.deliveryStatus != null) count++;
   return count;
 }
 
@@ -279,7 +264,6 @@ class _FilterSheet extends StatelessWidget {
                     FilterAdsListEvent(
                       platform: next,
                       gender: filter.gender,
-                      deliveryStatus: filter.deliveryStatus,
                     ),
                   );
                 },
@@ -290,7 +274,6 @@ class _FilterSheet extends StatelessWidget {
                 options: const [
                   ('Men', 'Men'),
                   ('Women', 'Women'),
-                  ('All', 'All'),
                 ],
                 selected: filter.gender,
                 onSelected: (value) {
@@ -299,23 +282,6 @@ class _FilterSheet extends StatelessWidget {
                     FilterAdsListEvent(
                       platform: filter.platform,
                       gender: next,
-                      deliveryStatus: filter.deliveryStatus,
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: context.space(factor: 1.5)),
-              _SheetSection(
-                label: 'Delivery status',
-                options: const [('Active', 'active'), ('Stopped', 'stopped')],
-                selected: filter.deliveryStatus,
-                onSelected: (value) {
-                  final next = filter.deliveryStatus == value ? null : value;
-                  context.read<AdsListBloc>().add(
-                    FilterAdsListEvent(
-                      platform: filter.platform,
-                      gender: filter.gender,
-                      deliveryStatus: next,
                     ),
                   );
                 },

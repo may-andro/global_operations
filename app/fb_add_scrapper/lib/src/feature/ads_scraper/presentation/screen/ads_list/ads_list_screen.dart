@@ -58,12 +58,16 @@ class _AdsListViewState extends State<_AdsListView> {
 
   void _onScroll() {
     final state = context.read<AdsListBloc>().state;
-    if (_scrollController.position.pixels >=
-            _scrollController.position.maxScrollExtent * 0.9 &&
-        state.hasMore &&
-        !state.isLoading) {
+    if (_isBottom && state.hasMore && !state.isLoading) {
       context.read<AdsListBloc>().add(const LoadMoreAdsListEvent());
     }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9); // Load more when 90% scrolled
   }
 
   @override

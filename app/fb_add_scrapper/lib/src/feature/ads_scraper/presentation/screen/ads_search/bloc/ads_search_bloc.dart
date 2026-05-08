@@ -53,10 +53,12 @@ class AdsSearchBloc extends Bloc<AdsSearchEvent, AdsSearchState> {
     final result = await _triggerScrape(
       TriggerScrapeInput(searchTerms: event.searchTerms, adType: event.adType),
     );
+    final latest = state;
+    if (latest is! AdsSearchLoadedState) return;
     result.fold(
       (failure) =>
-          emit(current.copyWith(isAdding: false, addError: failure.message)),
-      (_) => emit(current.copyWith(isAdding: false, clearError: true)),
+          emit(latest.copyWith(isAdding: false, addError: failure.message)),
+      (_) => emit(latest.copyWith(isAdding: false, clearError: true)),
     );
   }
 

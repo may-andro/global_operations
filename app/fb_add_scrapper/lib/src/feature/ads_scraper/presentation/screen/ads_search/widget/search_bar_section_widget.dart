@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_search/bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -46,7 +47,6 @@ class _SearchBarSectionWidgetState extends State<SearchBarSectionWidget> {
       AddSearchTermEvent(searchTerms: _input, adType: _adType),
     );
     _controller.clear();
-    context.read<AdsSearchBloc>().add(const UpdateSearchQueryEvent(query: ''));
     FocusScope.of(context).unfocus();
   }
 
@@ -121,7 +121,9 @@ class _SearchBarSectionWidgetState extends State<SearchBarSectionWidget> {
                           buttonColor: canAdd
                               ? context.colorPalette.brand.primary
                               : context.colorPalette.background.disabled,
-                          size: DSIconButtonSize.medium,
+                          size: kIsWeb
+                              ? DSIconButtonSize.small
+                              : DSIconButtonSize.medium,
                           onPressed: canAdd ? () => _onAdd(state) : null,
                         ),
                 ),
@@ -204,6 +206,9 @@ class _SearchInputWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final errorColor = context.colorPalette.semantic.warning.color;
+    final borderRadius = BorderRadius.circular(
+      context.dimen.radiusLevel2.value,
+    );
     return TextField(
       controller: controller,
       enabled: enabled,
@@ -211,21 +216,32 @@ class _SearchInputWidget extends StatelessWidget {
       onSubmitted: (_) => onSubmitted(),
       decoration: InputDecoration(
         hintText: 'Search ads...',
-        prefixIcon: const Icon(Icons.search_rounded),
+        prefixIcon: const Icon(Icons.search),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(context.dimen.radiusLevel2.value),
-          borderSide: hasError
-              ? BorderSide(color: errorColor, width: 1.5)
-              : const BorderSide(),
+          borderRadius: borderRadius,
+          borderSide: BorderSide(
+            color: context.colorPalette.background.onSurface.color,
+            width: 1.5,
+          ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: borderRadius,
+          borderSide: BorderSide(
+            color: context.colorPalette.background.disabled.color,
+            width: 1.5,
+          ),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(context.dimen.radiusLevel2.value),
-          borderSide: hasError
-              ? BorderSide(color: errorColor, width: 1.5)
-              : const BorderSide(),
+          borderRadius: borderRadius,
+          borderSide: BorderSide(
+            color: hasError
+                ? errorColor
+                : context.colorPalette.background.onSurface.color,
+            width: 1.5,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(context.dimen.radiusLevel2.value),
+          borderRadius: borderRadius,
           borderSide: BorderSide(
             color: hasError
                 ? errorColor

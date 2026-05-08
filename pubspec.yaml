@@ -197,41 +197,51 @@ melos:
         dependsOn: flutter_localizations
 
     # Run scripts (scoped to the app package)
-    run_prod:
-      run: flutter run lib/main.dart --dart-define=build_env=prod
-      description: Run the app in prod env.
+    run_global_ops_prod:
+      run: |
+        cd app/global_ops
+        flutter run lib/main.dart --dart-define=build_env=prod
+      description: Run the global_ops app in prod env.
       exec:
         concurrency: 1
       packageFilters:
         name: global_ops
 
-    run_prod_release:
-      run: flutter run lib/main.dart --dart-define=build_env=prod --release
-      description: Run the release app in prod env.
+    run_global_ops_prod_release:
+      run: |
+        cd app/global_ops
+        flutter run lib/main.dart --dart-define=build_env=prod --release
+      description: Run the global_ops app in prod env (release mode).
       exec:
         concurrency: 1
       packageFilters:
         name: global_ops
 
-    run_prod_web_release:
-      run: flutter run lib/main.dart --dart-define=build_env=prod --release -d chrome --web-port=1234
-      description: Run the app in prod env on Chrome.
+    run_global_ops_prod_web_release:
+      run: |
+        cd app/global_ops
+        flutter run lib/main.dart --dart-define=build_env=prod --release -d chrome --web-port=1234
+      description: Run the global_ops app in prod env on Chrome (release mode).
       exec:
         concurrency: 1
       packageFilters:
         name: global_ops
 
-    run_staging_web:
-      run: flutter run lib/main.dart --dart-define=build_env=staging -d chrome --web-port=1234
-      description: Run the app in staging env on Chrome.
+    run_global_ops_staging_web:
+      run: |
+        cd app/global_ops
+        flutter run lib/main.dart --dart-define=build_env=staging -d chrome --web-port=1234
+      description: Run the global_ops app in staging env on Chrome.
       exec:
         concurrency: 1
       packageFilters:
         name: global_ops
 
-    run_staging:
-      run: flutter run lib/main.dart --dart-define=build_env=staging
-      description: Run the app in staging env.
+    run_global_ops_staging:
+      run: |
+        cd app/global_ops
+        flutter run lib/main.dart --dart-define=build_env=staging
+      description: Run the global_ops app in staging env.
       exec:
         concurrency: 1
       packageFilters:
@@ -282,7 +292,7 @@ melos:
         echo "Building web with Flutter"
         flutter build web --release --dart-define=build_env=prod
         echo "Deploying to Firebase"
-        firebase deploy --only hosting
+        firebase deploy --only hosting --config=../../firebase.json
       description: Build and deploy Flutter web app.
       exec:
         concurrency: 1
