@@ -9,11 +9,11 @@ class FbAdMapper implements BiMapper<FbAdModel, FbAdEntity> {
   FbAdModel from(FbAdEntity entity) {
     return FbAdModel(
       id: entity.id,
-      adCreativeBody: entity.adCreativeBody,
-      adCreativeLinkCaption: entity.adCreativeLinkCaption,
-      adCreativeLinkDescription: entity.adCreativeLinkDescription,
-      adCreativeLinkTitle: entity.adCreativeLinkTitle,
-      adCreativeLinkUrl: entity.adCreativeLinkUrl,
+      adCreativeBodies: entity.adCreativeBodies,
+      adCreativeLinkTitles: entity.adCreativeLinkTitles,
+      adCreativeLinkDescriptions: entity.adCreativeLinkDescriptions,
+      adCreativeLinkCaptions: entity.adCreativeLinkCaptions,
+      adCreativeLinkUrls: entity.adCreativeLinkUrls,
       adCreationTime: entity.adCreationTime,
       adDeliveryStartTime: entity.adDeliveryStartTime,
       adDeliveryStopTime: entity.adDeliveryStopTime,
@@ -40,6 +40,11 @@ class FbAdMapper implements BiMapper<FbAdModel, FbAdEntity> {
       deliveryByRegion: entity.deliveryByRegion,
       beneficiaryPayers: entity.beneficiaryPayers,
       scrapedAt: entity.scrapedAt,
+      advertiserId: entity.advertiserId,
+      rankScore: entity.rankScore,
+      totalAdsFound: entity.totalAdsFound,
+      latestAdTime: entity.latestAdTime,
+      websiteDomain: entity.websiteDomain,
     );
   }
 
@@ -47,11 +52,11 @@ class FbAdMapper implements BiMapper<FbAdModel, FbAdEntity> {
   FbAdEntity to(FbAdModel model) {
     return FbAdEntity(
       id: model.id,
-      adCreativeBody: model.adCreativeBody,
-      adCreativeLinkCaption: model.adCreativeLinkCaption,
-      adCreativeLinkDescription: model.adCreativeLinkDescription,
-      adCreativeLinkTitle: model.adCreativeLinkTitle,
-      adCreativeLinkUrl: model.adCreativeLinkUrl,
+      adCreativeBodies: model.adCreativeBodies,
+      adCreativeLinkTitles: model.adCreativeLinkTitles,
+      adCreativeLinkDescriptions: model.adCreativeLinkDescriptions,
+      adCreativeLinkCaptions: model.adCreativeLinkCaptions,
+      adCreativeLinkUrls: model.adCreativeLinkUrls,
       adCreationTime: model.adCreationTime,
       adDeliveryStartTime: model.adDeliveryStartTime,
       adDeliveryStopTime: model.adDeliveryStopTime,
@@ -78,6 +83,11 @@ class FbAdMapper implements BiMapper<FbAdModel, FbAdEntity> {
       deliveryByRegion: model.deliveryByRegion,
       beneficiaryPayers: model.beneficiaryPayers,
       scrapedAt: model.scrapedAt,
+      advertiserId: model.advertiserId,
+      rankScore: model.rankScore,
+      totalAdsFound: model.totalAdsFound,
+      latestAdTime: model.latestAdTime,
+      websiteDomain: model.websiteDomain,
     );
   }
 }

@@ -33,7 +33,7 @@ class FbAdsFirestoreDataSource {
           orderBy: 'createdAt',
           descending: true,
         )
-        .asyncMap((list) async {
+        .asyncMap((list) {
           // streamCollection returns raw data without the doc ID, so we re-query
           // using getCollectionQuerySnapshot that also lacks IDs.
           // Instead we stream snapshots with IDs by doing a manual approach.
@@ -75,7 +75,7 @@ class FbAdsFirestoreDataSource {
       _kSearchTermsCollection,
       termId,
       _kAdsSubcollection,
-      orderBy: 'ad_creation_time',
+      orderBy: 'rank_score',
       descending: true,
       limit: limit ?? 30,
       startAfterDocumentId: startAfterDocId,

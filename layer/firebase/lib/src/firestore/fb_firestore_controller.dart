@@ -222,6 +222,9 @@ class FbFirestoreController {
   }
 
   /// Fetches a subcollection with optional ordering and pagination.
+  ///
+  /// Note: If [startAfterDocumentId] is provided, [orderBy] must also be specified.
+  /// Otherwise, pagination will not work and Firestore will throw an error.
   Future<List<Map<String, dynamic>>> getSubcollectionQuerySnapshot(
     String collectionPath,
     String documentPath,
@@ -244,6 +247,12 @@ class FbFirestoreController {
         query = query.limit(limit);
       }
       if (startAfterDocumentId != null) {
+        if (orderBy == null) {
+          throw FirestoreException(
+            'orderBy must be provided when using startAfterDocumentId for pagination.',
+            StackTrace.current,
+          );
+        }
         final docSnap = await _firebaseFirestore
             .collection(collectionPath)
             .doc(documentPath)
@@ -256,7 +265,10 @@ class FbFirestoreController {
       }
 
       final result = await query.get();
-      return result.docs.where((d) => d.exists).map((d) => d.data()).toList();
+      return result.docs.where((d) => d.exists).map((d) {
+        final data = d.data();
+        return {...data, 'id': d.id};
+      }).toList();
     } catch (error, st) {
       throw FirestoreException(error, st);
     }

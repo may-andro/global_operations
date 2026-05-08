@@ -49,16 +49,12 @@ class GetAdsForTermUseCase
   Future<Either<GetAdsForTermFailure, List<FbAdEntity>>> execute(
     GetAdsForTermInput input,
   ) async {
-    try {
-      final ads = await _repository.getAdsForTerm(
-        input.termId,
-        limit: input.limit,
-        startAfterDocId: input.startAfterDocId,
-      );
-      return Right(ads);
-    } catch (e, st) {
-      return Left(GetAdsForTermFailure(message: e.toString(), cause: st));
-    }
+    final ads = await _repository.getAdsForTerm(
+      input.termId,
+      limit: input.limit,
+      startAfterDocId: input.startAfterDocId,
+    );
+    return Right(ads);
   }
 
   @override

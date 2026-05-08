@@ -11,28 +11,7 @@ class AdDetailRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: context.space(factor: 0.75)),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: context.space(factor: 14),
-            child: DSTextWidget(
-              item.label,
-              style: context.typography.bodySmall,
-              color: context.colorPalette.neutral.grey5,
-            ),
-          ),
-          SizedBox(width: context.space()),
-          Expanded(
-            child: SelectableText(
-              item.value!,
-              style: context.typography.bodySmall.textStyle.copyWith(
-                color: context.colorPalette.invertedBackground.onPrimary.color,
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: item.buildWidget(context),
     );
   }
 }

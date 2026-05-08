@@ -1,6 +1,9 @@
+import 'package:core/core.dart';
 import 'package:design_system/design_system.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/entity/fb_ad_entity.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_detail/ads_detail_screen.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_list/widget/delivery_badge_widget.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_list/widget/platforms_widget.dart';
 import 'package:flutter/material.dart';
 
 class AdCardWidget extends StatelessWidget {
@@ -12,6 +15,10 @@ class AdCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isActive =
         ad.adDeliveryStopTime == null || ad.adDeliveryStopTime!.isEmpty;
+    final adCreativeBodies = ad.adCreativeBodies;
+    final publisherPlatforms = ad.publisherPlatforms;
+    final targetGender = ad.targetGender;
+    final targetAges = ad.targetAges;
 
     return DsCardWidget(
       backgroundColor: context.colorPalette.invertedBackground.primary,
@@ -25,10 +32,12 @@ class AdCardWidget extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: context.space(factor: 0.5),
           children: [
             // ── Title row ──
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: context.space(),
               children: [
                 Expanded(
                   child: DSTextWidget(
@@ -39,37 +48,31 @@ class AdCardWidget extends StatelessWidget {
                     textOverflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(width: 8),
-                _DeliveryBadgeWidget(isActive: isActive),
+                DeliveryBadgeWidget(isActive: isActive),
               ],
             ),
-            SizedBox(height: context.space(factor: 0.5)),
-
+            DSHorizontalDividerWidget(
+              thickness: 1,
+              color: context.colorPalette.neutral.grey6,
+            ),
             // ── Ad body ──
-            if (ad.adCreativeBody != null && ad.adCreativeBody!.isNotEmpty)
-              _InfoRowWidget(
-                icon: Icons.notes_rounded,
-                label: ad.adCreativeBody!,
-                color: context.colorPalette.neutral.grey3,
+            if (adCreativeBodies != null && adCreativeBodies.isNotEmpty)
+              DSTextWidget(
+                adCreativeBodies.first,
+                color: context.colorPalette.neutral.grey2,
                 style: context.typography.bodyMedium,
                 maxLines: 2,
+                textOverflow: TextOverflow.ellipsis,
               ),
-
             // ── Platforms ──
-            if (ad.publisherPlatforms != null &&
-                ad.publisherPlatforms!.isNotEmpty)
-              _InfoRowWidget(
-                icon: Icons.share_rounded,
-                label: ad.publisherPlatforms!.map(_capitalise).join(' · '),
-                color: context.colorPalette.neutral.grey4,
-              ),
+            if (publisherPlatforms != null && publisherPlatforms.isNotEmpty)
+              PlatformsWidget(platforms: publisherPlatforms),
 
             // ── Target gender / ages ──
-            if (ad.targetGender != null || ad.targetAges != null) ...[
+            if (targetGender != null || targetAges != null) ...[
               _InfoRowWidget(
-                icon: Icons.people_outline_rounded,
+                icon: targetGender.genderIcon,
                 label: _targetLabel(ad),
-                color: context.colorPalette.neutral.grey4,
               ),
             ],
 
@@ -83,7 +86,6 @@ class AdCardWidget extends StatelessWidget {
                   ad.impressionsUpperBound,
                   suffix: ' impressions',
                 ),
-                color: context.colorPalette.neutral.grey4,
               ),
 
             // ── Spend ──
@@ -95,7 +97,6 @@ class AdCardWidget extends StatelessWidget {
                   ad.spendUpperBound,
                   prefix: ad.currency != null ? '${ad.currency} ' : '',
                 ),
-                color: context.colorPalette.neutral.grey4,
               ),
 
             // ── Reach (EU / BR) ──
@@ -103,18 +104,15 @@ class AdCardWidget extends StatelessWidget {
               _InfoRowWidget(
                 icon: Icons.public_rounded,
                 label: _reachLabel(ad),
-                color: context.colorPalette.neutral.grey4,
               ),
 
             // ── Creation date ──
             if (ad.adCreationTime != null)
               _InfoRowWidget(
                 icon: Icons.calendar_today_outlined,
-                label: ad.adCreationTime!.length >= 10
-                    ? ad.adCreationTime!.substring(0, 10)
-                    : ad.adCreationTime!,
-                color: context.colorPalette.neutral.grey5,
-                style: context.typography.labelSmall,
+                label:
+                    ad.adCreationTime?.toFormattedDate.toFullDateWithoutTime ??
+                    'Unknown date',
               ),
           ],
         ),
@@ -122,16 +120,13 @@ class AdCardWidget extends StatelessWidget {
     );
   }
 
-  String _capitalise(String s) =>
-      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1).toLowerCase();
-
   String _targetLabel(FbAdEntity ad) {
     final parts = <String>[];
-    if (ad.targetGender != null) parts.add(ad.targetGender!);
     if (ad.targetAges != null && ad.targetAges!.isNotEmpty) {
-      parts.add(ad.targetAges!.join(', '));
+      parts.add(ad.targetAges!.join(' - '));
+      parts.add('Age Groups');
     }
-    return parts.join(' · ');
+    return parts.join(' ');
   }
 
   String _rangeLabel(
@@ -152,77 +147,44 @@ class AdCardWidget extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Delivery status badge
-// ---------------------------------------------------------------------------
-
-class _DeliveryBadgeWidget extends StatelessWidget {
-  const _DeliveryBadgeWidget({required this.isActive});
-
-  final bool isActive;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isActive
-        ? context.colorPalette.semantic.success
-        : context.colorPalette.neutral.grey5;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.space(factor: 0.75),
-        vertical: context.space(factor: 0.25),
-      ),
-      decoration: BoxDecoration(
-        color: color.color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(context.dimen.radiusLevel1.value),
-        border: Border.all(color: color.color.withValues(alpha: 0.4)),
-      ),
-      child: DSTextWidget(
-        isActive ? 'Active' : 'Stopped',
-        color: color,
-        style: context.typography.labelSmall,
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Info row — mirrors _ItemWidget from AdPanelWidget
-// ---------------------------------------------------------------------------
-
 class _InfoRowWidget extends StatelessWidget {
-  const _InfoRowWidget({
-    required this.icon,
-    required this.label,
-    required this.color,
-    this.style,
-    this.maxLines = 1,
-  });
+  const _InfoRowWidget({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
-  final DSColor color;
-  final DSTextStyle? style;
-  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      crossAxisAlignment: maxLines > 1
-          ? CrossAxisAlignment.start
-          : CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DSIconWidget(icon, size: DSIconSize.small, color: color),
+        DSIconWidget(
+          icon,
+          size: DSIconSize.small,
+          color: context.colorPalette.neutral.grey3,
+        ),
         const DSHorizontalSpacerWidget(0.5),
         Flexible(
           child: DSTextWidget(
             label,
-            color: color,
-            style: style ?? context.typography.bodyMedium,
-            maxLines: maxLines,
+            color: context.colorPalette.neutral.grey3,
+            style: context.typography.bodyMedium,
+            maxLines: 1,
             textOverflow: TextOverflow.ellipsis,
           ),
         ),
       ],
     );
   }
+}
+
+extension on String? {
+  IconData get genderIcon => switch (this?.toLowerCase()) {
+    'male' => Icons.male_rounded,
+    'men' => Icons.male_rounded,
+    'women' => Icons.female_rounded,
+    'female' => Icons.female_rounded,
+    'all' => Icons.people_outline_rounded,
+    _ => Icons.help_outline_rounded,
+  };
 }

@@ -20,8 +20,9 @@ class AdDetailBloc extends Bloc<AdDetailEvent, AdDetailState> {
   ) async {
     emit(state.copyWith(status: AdDetailPageInfoStatus.loading));
 
+    //GetPageInfoInput(pageId: event.pageId),
     final result = await getPageInfoUseCase(
-      GetPageInfoInput(pageId: event.pageId),
+      const GetPageInfoInput(pageId: '1217422004777362'),
     );
 
     result.fold(

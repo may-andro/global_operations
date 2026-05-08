@@ -25,7 +25,7 @@ class AdDetailScreen extends StatelessWidget {
         if (ad.pageId != null) bloc.add(LoadPageInfoEvent(ad.pageId!));
         return bloc;
       },
-      child: AdDetailViewWidget(ad: ad),
+      child: SafeArea(child: AdDetailViewWidget(ad: ad)),
     );
   }
 }

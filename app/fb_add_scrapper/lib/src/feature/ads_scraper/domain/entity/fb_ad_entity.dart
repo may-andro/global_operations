@@ -3,11 +3,11 @@ import 'package:equatable/equatable.dart';
 class FbAdEntity extends Equatable {
   const FbAdEntity({
     required this.id,
-    this.adCreativeBody,
-    this.adCreativeLinkCaption,
-    this.adCreativeLinkDescription,
-    this.adCreativeLinkTitle,
-    this.adCreativeLinkUrl,
+    this.adCreativeBodies,
+    this.adCreativeLinkTitles,
+    this.adCreativeLinkDescriptions,
+    this.adCreativeLinkCaptions,
+    this.adCreativeLinkUrls,
     this.adCreationTime,
     this.adDeliveryStartTime,
     this.adDeliveryStopTime,
@@ -34,16 +34,25 @@ class FbAdEntity extends Equatable {
     this.deliveryByRegion,
     this.beneficiaryPayers,
     this.scrapedAt,
+    this.advertiserId,
+    this.rankScore,
+    this.totalAdsFound,
+    this.latestAdTime,
+    this.websiteDomain,
   });
+  final String? advertiserId;
+  final double? rankScore;
+  final int? totalAdsFound;
+  final String? latestAdTime;
 
   /// The unique `ad_archive_id` — used as Firestore document key for dedup.
   final String id;
 
-  final String? adCreativeBody;
-  final String? adCreativeLinkCaption;
-  final String? adCreativeLinkDescription;
-  final String? adCreativeLinkTitle;
-  final String? adCreativeLinkUrl;
+  final List<String>? adCreativeBodies;
+  final List<String>? adCreativeLinkTitles;
+  final List<String>? adCreativeLinkDescriptions;
+  final List<String>? adCreativeLinkCaptions;
+  final List<String>? adCreativeLinkUrls;
   final String? adCreationTime;
   final String? adDeliveryStartTime;
   final String? adDeliveryStopTime;
@@ -99,14 +108,17 @@ class FbAdEntity extends Equatable {
 
   final String? scrapedAt;
 
+  /// The domain of the website associated with the ad.
+  final String? websiteDomain;
+
   @override
   List<Object?> get props => [
     id,
-    adCreativeBody,
-    adCreativeLinkCaption,
-    adCreativeLinkDescription,
-    adCreativeLinkTitle,
-    adCreativeLinkUrl,
+    adCreativeBodies,
+    adCreativeLinkTitles,
+    adCreativeLinkDescriptions,
+    adCreativeLinkCaptions,
+    adCreativeLinkUrls,
     adCreationTime,
     adDeliveryStartTime,
     adDeliveryStopTime,
@@ -133,15 +145,20 @@ class FbAdEntity extends Equatable {
     deliveryByRegion,
     beneficiaryPayers,
     scrapedAt,
+    advertiserId,
+    rankScore,
+    totalAdsFound,
+    latestAdTime,
+    websiteDomain,
   ];
 
   FbAdEntity copyWith({
     String? id,
-    String? adCreativeBody,
-    String? adCreativeLinkCaption,
-    String? adCreativeLinkDescription,
-    String? adCreativeLinkTitle,
-    String? adCreativeLinkUrl,
+    List<String>? adCreativeBodies,
+    List<String>? adCreativeLinkTitles,
+    List<String>? adCreativeLinkDescriptions,
+    List<String>? adCreativeLinkCaptions,
+    List<String>? adCreativeLinkUrls,
     String? adCreationTime,
     String? adDeliveryStartTime,
     String? adDeliveryStopTime,
@@ -168,16 +185,19 @@ class FbAdEntity extends Equatable {
     List<Map<String, dynamic>>? deliveryByRegion,
     List<String>? beneficiaryPayers,
     String? scrapedAt,
+    String? advertiserId,
+    double? rankScore,
+    int? totalAdsFound,
+    String? latestAdTime,
+    String? websiteDomain,
   }) {
     return FbAdEntity(
       id: id ?? this.id,
-      adCreativeBody: adCreativeBody ?? this.adCreativeBody,
-      adCreativeLinkCaption:
-          adCreativeLinkCaption ?? this.adCreativeLinkCaption,
-      adCreativeLinkDescription:
-          adCreativeLinkDescription ?? this.adCreativeLinkDescription,
-      adCreativeLinkTitle: adCreativeLinkTitle ?? this.adCreativeLinkTitle,
-      adCreativeLinkUrl: adCreativeLinkUrl ?? this.adCreativeLinkUrl,
+      adCreativeBodies: adCreativeBodies ?? this.adCreativeBodies,
+      adCreativeLinkTitles: adCreativeLinkTitles ?? this.adCreativeLinkTitles,
+      adCreativeLinkDescriptions: adCreativeLinkDescriptions ?? this.adCreativeLinkDescriptions,
+      adCreativeLinkCaptions: adCreativeLinkCaptions ?? this.adCreativeLinkCaptions,
+      adCreativeLinkUrls: adCreativeLinkUrls ?? this.adCreativeLinkUrls,
       adCreationTime: adCreationTime ?? this.adCreationTime,
       adDeliveryStartTime: adDeliveryStartTime ?? this.adDeliveryStartTime,
       adDeliveryStopTime: adDeliveryStopTime ?? this.adDeliveryStopTime,
@@ -187,10 +207,8 @@ class FbAdEntity extends Equatable {
       fundingEntity: fundingEntity ?? this.fundingEntity,
       pageId: pageId ?? this.pageId,
       pageName: pageName ?? this.pageName,
-      impressionsLowerBound:
-          impressionsLowerBound ?? this.impressionsLowerBound,
-      impressionsUpperBound:
-          impressionsUpperBound ?? this.impressionsUpperBound,
+      impressionsLowerBound: impressionsLowerBound ?? this.impressionsLowerBound,
+      impressionsUpperBound: impressionsUpperBound ?? this.impressionsUpperBound,
       spendLowerBound: spendLowerBound ?? this.spendLowerBound,
       spendUpperBound: spendUpperBound ?? this.spendUpperBound,
       languages: languages ?? this.languages,
@@ -200,17 +218,17 @@ class FbAdEntity extends Equatable {
       targetLocations: targetLocations ?? this.targetLocations,
       euTotalReach: euTotalReach ?? this.euTotalReach,
       brTotalReach: brTotalReach ?? this.brTotalReach,
-      estimatedAudienceSizeLowerBound:
-          estimatedAudienceSizeLowerBound ??
-          this.estimatedAudienceSizeLowerBound,
-      estimatedAudienceSizeUpperBound:
-          estimatedAudienceSizeUpperBound ??
-          this.estimatedAudienceSizeUpperBound,
-      demographicDistribution:
-          demographicDistribution ?? this.demographicDistribution,
+      estimatedAudienceSizeLowerBound: estimatedAudienceSizeLowerBound ?? this.estimatedAudienceSizeLowerBound,
+      estimatedAudienceSizeUpperBound: estimatedAudienceSizeUpperBound ?? this.estimatedAudienceSizeUpperBound,
+      demographicDistribution: demographicDistribution ?? this.demographicDistribution,
       deliveryByRegion: deliveryByRegion ?? this.deliveryByRegion,
       beneficiaryPayers: beneficiaryPayers ?? this.beneficiaryPayers,
       scrapedAt: scrapedAt ?? this.scrapedAt,
+      advertiserId: advertiserId ?? this.advertiserId,
+      rankScore: rankScore ?? this.rankScore,
+      totalAdsFound: totalAdsFound ?? this.totalAdsFound,
+      latestAdTime: latestAdTime ?? this.latestAdTime,
+      websiteDomain: websiteDomain ?? this.websiteDomain,
     );
   }
 }

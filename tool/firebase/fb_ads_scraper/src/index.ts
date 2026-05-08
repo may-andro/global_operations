@@ -39,23 +39,22 @@ interface GetPageInfoRequest {
   pageId: string;
 }
 
-// ---------------------------------------------------------------------------
-// Field lists (mirrors FbAdsApiDataSource in the Flutter app)
-// ---------------------------------------------------------------------------
-
 const BASE_AD_FIELDS = [
   "id",
-  "ad_creation_time",
-  "ad_creative_bodies",
-  "ad_creative_link_captions",
-  "ad_creative_link_descriptions",
-  "ad_creative_link_titles",
-  "ad_delivery_start_time",
-  "ad_delivery_stop_time",
-  "ad_snapshot_url",
-  "bylines",
   "page_id",
   "page_name",
+  "ad_creation_time",
+  "ad_delivery_start_time",
+  "ad_delivery_stop_time",
+  "ad_creative_bodies",
+  "ad_creative_link_titles",
+  "ad_creative_link_captions",
+  "ad_creative_link_descriptions",
+  "ad_creative_link_urls",
+  "ad_creative_link_call_to_action",
+  "ad_snapshot_url",
+  "ad_creative_link_images",
+  "bylines",
   "languages",
   "publisher_platforms",
   "target_ages",
@@ -123,6 +122,47 @@ function sanitizeAd(ad: Record<string, unknown>): Record<string, unknown> {
   return sanitized;
 }
 
+function getNumber(value: unknown): number {
+  if (typeof value === "number") return value;
+
+  if (typeof value === "string") {
+    const parsed = parseInt(value.replace(/[^\d]/g, ""), 10);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  return 0;
+}
+
+function getTimestamp(value: unknown): number {
+  if (typeof value !== "string") return 0;
+
+  const ts = Date.parse(value);
+  return Number.isNaN(ts) ? 0 : ts;
+}
+
+/**
+ * Creates a ranking score similar to "top impressions".
+ */
+function computeRankScore(ad: Record<string, unknown>): number {
+  const euReach = getNumber(ad["eu_total_reach"]);
+  const estimatedAudience = getNumber(ad["estimated_audience_size"]);
+  const createdAt = getTimestamp(ad["ad_creation_time"]);
+
+  // Recency boost (newer ads rank slightly higher)
+  const ageDays = Math.max(
+    1,
+    (Date.now() - createdAt) / (1000 * 60 * 60 * 24)
+  );
+
+  const recencyBoost = 1 / ageDays;
+
+  return (
+    euReach * 10 +
+    estimatedAudience * 2 +
+    recencyBoost * 1000
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Cloud Function: searchAds  (fire-and-forget scraper)
 // Called from Flutter via FbFunctionController.callFunction("searchAds")
@@ -182,7 +222,14 @@ export const searchAds = onCall<SearchAdsRequest>(
 
     // Keyed by page_id (falls back to ad archive id) — last-write-wins per
     // advertiser, favouring the most recent ad_creation_time.
-    const advertiserMap = new Map<string, Record<string, unknown>>();
+    const advertiserMap = new Map<
+      string,
+      {
+        bestAd: Record<string, unknown>;
+        score: number;
+        adCount: number;
+      }
+    >();
 
     try {
       const client = graphClient(token);
@@ -219,16 +266,23 @@ export const searchAds = onCall<SearchAdsRequest>(
 
           sanitized["scraped_at"] = scrapedAt;
 
+          const score = computeRankScore(sanitized);
           const existing = advertiserMap.get(key);
           if (!existing) {
-            advertiserMap.set(key, sanitized);
+            advertiserMap.set(key, {
+              bestAd: sanitized,
+              score,
+              adCount: 1,
+            });
           } else {
-            // Keep the more recent ad for this advertiser.
-            const existingTime = (existing["ad_creation_time"] as string) ?? "";
-            const newTime = (sanitized["ad_creation_time"] as string) ?? "";
-            if (newTime > existingTime) {
-              advertiserMap.set(key, sanitized);
+            existing.adCount += 1;
+            // Keep higher-ranked ad
+            if (score > existing.score) {
+              existing.bestAd = sanitized;
+              existing.score = score;
             }
+            existing.score = Math.max(existing.score, score);
+            advertiserMap.set(key, existing);
           }
         }
 
@@ -239,13 +293,34 @@ export const searchAds = onCall<SearchAdsRequest>(
       // Using page_id as the Firestore doc key is itself a dedup mechanism —
       // a plain set() would also deduplicate, but the Map approach lets us
       // control *which* ad wins (most recent), regardless of API return order.
-      const uniqueAds = Array.from(advertiserMap.entries());
+      const uniqueAds = Array.from(advertiserMap.entries())
+        .map(([key, value]) => {
+          const bestAd = value.bestAd;
+
+          return {
+            key,
+            data: {
+              ...bestAd,
+              advertiser_id: key,
+              rank_score: value.score,
+              total_ads_found: value.adCount,
+              latest_ad_time:
+                bestAd["ad_creation_time"] ?? null,
+              scraped_at: new Date().toISOString(),
+            },
+          };
+        })
+        .sort((a, b) => {
+          const scoreA = getNumber(a.data.rank_score);
+          const scoreB = getNumber(b.data.rank_score);
+          return scoreB - scoreA;
+        });
       logger.info(`  unique advertisers: ${uniqueAds.length}`);
 
       // Delete ads from any previous scrape of this term so stale advertisers
       // that are no longer active don't remain in the collection.
       const existingSnap = await termRef.collection("ads").listDocuments();
-      const newKeys = new Set(uniqueAds.map(([key]) => key));
+      const newKeys = new Set(uniqueAds.map((item) => item.key));
       const staleRefs = existingSnap.filter((ref) => !newKeys.has(ref.id));
       if (staleRefs.length > 0) {
         logger.info(`  removing ${staleRefs.length} stale advertiser(s)`);
@@ -262,9 +337,9 @@ export const searchAds = onCall<SearchAdsRequest>(
       const BATCH_SIZE = 500;
       for (let i = 0; i < uniqueAds.length; i += BATCH_SIZE) {
         const batch = db.batch();
-        for (const [key, ad] of uniqueAds.slice(i, i + BATCH_SIZE)) {
-          const adRef = termRef.collection("ads").doc(key);
-          batch.set(adRef, ad, {merge: true});
+        for (const item of uniqueAds.slice(i, i + BATCH_SIZE)) {
+          const adRef = termRef.collection("ads").doc(item.key);
+          batch.set(adRef, item.data, {merge: true});
         }
         await batch.commit();
       }
@@ -329,6 +404,12 @@ export const getPageInfo = onCall<GetPageInfoRequest>(
       return resp.data ?? null;
     } catch (err) {
       logger.warn(`getPageInfo → no data for pageId=${pageId}:`, err instanceof Error ? err.message : err);
+      // Safely log response data if available
+      if (err && typeof err === "object" && "response" in err && err.response && typeof err.response === "object" && "data" in err.response) {
+        logger.error("Meta Graph error", JSON.stringify((err as any).response.data, null, 2));
+      } else {
+        logger.error("Meta Graph error", err);
+      }
       return null;
     }
   }

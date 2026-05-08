@@ -28,12 +28,8 @@ class GetPageInfoUseCase
   Future<Either<GetPageInfoFailure, FbPageInfoEntity?>> execute(
     GetPageInfoInput input,
   ) async {
-    try {
-      final entity = await _repository.getPageInfo(pageId: input.pageId);
-      return Right(entity);
-    } catch (e, st) {
-      return Left(GetPageInfoFailure(message: e.toString(), cause: st));
-    }
+    final entity = await _repository.getPageInfo(pageId: input.pageId);
+    return Right(entity);
   }
 
   @override

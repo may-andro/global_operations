@@ -15,7 +15,7 @@ class AdDetailSectionWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final relevant = items.where((i) => i.value != null).toList();
+    final relevant = items.where((i) => i.isRelevant).toList();
     if (relevant.isEmpty) return const SizedBox.shrink();
 
     return Column(

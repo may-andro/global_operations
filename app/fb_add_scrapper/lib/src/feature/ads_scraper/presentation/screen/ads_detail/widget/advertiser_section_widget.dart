@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/entity/entity.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/extension/platform_extension.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_detail/bloc/bloc.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_detail/widget/item_data.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_detail/widget/row_widget.dart';
@@ -21,30 +22,38 @@ class AdvertiserSectionWidget extends StatelessWidget {
         final info = state.pageInfo;
         final isLoading = state.status == AdDetailPageInfoStatus.loading;
 
-        final items = [
-          AdDetailItemData('Page name', info?.name ?? ad.pageName),
-          AdDetailItemData('Category', info?.category),
-          AdDetailItemData('About', info?.about ?? info?.description),
-          AdDetailItemData('Phone', info?.phone),
-          AdDetailItemData('Email', info?.emails?.join(', ')),
-          AdDetailItemData('Website', info?.website ?? ad.adCreativeLinkUrl),
-          AdDetailItemData('Facebook page', info?.link ?? _pageUrl),
-          AdDetailItemData('Address', info?.fullAddress),
-          AdDetailItemData(
+        final items = <AdDetailItemData>[
+          AdDetailChipItem('Page name', [info?.name ?? ad.pageName]),
+          AdDetailChipItem('Category', [info?.category]),
+          AdDetailTextItem('About', info?.about ?? info?.description),
+          AdDetailTextItem('Phone', info?.phone),
+          AdDetailTextItem('Email', info?.emails?.join(', ')),
+          AdDetailHyperlinkItem('Website', [
+            info?.website ?? ad.adCreativeLinkUrls?.join(', '),
+          ]),
+          AdDetailHyperlinkItem('Facebook page', [info?.link ?? _pageUrl]),
+          AdDetailTextItem('Address', info?.fullAddress),
+          AdDetailTextItem(
             'Page likes',
             info?.fanCount != null ? _formatCount(info!.fanCount!) : null,
           ),
-          AdDetailItemData('Founded', info?.founded),
-          AdDetailItemData('Verification', switch (info?.verificationStatus) {
+          AdDetailTextItem('Founded', info?.founded),
+          AdDetailTextItem('Verification', switch (info?.verificationStatus) {
             'blue_verified' => '✓ Blue verified',
             'gray_verified' => '✓ Gray verified',
             _ => null,
           }),
-          AdDetailItemData('Declared funder', ad.bylines ?? ad.fundingEntity),
-          AdDetailItemData('Currency', ad.currency),
-          AdDetailItemData('Platforms', ad.publisherPlatforms?.join(', ')),
-          AdDetailItemData('Languages', ad.languages?.join(', ')),
-        ].where((i) => i.value != null).toList();
+          AdDetailTextItem('Declared funder', ad.bylines ?? ad.fundingEntity),
+          AdDetailTextItem('Currency', ad.currency),
+          AdDetailIconItem(
+            'Platforms',
+            ad.publisherPlatforms
+                    ?.map((platform) => platform.platformIcon)
+                    .toList() ??
+                [],
+          ),
+          AdDetailTextItem('Languages', ad.languages?.join(', ')),
+        ].where((i) => i.isRelevant).toList();
 
         if (items.isEmpty && !isLoading) return const SizedBox.shrink();
 

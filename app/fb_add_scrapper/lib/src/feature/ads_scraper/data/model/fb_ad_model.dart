@@ -6,11 +6,11 @@ part 'fb_ad_model.g.dart';
 class FbAdModel {
   const FbAdModel({
     required this.id,
-    this.adCreativeBody,
-    this.adCreativeLinkCaption,
-    this.adCreativeLinkDescription,
-    this.adCreativeLinkTitle,
-    this.adCreativeLinkUrl,
+    this.adCreativeBodies,
+    this.adCreativeLinkTitles,
+    this.adCreativeLinkDescriptions,
+    this.adCreativeLinkCaptions,
+    this.adCreativeLinkUrls,
     this.adCreationTime,
     this.adDeliveryStartTime,
     this.adDeliveryStopTime,
@@ -37,28 +37,44 @@ class FbAdModel {
     this.deliveryByRegion,
     this.beneficiaryPayers,
     this.scrapedAt,
+    this.advertiserId,
+    this.rankScore,
+    this.totalAdsFound,
+    this.latestAdTime,
+    this.websiteDomain,
   });
 
   factory FbAdModel.fromJson(Map<String, dynamic> json) =>
       _$FbAdModelFromJson(json);
+  @JsonKey(name: 'advertiser_id')
+  final String? advertiserId;
+
+  @JsonKey(name: 'rank_score')
+  final double? rankScore;
+
+  @JsonKey(name: 'total_ads_found')
+  final int? totalAdsFound;
+
+  @JsonKey(name: 'latest_ad_time')
+  final String? latestAdTime;
 
   /// The unique `ad_archive_id` – used as Firestore document key for dedup.
   final String id;
 
-  @JsonKey(name: 'ad_creative_body')
-  final String? adCreativeBody;
+  @JsonKey(name: 'ad_creative_bodies')
+  final List<String>? adCreativeBodies;
 
-  @JsonKey(name: 'ad_creative_link_caption')
-  final String? adCreativeLinkCaption;
+  @JsonKey(name: 'ad_creative_link_titles')
+  final List<String>? adCreativeLinkTitles;
 
-  @JsonKey(name: 'ad_creative_link_description')
-  final String? adCreativeLinkDescription;
+  @JsonKey(name: 'ad_creative_link_descriptions')
+  final List<String>? adCreativeLinkDescriptions;
 
-  @JsonKey(name: 'ad_creative_link_title')
-  final String? adCreativeLinkTitle;
+  @JsonKey(name: 'ad_creative_link_captions')
+  final List<String>? adCreativeLinkCaptions;
 
-  @JsonKey(name: 'ad_creative_link_url')
-  final String? adCreativeLinkUrl;
+  @JsonKey(name: 'ad_creative_link_urls')
+  final List<String>? adCreativeLinkUrls;
 
   @JsonKey(name: 'ad_creation_time')
   final String? adCreationTime;
@@ -159,15 +175,18 @@ class FbAdModel {
   @JsonKey(name: 'scraped_at')
   final String? scrapedAt;
 
+  @JsonKey(name: 'website_domain')
+  final String? websiteDomain;
+
   Map<String, dynamic> toJson() => _$FbAdModelToJson(this);
 
   FbAdModel copyWith({
     String? id,
-    String? adCreativeBody,
-    String? adCreativeLinkCaption,
-    String? adCreativeLinkDescription,
-    String? adCreativeLinkTitle,
-    String? adCreativeLinkUrl,
+    List<String>? adCreativeBodies,
+    List<String>? adCreativeLinkTitles,
+    List<String>? adCreativeLinkDescriptions,
+    List<String>? adCreativeLinkCaptions,
+    List<String>? adCreativeLinkUrls,
     String? adCreationTime,
     String? adDeliveryStartTime,
     String? adDeliveryStopTime,
@@ -194,16 +213,21 @@ class FbAdModel {
     List<Map<String, dynamic>>? deliveryByRegion,
     List<String>? beneficiaryPayers,
     String? scrapedAt,
+    String? advertiserId,
+    double? rankScore,
+    int? totalAdsFound,
+    String? latestAdTime,
+    String? websiteDomain,
   }) {
     return FbAdModel(
       id: id ?? this.id,
-      adCreativeBody: adCreativeBody ?? this.adCreativeBody,
-      adCreativeLinkCaption:
-          adCreativeLinkCaption ?? this.adCreativeLinkCaption,
-      adCreativeLinkDescription:
-          adCreativeLinkDescription ?? this.adCreativeLinkDescription,
-      adCreativeLinkTitle: adCreativeLinkTitle ?? this.adCreativeLinkTitle,
-      adCreativeLinkUrl: adCreativeLinkUrl ?? this.adCreativeLinkUrl,
+      adCreativeBodies: adCreativeBodies ?? this.adCreativeBodies,
+      adCreativeLinkTitles: adCreativeLinkTitles ?? this.adCreativeLinkTitles,
+      adCreativeLinkDescriptions:
+          adCreativeLinkDescriptions ?? this.adCreativeLinkDescriptions,
+      adCreativeLinkCaptions:
+          adCreativeLinkCaptions ?? this.adCreativeLinkCaptions,
+      adCreativeLinkUrls: adCreativeLinkUrls ?? this.adCreativeLinkUrls,
       adCreationTime: adCreationTime ?? this.adCreationTime,
       adDeliveryStartTime: adDeliveryStartTime ?? this.adDeliveryStartTime,
       adDeliveryStopTime: adDeliveryStopTime ?? this.adDeliveryStopTime,
@@ -237,6 +261,11 @@ class FbAdModel {
       deliveryByRegion: deliveryByRegion ?? this.deliveryByRegion,
       beneficiaryPayers: beneficiaryPayers ?? this.beneficiaryPayers,
       scrapedAt: scrapedAt ?? this.scrapedAt,
+      advertiserId: advertiserId ?? this.advertiserId,
+      rankScore: rankScore ?? this.rankScore,
+      totalAdsFound: totalAdsFound ?? this.totalAdsFound,
+      latestAdTime: latestAdTime ?? this.latestAdTime,
+      websiteDomain: websiteDomain ?? this.websiteDomain,
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:design_system/design_system.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/domain/entity/entity.dart';
+import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/extension/platform_extension.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_detail/widget/advertiser_section_widget.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_detail/widget/item_data.dart';
 import 'package:fb_add_scrapper/src/feature/ads_scraper/presentation/screen/ads_detail/widget/section_widget.dart';
@@ -45,7 +46,7 @@ class AdDetailViewWidget extends StatelessWidget {
                 color: context.colorPalette.brand.primary,
               ),
               tooltip: 'Open snapshot',
-              onPressed: () async => _launchUrl(ad.adSnapshotUrl!),
+              onPressed: () => _launchUrl(ad.adSnapshotUrl!),
             ),
           const DSHorizontalSpacerWidget(1),
         ],
@@ -56,50 +57,60 @@ class AdDetailViewWidget extends StatelessWidget {
           AdDetailSectionWidget(
             title: 'Page',
             items: [
-              AdDetailItemData('Page name', ad.pageName),
-              AdDetailItemData('Page ID', ad.pageId),
+              AdDetailChipItem('Page name', [ad.pageName]),
+              AdDetailChipItem('Page ID', [ad.pageId]),
             ],
           ),
           AdDetailSectionWidget(
             title: 'Creative',
             items: [
-              AdDetailItemData('Body', ad.adCreativeBody),
-              AdDetailItemData('Link title', ad.adCreativeLinkTitle),
-              AdDetailItemData(
+              AdDetailListItem('Body', ad.adCreativeBodies ?? []),
+              AdDetailListItem('Link title', ad.adCreativeLinkTitles ?? []),
+              AdDetailListItem(
                 'Link description',
-                ad.adCreativeLinkDescription,
+                ad.adCreativeLinkDescriptions ?? [],
               ),
-              AdDetailItemData('Link caption', ad.adCreativeLinkCaption),
-              AdDetailItemData('Destination URL', ad.adCreativeLinkUrl),
+              AdDetailHyperlinkItem(
+                'Link caption',
+                ad.adCreativeLinkCaptions ?? [],
+              ),
+              AdDetailHyperlinkItem(
+                'Destination URL',
+                ad.adCreativeLinkUrls ?? [],
+              ),
             ],
           ),
           AdDetailSectionWidget(
             title: 'Delivery',
             items: [
-              AdDetailItemData('Created', ad.adCreationTime),
-              AdDetailItemData('Started', ad.adDeliveryStartTime),
-              AdDetailItemData('Stopped', ad.adDeliveryStopTime),
-              AdDetailItemData('Currency', ad.currency),
-              AdDetailItemData('Funding entity', ad.fundingEntity),
-              AdDetailItemData('Bylines', ad.bylines),
-              AdDetailItemData(
-                'Impressions',
+              AdDetailDateItem('Created', ad.adCreationTime),
+              AdDetailDateItem('Started', ad.adDeliveryStartTime),
+              AdDetailDateItem('Stopped', ad.adDeliveryStopTime),
+              AdDetailTextItem('Currency', ad.currency),
+              AdDetailTextItem('Funding entity', ad.fundingEntity),
+              AdDetailTextItem('Bylines', ad.bylines),
+              AdDetailChipItem('Impressions', [
                 _rangeText(ad.impressionsLowerBound, ad.impressionsUpperBound),
-              ),
-              AdDetailItemData(
-                'Spend',
+              ]),
+              AdDetailChipItem('Spend', [
                 _rangeText(ad.spendLowerBound, ad.spendUpperBound),
-              ),
+              ]),
             ],
           ),
           AdDetailSectionWidget(
             title: 'Targeting',
             items: [
-              AdDetailItemData('Platforms', ad.publisherPlatforms?.join(', ')),
-              AdDetailItemData('Languages', ad.languages?.join(', ')),
-              AdDetailItemData('Target gender', ad.targetGender),
-              AdDetailItemData('Target ages', ad.targetAges?.join(', ')),
-              AdDetailItemData(
+              AdDetailIconItem(
+                'Platforms',
+                ad.publisherPlatforms
+                        ?.map((platform) => platform.platformIcon)
+                        .toList() ??
+                    [],
+              ),
+              AdDetailTextItem('Languages', ad.languages?.join(', ')),
+              AdDetailTextItem('Target gender', ad.targetGender),
+              AdDetailTextItem('Target ages', ad.targetAges?.join(', ')),
+              AdDetailTextItem(
                 'Target locations',
                 ad.targetLocations?.join(', '),
               ),
@@ -108,24 +119,22 @@ class AdDetailViewWidget extends StatelessWidget {
           AdDetailSectionWidget(
             title: 'Reach',
             items: [
-              AdDetailItemData(
+              AdDetailTextItem(
                 'Est. audience size',
                 _rangeText(
                   ad.estimatedAudienceSizeLowerBound,
                   ad.estimatedAudienceSizeUpperBound,
                 ),
               ),
-              AdDetailItemData(
-                'EU total reach',
-                ad.euTotalReach != null ? '~${ad.euTotalReach}' : null,
-              ),
-              AdDetailItemData(
-                'Brazil total reach',
-                ad.brTotalReach != null ? '~${ad.brTotalReach}' : null,
-              ),
-              AdDetailItemData(
+              AdDetailChipItem('EU total reach', [
+                if (ad.euTotalReach != null) '~${ad.euTotalReach}' else null,
+              ]),
+              AdDetailChipItem('Brazil total reach', [
+                if (ad.brTotalReach != null) '~${ad.brTotalReach}' else null,
+              ]),
+              AdDetailChipItem(
                 'Beneficiary / Payer',
-                ad.beneficiaryPayers?.join(' • '),
+                ad.beneficiaryPayers ?? [],
               ),
             ],
           ),
@@ -134,7 +143,7 @@ class AdDetailViewWidget extends StatelessWidget {
               title: 'Demographics',
               items: [
                 if (ad.demographicDistribution != null)
-                  AdDetailItemData(
+                  AdDetailTextItem(
                     'By age & gender',
                     _formatDistribution(
                       ad.demographicDistribution!,
@@ -144,7 +153,7 @@ class AdDetailViewWidget extends StatelessWidget {
                     ),
                   ),
                 if (ad.deliveryByRegion != null)
-                  AdDetailItemData(
+                  AdDetailTextItem(
                     'By region',
                     _formatDistribution(
                       ad.deliveryByRegion!,
@@ -158,8 +167,9 @@ class AdDetailViewWidget extends StatelessWidget {
           AdDetailSectionWidget(
             title: 'Meta',
             items: [
-              AdDetailItemData('Ad Archive ID', ad.id),
-              AdDetailItemData('Scraped at', ad.scrapedAt),
+              AdDetailChipItem('Ad Archive ID', [ad.id]),
+              AdDetailDateItem('Scraped at', ad.scrapedAt),
+              AdDetailTextItem('Total Ads Found', ad.totalAdsFound?.toString()),
             ],
           ),
           AdvertiserSectionWidget(ad: ad),
@@ -168,7 +178,7 @@ class AdDetailViewWidget extends StatelessWidget {
             DSButtonWidget(
               label: 'View Ad Snapshot',
               icon: Icons.open_in_browser,
-              onPressed: () async => _launchUrl(ad.adSnapshotUrl!),
+              onPressed: () => _launchUrl(ad.adSnapshotUrl!),
             ),
             DSVerticalSpacerWidget(context.space(factor: 2) / context.space()),
           ],
