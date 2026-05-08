@@ -7,7 +7,6 @@ import 'package:firebase/src/analytics/fb_analytics_controller.dart';
 import 'package:firebase/src/app_check/fb_app_check_controller.dart';
 import 'package:firebase/src/auth/fb_auth_controller.dart';
 import 'package:firebase/src/crashlytics/fb_crashlytics_controller.dart';
-import 'package:firebase/src/firebase_options.dart';
 import 'package:firebase/src/firestore/fb_firestore_controller.dart';
 import 'package:firebase/src/function/fb_function_controller.dart';
 import 'package:firebase/src/remote_config/fb_remote_config_controller.dart';
@@ -22,9 +21,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:module_injector/module_injector.dart';
 
 class FirebaseModuleConfigurator implements ModuleConfigurator {
-  FirebaseModuleConfigurator(this.isFirebaseEnabled);
+  FirebaseModuleConfigurator(
+    this.isFirebaseEnabled, {
+    required this.firebaseOptions,
+  });
 
   final bool isFirebaseEnabled;
+  final FirebaseOptions firebaseOptions;
 
   @override
   FutureOr<void> postDependenciesSetup(ServiceLocator serviceLocator) async {
@@ -50,9 +53,7 @@ class FirebaseModuleConfigurator implements ModuleConfigurator {
 
   @override
   FutureOr<void> preDependenciesSetup(ServiceLocator serviceLocator) async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await Firebase.initializeApp(options: firebaseOptions);
   }
 
   @override

@@ -1,9 +1,16 @@
 name: Host PWA to firebase
 
+permissions:
+  contents: read
+  pull-requests: write
+
 on:
   workflow_call:
     inputs:
       channelId:
+        type: string
+        required: true
+      app_path:
         type: string
         required: true
     secrets:
@@ -24,9 +31,10 @@ env:
   FLUTTER_VERSION: 3.32.2
 
 jobs:
- build_and_host:
-    name: Deploy to firebase
+  build_and_host:
+    name: Deploy web for ${{ inputs.app_path }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -40,11 +48,12 @@ jobs:
 
       - name: Set version from tag
         run: |
+          pubspec_path="${{ inputs.app_path }}/pubspec.yaml"
           if [ "$GITHUB_REF_TYPE" != "tag" ]
           then
             echo "Ref name $GITHUB_REF_NAME is not a tag but a $GITHUB_REF_TYPE, not setting version number"
           else
-            version=$(echo $GITHUB_REF_NAME | sed "s/-review//" | sed "s/-prod//") && sed -i "s/^version: .*$/version: $version/g" app/global_ops/pubspec.yaml
+            version=$(echo $GITHUB_REF_NAME | sed "s/-review//" | sed "s/-prod//") && sed -i "s/^version: .*$/version: $version/g" "$pubspec_path"
           fi
 
       - name: Decode Firebase Json
@@ -53,14 +62,17 @@ jobs:
 
       - name: Decode firebase-config.js in web directory
         run: |
-          echo "${{ secrets.FIREBASE_CONFIG_BASE64 }}" | base64 --decode > app/global_ops/web/firebase-config.js
+          mkdir -p ${{ github.workspace }}/${{ inputs.app_path }}/web
+          echo "${{ secrets.FIREBASE_CONFIG_BASE64 }}" | base64 --decode > ${{ github.workspace }}/${{ inputs.app_path }}/web/firebase-config.js
 
       - name: Decode Firebase Options
         run: |
-          echo "${{ secrets.FIREBASE_OPTIONS_BASE64 }}" | base64 --decode > ${{ github.workspace }}/layer/firebase/lib/src/firebase_options.dart
+          mkdir -p ${{ github.workspace }}/${{ inputs.app_path }}/lib/firebase
+          echo "${{ secrets.FIREBASE_OPTIONS_BASE64 }}" | base64 --decode > ${{ github.workspace }}/${{ inputs.app_path }}/lib/firebase/firebase_options.dart
 
       - name: Decode App Check Token
         run: |
+          mkdir -p ${{ github.workspace }}/layer/firebase/lib/src/app_check
           echo "${{ secrets.APP_CHECK_TOKEN_BASE64 }}" | base64 --decode > ${{ github.workspace }}/layer/firebase/lib/src/app_check/token.dart
 
       - name: Setup Melos
@@ -74,12 +86,12 @@ jobs:
         run: melos gen_app --no-select
 
       - name: Build Flutter Web
-        working-directory: app/global_ops
+        working-directory: ${{ inputs.app_path }}
         run: flutter build web --release --dart-define=build_env=prod
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          repoToken: "${{ github.token }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
           channelId: ${{ inputs.channelId }}

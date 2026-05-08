@@ -55,10 +55,13 @@ app.*.map.json
 /ios/Runner/Secrets.xcconfig
 
 # Firebase app config files
+/lib/firebase
 /ios/Runner/GoogleService-Info.plist
 /ios/firebase_app_id_file.json
 /android/app/google-services.json
 /android/app/google_services.base64
+firebase.json
+firebase_json.base64
 
 # Web local firebase config
 /web/firebase-config.js

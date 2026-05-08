@@ -1,7 +1,19 @@
 name: Analyze and test app
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 on:
   workflow_call:
+    inputs:
+      app_path:
+        type: string
+        required: true
+      app_name:
+        type: string
+        required: true
     secrets:
       FIREBASE_OPTIONS_BASE64:
         required: true
@@ -13,7 +25,7 @@ env:
 
 jobs:
   analyze_and_test:
-    name: Analyse and test the app
+    name: Analyse and test ${{ inputs.app_name }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,10 +40,12 @@ jobs:
 
       - name: Decode Firebase Options
         run: |
-          echo "${{ secrets.FIREBASE_OPTIONS_BASE64 }}" | base64 --decode > ${{ github.workspace }}/layer/firebase/lib/src/firebase_options.dart
+          mkdir -p ${{ github.workspace }}/${{ inputs.app_path }}/lib/firebase
+          echo "${{ secrets.FIREBASE_OPTIONS_BASE64 }}" | base64 --decode > ${{ github.workspace }}/${{ inputs.app_path }}/lib/firebase/firebase_options.dart
 
       - name: Decode App Check Token
         run: |
+          mkdir -p ${{ github.workspace }}/layer/firebase/lib/src/app_check
           echo "${{ secrets.APP_CHECK_TOKEN_BASE64 }}" | base64 --decode > ${{ github.workspace }}/layer/firebase/lib/src/app_check/token.dart
 
       - name: Setup Melos
@@ -45,28 +59,28 @@ jobs:
         run: flutter pub get
 
       - name: Format the Dart code
-        working-directory: app/global_ops
+        working-directory: ${{ inputs.app_path }}
         run: dart format lib test --set-exit-if-changed
 
       - name: Run code generator
         run: melos gen_app --no-select
 
       - name: Statically analyze the code
-        working-directory: app/global_ops
+        working-directory: ${{ inputs.app_path }}
         run: flutter analyze
 
       - name: Run unit tests
-        working-directory: app/global_ops
+        working-directory: ${{ inputs.app_path }}
         run: flutter test --exclude-tags golden --coverage --machine > test-results.json --no-pub
 
       - name: Generate test report
         uses: dorny/test-reporter@v1.9.1
         if: always()
         with:
-          name: Test Results
-          path: app/global_ops/test-results.json
+          name: Test Results (${{ inputs.app_name }})
+          path: ${{ inputs.app_path }}/test-results.json
           reporter: flutter-json
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ github.token }}
 
       - name: Install lcov on ubuntu
         run: |
@@ -74,17 +88,17 @@ jobs:
           sudo apt-get install lcov
 
       - name: Normalize lcov source paths for workspace layout
-        working-directory: app/global_ops
+        working-directory: ${{ inputs.app_path }}
         run: |
           # Make source-file entries resolvable when genhtml runs from repo root.
-          sed -i "s|^SF:lib/|SF:${GITHUB_WORKSPACE}/app/global_ops/lib/|g" coverage/lcov.info
+          sed -i "s|^SF:lib/|SF:${GITHUB_WORKSPACE}/${{ inputs.app_path }}/lib/|g" coverage/lcov.info
 
       - name: Generate code coverage report from lcov.info
         uses: zgosalvez/github-actions-report-lcov@v4.1.22
         with:
-          coverage-files: app/global_ops/coverage/lcov.info
+          coverage-files: ${{ inputs.app_path }}/coverage/lcov.info
           minimum-coverage: 0
-          artifact-name: code-coverage-report
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          artifact-name: code-coverage-report-${{ inputs.app_name }}
+          github-token: ${{ github.token }}
           update-comment: true
 
